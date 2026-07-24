@@ -2,16 +2,16 @@
 /**
  * The home template.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  */
 
-use function MENJ\Bio\opt;
+use function Kolofon\opt;
 
 get_header();
 ?>
 
 <main class="home">
-	<?php do_action( 'menj_bio_before_hero' ); ?>
+	<?php do_action( 'kolofon_before_hero' ); ?>
 
 	<section class="hero">
 		<div class="container">
@@ -23,7 +23,7 @@ get_header();
 					<?php endif; ?>
 
 					<h1 class="hero-heading">
-						<?php echo wp_kses( opt( 'hero_heading' ), \MENJ\Bio\allowed_heading_html() ); ?>
+						<?php echo wp_kses( opt( 'hero_heading' ), \Kolofon\allowed_heading_html() ); ?>
 					</h1>
 
 					<?php $body = opt( 'hero_body' ); ?>
@@ -31,7 +31,7 @@ get_header();
 						<div class="hero-body"><?php echo wp_kses_post( wpautop( $body ) ); ?></div>
 					<?php endif; ?>
 
-					<?php \MENJ\Bio\render_social_icons(); ?>
+					<?php \Kolofon\render_social_icons(); ?>
 
 					<?php if ( is_active_sidebar( 'intro' ) ) : ?>
 						<div class="intro"><?php dynamic_sidebar( 'intro' ); ?></div>
@@ -39,7 +39,7 @@ get_header();
 				</div>
 
 				<?php
-				$portrait = opt( 'hero_portrait' ) ?: \MENJ\Bio\default_portrait_url();
+				$portrait = opt( 'hero_portrait' ) ?: \Kolofon\default_portrait_url();
 				$pstyle   = sanitize_html_class( opt( 'portrait_style' ) );
 				?>
 				<div class="hero-portrait is-<?php echo esc_attr( $pstyle ); ?>">
@@ -49,7 +49,7 @@ get_header();
 		</div>
 	</section>
 
-	<?php do_action( 'menj_bio_after_hero' ); ?>
+	<?php do_action( 'kolofon_after_hero' ); ?>
 
 	<?php if ( intval( opt( 'show_recent' ) ) === 1 ) : ?>
 		<?php
@@ -66,15 +66,15 @@ get_header();
 				<div class="container">
 					<?php
 					if ( 1 === intval( opt( 'show_section_chooser' ) ) ) {
-						\MENJ\Bio\render_section_chooser( 0 );
+						\Kolofon\render_section_chooser( 0 );
 					}
 					?>
-					<h2 class="section-heading"><?php esc_html_e( 'Recent Posts', 'menj-bio' ); ?> <a class="section-link" href="<?php echo esc_url( \MENJ\Bio\get_blog_index_url() ); ?>"><?php esc_html_e( 'View all', 'menj-bio' ); ?></a></h2>
-					<ul class="<?php echo esc_attr( \MENJ\Bio\post_list_classes( $recent ) ); ?>">
+					<h2 class="section-heading"><?php esc_html_e( 'Recent Posts', 'kolofon' ); ?> <a class="section-link" href="<?php echo esc_url( \Kolofon\get_blog_index_url() ); ?>"><?php esc_html_e( 'View all', 'kolofon' ); ?></a></h2>
+					<ul class="<?php echo esc_attr( \Kolofon\post_list_classes( $recent ) ); ?>">
 						<?php
 						while ( $recent->have_posts() ) :
 							$recent->the_post();
-							\MENJ\Bio\post_list_item();
+							\Kolofon\post_list_item();
 						endwhile;
 						?>
 					</ul>

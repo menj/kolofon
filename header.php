@@ -2,7 +2,7 @@
 /**
  * The site header.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  */
 
 ?><!DOCTYPE html>
@@ -16,9 +16,9 @@
 <body <?php body_class(); ?>>
 <?php wp_body_open(); ?>
 
-<a class="skip-link screen-reader-text" href="#content"><?php esc_html_e( 'Skip to content', 'menj-bio' ); ?></a>
+<a class="skip-link screen-reader-text" href="#content"><?php esc_html_e( 'Skip to content', 'kolofon' ); ?></a>
 
-<?php if ( \MENJ\Bio\is_sidebar_layout() ) : ?>
+<?php if ( \Kolofon\is_sidebar_layout() ) : ?>
 
 <header class="site-header sidebar-card" role="banner">
 	<div class="site-branding">
@@ -32,7 +32,7 @@
 	</div>
 
 	<?php if ( has_nav_menu( 'primary' ) ) : ?>
-		<nav id="site-nav" class="site-nav" aria-label="<?php esc_attr_e( 'Primary', 'menj-bio' ); ?>" data-toggle-label="<?php esc_attr_e( 'Menu', 'menj-bio' ); ?>">
+		<nav id="site-nav" class="site-nav" aria-label="<?php esc_attr_e( 'Primary', 'kolofon' ); ?>" data-toggle-label="<?php esc_attr_e( 'Menu', 'kolofon' ); ?>">
 			<?php
 			wp_nav_menu(
 				array(
@@ -46,7 +46,7 @@
 		</nav>
 	<?php endif; ?>
 
-	<?php \MENJ\Bio\render_sidebar_social(); ?>
+	<?php \Kolofon\render_sidebar_social(); ?>
 </header>
 
 <?php else : ?>
@@ -64,7 +64,7 @@
 		</div>
 
 		<?php if ( has_nav_menu( 'primary' ) ) : ?>
-			<nav id="site-nav" class="site-nav" aria-label="<?php esc_attr_e( 'Primary', 'menj-bio' ); ?>" data-toggle-label="<?php esc_attr_e( 'Menu', 'menj-bio' ); ?>">
+			<nav id="site-nav" class="site-nav" aria-label="<?php esc_attr_e( 'Primary', 'kolofon' ); ?>" data-toggle-label="<?php esc_attr_e( 'Menu', 'kolofon' ); ?>">
 				<?php
 				wp_nav_menu(
 					array(

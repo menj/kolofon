@@ -10,15 +10,15 @@
  * State lives in post meta, so it survives a theme switch as data even though
  * the rendering here does not.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.4.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
-const PAGE_STATE_META = '_menj_bio_page_state';
+const PAGE_STATE_META = '_kolofon_page_state';
 
 add_action( 'init', __NAMESPACE__ . '\\register_page_state_meta' );
 add_action( 'add_meta_boxes_page', __NAMESPACE__ . '\\add_page_state_box' );
@@ -54,8 +54,8 @@ function register_page_state_meta() {
  */
 function get_page_states() {
 	return array(
-		''     => __( 'Published normally', 'menj-bio' ),
-		'soon' => __( 'Planned, not yet written', 'menj-bio' ),
+		''     => __( 'Published normally', 'kolofon' ),
+		'soon' => __( 'Planned, not yet written', 'kolofon' ),
 	);
 }
 
@@ -91,8 +91,8 @@ function page_is_planned( $page_id = null ) {
  */
 function add_page_state_box() {
 	add_meta_box(
-		'menj-bio-page-state',
-		__( 'Page state', 'menj-bio' ),
+		'kolofon-page-state',
+		__( 'Page state', 'kolofon' ),
 		__NAMESPACE__ . '\\render_page_state_box',
 		'page',
 		'side',
@@ -106,20 +106,20 @@ function add_page_state_box() {
  * @param \WP_Post $post Current page.
  */
 function render_page_state_box( $post ) {
-	wp_nonce_field( 'menj_bio_page_state', 'menj_bio_page_state_nonce' );
+	wp_nonce_field( 'kolofon_page_state', 'kolofon_page_state_nonce' );
 
 	$current = get_post_meta( $post->ID, PAGE_STATE_META, true );
 	?>
 	<p>
 		<?php foreach ( get_page_states() as $value => $label ) : ?>
 			<label style="display:block;margin-bottom:4px;">
-				<input type="radio" name="menj_bio_page_state" value="<?php echo esc_attr( $value ); ?>" <?php checked( $current, $value ); ?> />
+				<input type="radio" name="kolofon_page_state" value="<?php echo esc_attr( $value ); ?>" <?php checked( $current, $value ); ?> />
 				<?php echo esc_html( $label ); ?>
 			</label>
 		<?php endforeach; ?>
 	</p>
 	<p class="description">
-		<?php esc_html_e( 'A planned page stays in the navigation with a badge, and shows its excerpt as a short description of what it will contain.', 'menj-bio' ); ?>
+		<?php esc_html_e( 'A planned page stays in the navigation with a badge, and shows its excerpt as a short description of what it will contain.', 'kolofon' ); ?>
 	</p>
 	<?php
 }
@@ -130,11 +130,11 @@ function render_page_state_box( $post ) {
  * @param int $post_id Page ID.
  */
 function save_page_state( $post_id ) {
-	if ( ! isset( $_POST['menj_bio_page_state_nonce'] ) ) {
+	if ( ! isset( $_POST['kolofon_page_state_nonce'] ) ) {
 		return;
 	}
 
-	if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['menj_bio_page_state_nonce'] ) ), 'menj_bio_page_state' ) ) {
+	if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['kolofon_page_state_nonce'] ) ), 'kolofon_page_state' ) ) {
 		return;
 	}
 
@@ -146,7 +146,7 @@ function save_page_state( $post_id ) {
 		return;
 	}
 
-	$state = isset( $_POST['menj_bio_page_state'] ) ? sanitize_text_field( wp_unslash( $_POST['menj_bio_page_state'] ) ) : '';
+	$state = isset( $_POST['kolofon_page_state'] ) ? sanitize_text_field( wp_unslash( $_POST['kolofon_page_state'] ) ) : '';
 
 	if ( '' === sanitize_page_state( $state ) ) {
 		delete_post_meta( $post_id, PAGE_STATE_META );

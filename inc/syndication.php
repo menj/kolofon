@@ -11,11 +11,11 @@
  * as theme features rather than a companion plugin because they are structural
  * outputs of the theme's identity, same as the SEO stand-down and the icon set.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   2.9.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -83,7 +83,7 @@ function prepend_feed_thumbnail( $content ) {
 		array(
 			'fetchpriority' => false,
 			'decoding'      => false,
-			'class'         => 'menj-bio-feed-thumbnail',
+			'class'         => 'kolofon-feed-thumbnail',
 			'style'         => 'margin-bottom:1em;height:auto;max-width:100%;',
 		)
 	);

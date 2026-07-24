@@ -9,7 +9,7 @@
  * request for a face they never see.
  *
  * A stack is treated as needing a webfont when it declares `webfont` in its
- * definition. `menj_bio_font_stacks` can therefore register more, and the
+ * definition. `kolofon_font_stacks` can therefore register more, and the
  * loader will do the right thing with them.
  *
  * Preload and stylesheet emission are conditional. `font-display: swap` keeps
@@ -18,11 +18,11 @@
  * environment does not have; that is a documented followup, not a promise the
  * word "self-hosted" would imply on its own.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   2.4.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -65,7 +65,7 @@ function preload_active_webfont() {
 		return;
 	}
 
-	$path = MENJ_BIO_DIR . 'assets/fonts/' . ltrim( $def['preload'], '/' );
+	$path = KOLOFON_DIR . 'assets/fonts/' . ltrim( $def['preload'], '/' );
 
 	if ( ! is_readable( $path ) ) {
 		return;
@@ -77,7 +77,7 @@ function preload_active_webfont() {
 	printf(
 		'<link rel="preload" as="font" type="%s" href="%s" crossorigin />' . "\n",
 		esc_attr( $type ),
-		esc_url( MENJ_BIO_URI . 'assets/fonts/' . ltrim( $def['preload'], '/' ) )
+		esc_url( KOLOFON_URI . 'assets/fonts/' . ltrim( $def['preload'], '/' ) )
 	);
 }
 
@@ -101,7 +101,7 @@ function enqueue_active_webfont() {
 			continue;
 		}
 
-		$path = MENJ_BIO_DIR . 'assets/fonts/' . ltrim( $file['src'], '/' );
+		$path = KOLOFON_DIR . 'assets/fonts/' . ltrim( $file['src'], '/' );
 		if ( ! is_readable( $path ) ) {
 			continue;
 		}
@@ -114,7 +114,7 @@ function enqueue_active_webfont() {
 		$rules .= sprintf(
 			"@font-face{font-family:'%s';src:url('%s') format('%s');font-weight:%s;font-style:%s;font-display:swap;}\n",
 			esc_html( $def['family'] ),
-			esc_url( MENJ_BIO_URI . 'assets/fonts/' . ltrim( $file['src'], '/' ) ),
+			esc_url( KOLOFON_URI . 'assets/fonts/' . ltrim( $file['src'], '/' ) ),
 			esc_html( $format ),
 			esc_html( $weight ),
 			esc_html( $style )
@@ -122,6 +122,6 @@ function enqueue_active_webfont() {
 	}
 
 	if ( '' !== $rules ) {
-		wp_add_inline_style( 'menj-bio-main', $rules );
+		wp_add_inline_style( 'kolofon-main', $rules );
 	}
 }

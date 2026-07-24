@@ -10,11 +10,11 @@
  * This absorbs what a login-branding plugin does, which is why the live site
  * can drop its own.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.1.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -130,14 +130,25 @@ function login_styles() {
 			color: ' . $text . ';
 		}
 		.login .message,
-		.login .notice {
-			border-left-color: ' . $accent . ';
+		.login .notice,
+		.login #login_error {
+			background: ' . $bg . ';
+			color: ' . $text . ';
+			border: 1px solid ' . $rule . ';
+			border-left: 4px solid ' . $accent . ';
+			border-radius: 4px;
+			box-shadow: none;
+		}
+		.login .message a,
+		.login .notice a,
+		.login #login_error a {
+			color: ' . $accent . ';
 		}
 	';
 
-	wp_register_style( 'menj-bio-login', false, array(), MENJ_BIO_VERSION );
-	wp_enqueue_style( 'menj-bio-login' );
-	wp_add_inline_style( 'menj-bio-login', $css );
+	wp_register_style( 'kolofon-login', false, array(), KOLOFON_VERSION );
+	wp_enqueue_style( 'kolofon-login' );
+	wp_add_inline_style( 'kolofon-login', $css );
 }
 
 /**

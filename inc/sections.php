@@ -21,11 +21,11 @@
  * single-author site that controls its own theme the trade is acceptable, and
  * it is recorded in ssot.md rather than left implicit.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.1.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -268,10 +268,10 @@ function enqueue_section_editor_script() {
 	}
 
 	wp_enqueue_script(
-		'menj-bio-single-section',
-		MENJ_BIO_URI . 'assets/js/single-section.js',
+		'kolofon-single-section',
+		KOLOFON_URI . 'assets/js/single-section.js',
 		array( 'wp-data', 'wp-dom-ready' ),
-		MENJ_BIO_VERSION,
+		KOLOFON_VERSION,
 		true
 	);
 }
@@ -297,7 +297,7 @@ function render_section_chooser( $current_id = 0 ) {
 	$all_label = opt( 'section_all_label' );
 	$blog_url  = get_blog_index_url();
 	?>
-	<nav class="section-chooser" aria-label="<?php esc_attr_e( 'Sections', 'menj-bio' ); ?>">
+	<nav class="section-chooser" aria-label="<?php esc_attr_e( 'Sections', 'kolofon' ); ?>">
 		<ul class="section-list">
 			<li class="section-item">
 				<a href="<?php echo esc_url( $blog_url ); ?>"

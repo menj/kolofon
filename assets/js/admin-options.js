@@ -6,15 +6,15 @@
 	'use strict';
 
 	document.addEventListener( 'DOMContentLoaded', function () {
-		var tabs   = document.querySelectorAll( '.menj-bio-tabs .nav-tab' );
-		var panels = document.querySelectorAll( '.menj-bio-panel' );
-		var form   = document.querySelector( '.menj-bio-form' );
+		var tabs   = document.querySelectorAll( '.kolofon-tabs .nav-tab' );
+		var panels = document.querySelectorAll( '.kolofon-panel' );
+		var form   = document.querySelector( '.kolofon-form' );
 
 		if ( ! tabs.length || ! panels.length || ! form ) {
 			return;
 		}
 
-		var wrap = document.querySelector( '.menj-bio-wrap' );
+		var wrap = document.querySelector( '.kolofon-wrap' );
 		if ( wrap ) {
 			wrap.classList.add( 'js-tabs' );
 		}
@@ -91,15 +91,15 @@
 
 		// Colour picker (WP built-in). Uses jQuery, which WP always enqueues alongside wp-color-picker.
 		if ( window.jQuery && window.jQuery.fn && window.jQuery.fn.wpColorPicker ) {
-			window.jQuery( '.menj-bio-color-picker' ).wpColorPicker();
+			window.jQuery( '.kolofon-color-picker' ).wpColorPicker();
 		}
 
 		// Media library picker for image fields.
-		document.querySelectorAll( '.menj-bio-image-field' ).forEach( function ( field ) {
-			var urlInput = field.querySelector( '.menj-bio-image-url' );
-			var choose   = field.querySelector( '.menj-bio-image-choose' );
-			var clear    = field.querySelector( '.menj-bio-image-clear' );
-			var preview  = field.querySelector( '.menj-bio-image-preview' );
+		document.querySelectorAll( '.kolofon-image-field' ).forEach( function ( field ) {
+			var urlInput = field.querySelector( '.kolofon-image-url' );
+			var choose   = field.querySelector( '.kolofon-image-choose' );
+			var clear    = field.querySelector( '.kolofon-image-clear' );
+			var preview  = field.querySelector( '.kolofon-image-preview' );
 			var img      = preview.querySelector( 'img' );
 			var frame    = null;
 

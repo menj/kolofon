@@ -5,31 +5,31 @@
  * Uses the Settings API. Tabs are rendered client-side (no page reload)
  * with a single option group so all fields save in one request.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.0.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
-const OPTION_GROUP = 'menj_bio_option_group';
-const OPTION_PAGE  = 'menj_bio_options_page';
+const OPTION_GROUP = 'kolofon_option_group';
+const OPTION_PAGE  = 'kolofon_options_page';
 
 add_action( 'admin_menu', __NAMESPACE__ . '\\register_options_page' );
 add_action( 'admin_init', __NAMESPACE__ . '\\register_settings' );
 add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_options_assets' );
-add_action( 'admin_post_menj_bio_reset', __NAMESPACE__ . '\\handle_reset' );
+add_action( 'admin_post_kolofon_reset', __NAMESPACE__ . '\\handle_reset' );
 
 /**
  * Add the Appearance submenu entry.
  */
 function register_options_page() {
 	add_theme_page(
-		__( 'Theme Options', 'menj-bio' ),
-		__( 'Theme Options', 'menj-bio' ),
+		__( 'Theme Options', 'kolofon' ),
+		__( 'Theme Options', 'kolofon' ),
 		'manage_options',
-		'menj-bio-options',
+		'kolofon-options',
 		__NAMESPACE__ . '\\render_options_page'
 	);
 }
@@ -40,25 +40,25 @@ function register_options_page() {
  * @param string $hook Current admin page hook.
  */
 function enqueue_options_assets( $hook ) {
-	if ( 'appearance_page_menj-bio-options' !== $hook ) {
+	if ( 'appearance_page_kolofon-options' !== $hook ) {
 		return;
 	}
 
 	wp_enqueue_style(
-		'menj-bio-admin-options',
-		MENJ_BIO_URI . 'assets/css/admin-options.css',
+		'kolofon-admin-options',
+		KOLOFON_URI . 'assets/css/admin-options.css',
 		array(),
-		MENJ_BIO_VERSION
+		KOLOFON_VERSION
 	);
 
 	wp_enqueue_style( 'wp-color-picker' );
 	wp_enqueue_media();
 
 	wp_enqueue_script(
-		'menj-bio-admin-options',
-		MENJ_BIO_URI . 'assets/js/admin-options.js',
+		'kolofon-admin-options',
+		KOLOFON_URI . 'assets/js/admin-options.js',
 		array( 'jquery', 'wp-color-picker' ),
-		MENJ_BIO_VERSION,
+		KOLOFON_VERSION,
 		true
 	);
 }
@@ -69,7 +69,7 @@ function enqueue_options_assets( $hook ) {
 function register_settings() {
 	register_setting(
 		OPTION_GROUP,
-		MENJ_BIO_OPTION_KEY,
+		KOLOFON_OPTION_KEY,
 		array(
 			'type'              => 'array',
 			'sanitize_callback' => __NAMESPACE__ . '\\sanitize_options',
@@ -140,7 +140,7 @@ function render_field( $args ) {
 	$key   = $args['key'];
 	$type  = $args['type'];
 	$value = opt( $key );
-	$name  = MENJ_BIO_OPTION_KEY . '[' . $key . ']';
+	$name  = KOLOFON_OPTION_KEY . '[' . $key . ']';
 
 	switch ( $type ) {
 		case 'text':
@@ -180,20 +180,20 @@ function render_field( $args ) {
 
 		case 'image':
 			printf(
-				'<div class="menj-bio-image-field">
-					<input type="url" class="regular-text menj-bio-image-url" name="%1$s" id="%2$s" value="%3$s" placeholder="https://" />
-					<button type="button" class="button menj-bio-image-choose">%4$s</button>
-					<button type="button" class="button-link menj-bio-image-clear" %5$s>%6$s</button>
-					<div class="menj-bio-image-preview" %5$s>
+				'<div class="kolofon-image-field">
+					<input type="url" class="regular-text kolofon-image-url" name="%1$s" id="%2$s" value="%3$s" placeholder="https://" />
+					<button type="button" class="button kolofon-image-choose">%4$s</button>
+					<button type="button" class="button-link kolofon-image-clear" %5$s>%6$s</button>
+					<div class="kolofon-image-preview" %5$s>
 						<img src="%3$s" alt="" />
 					</div>
 				</div>',
 				esc_attr( $name ),
 				esc_attr( $key ),
 				esc_url( $value ),
-				esc_html__( 'Choose image', 'menj-bio' ),
+				esc_html__( 'Choose image', 'kolofon' ),
 				empty( $value ) ? 'hidden' : '',
-				esc_html__( 'Remove', 'menj-bio' )
+				esc_html__( 'Remove', 'kolofon' )
 			);
 			break;
 
@@ -232,13 +232,13 @@ function render_field( $args ) {
 				esc_attr( $name ),
 				esc_attr( $key ),
 				checked( 1, intval( $value ), false ),
-				esc_html__( 'Enabled', 'menj-bio' )
+				esc_html__( 'Enabled', 'kolofon' )
 			);
 			break;
 
 		case 'colour':
 			printf(
-				'<input type="text" class="menj-bio-color-picker" name="%1$s" id="%2$s" value="%3$s" data-default-color="%3$s" />',
+				'<input type="text" class="kolofon-color-picker" name="%1$s" id="%2$s" value="%3$s" data-default-color="%3$s" />',
 				esc_attr( $name ),
 				esc_attr( $key ),
 				esc_attr( $value )
@@ -248,7 +248,7 @@ function render_field( $args ) {
 		case 'radio_presets':
 			foreach ( get_colour_presets() as $slug => $preset ) {
 				printf(
-					'<label class="menj-bio-preset"><input type="radio" name="%1$s" value="%2$s" %3$s /> %4$s</label><br />',
+					'<label class="kolofon-preset"><input type="radio" name="%1$s" value="%2$s" %3$s /> %4$s</label><br />',
 					esc_attr( $name ),
 					esc_attr( $slug ),
 					checked( $value, $slug, false ),
@@ -260,7 +260,7 @@ function render_field( $args ) {
 		case 'font_stack':
 			foreach ( get_font_stacks() as $slug => $stack ) {
 				printf(
-					'<label class="menj-bio-preset"><input type="radio" name="%1$s" value="%2$s" %3$s /> %4$s</label><br />',
+					'<label class="kolofon-preset"><input type="radio" name="%1$s" value="%2$s" %3$s /> %4$s</label><br />',
 					esc_attr( $name ),
 					esc_attr( $slug ),
 					checked( $value, $slug, false ),
@@ -272,8 +272,8 @@ function render_field( $args ) {
 		case 'export_button':
 			printf(
 				'<a href="%1$s" class="button button-secondary">%2$s</a>',
-				esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=menj_bio_export' ), 'menj_bio_export' ) ),
-				esc_html__( 'Download JSON', 'menj-bio' )
+				esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=kolofon_export' ), 'kolofon_export' ) ),
+				esc_html__( 'Download JSON', 'kolofon' )
 			);
 			break;
 
@@ -281,12 +281,12 @@ function render_field( $args ) {
 			// Rendered as a standalone form, since the settings form posts to
 			// options.php and cannot carry a file upload to a different handler.
 			printf(
-				'<div class="menj-bio-import">
-					<input type="file" form="menj-bio-import-form" name="menj_bio_import_file" accept="application/json,.json" required />
-					<button type="submit" form="menj-bio-import-form" class="button button-secondary" onclick="return confirm(\'%1$s\');">%2$s</button>
+				'<div class="kolofon-import">
+					<input type="file" form="kolofon-import-form" name="kolofon_import_file" accept="application/json,.json" required />
+					<button type="submit" form="kolofon-import-form" class="button button-secondary" onclick="return confirm(\'%1$s\');">%2$s</button>
 				</div>',
-				esc_js( __( 'This replaces all current settings. Continue?', 'menj-bio' ) ),
-				esc_html__( 'Upload and replace', 'menj-bio' )
+				esc_js( __( 'This replaces all current settings. Continue?', 'kolofon' ) ),
+				esc_html__( 'Upload and replace', 'kolofon' )
 			);
 			break;
 
@@ -304,7 +304,7 @@ function render_field( $args ) {
 				'<textarea class="large-text code" rows="3" name="%1$s" id="%2$s" placeholder="%3$s">%4$s</textarea>',
 				esc_attr( $name ),
 				esc_attr( $key ),
-				esc_attr__( 'first-slug, second-slug, third-slug', 'menj-bio' ),
+				esc_attr__( 'first-slug, second-slug, third-slug', 'kolofon' ),
 				esc_textarea( $value )
 			);
 
@@ -313,18 +313,18 @@ function render_field( $args ) {
 			$slugs = parse_section_slugs( $value );
 
 			if ( $slugs ) {
-				echo '<ul class="menj-bio-slug-report">';
+				echo '<ul class="kolofon-slug-report">';
 				foreach ( $slugs as $slug ) {
 					$term = get_term_by( 'slug', $slug, 'category' );
 					if ( $term instanceof \WP_Term ) {
 						printf(
-							'<li class="is-ok"><code>%1$s</code> %2$s <span class="menj-bio-slug-count">%3$s</span></li>',
+							'<li class="is-ok"><code>%1$s</code> %2$s <span class="kolofon-slug-count">%3$s</span></li>',
 							esc_html( $slug ),
 							esc_html( $term->name ),
 							esc_html(
 								sprintf(
 									/* translators: %s: number of posts */
-									_n( '%s post', '%s posts', $term->count, 'menj-bio' ),
+									_n( '%s post', '%s posts', $term->count, 'kolofon' ),
 									number_format_i18n( $term->count )
 								)
 							)
@@ -333,7 +333,7 @@ function render_field( $args ) {
 						printf(
 							'<li class="is-missing"><code>%1$s</code> %2$s</li>',
 							esc_html( $slug ),
-							esc_html__( 'no category with this slug exists yet', 'menj-bio' )
+							esc_html__( 'no category with this slug exists yet', 'kolofon' )
 						);
 					}
 				}
@@ -342,21 +342,21 @@ function render_field( $args ) {
 				printf(
 					'<p class="description"><a href="%1$s">%2$s</a></p>',
 					esc_url( admin_url( 'edit-tags.php?taxonomy=category' ) ),
-					esc_html__( 'Manage categories', 'menj-bio' )
+					esc_html__( 'Manage categories', 'kolofon' )
 				);
 			}
 			break;
 
 		case 'reset_button':
 			$reset_url = wp_nonce_url(
-				admin_url( 'admin-post.php?action=menj_bio_reset' ),
-				'menj_bio_reset'
+				admin_url( 'admin-post.php?action=kolofon_reset' ),
+				'kolofon_reset'
 			);
 			printf(
 				'<a href="%1$s" class="button button-secondary" onclick="return confirm(\'%2$s\');">%3$s</a>',
 				esc_url( $reset_url ),
-				esc_js( __( 'Restore all options to default values. Continue?', 'menj-bio' ) ),
-				esc_html__( 'Restore defaults', 'menj-bio' )
+				esc_js( __( 'Restore all options to default values. Continue?', 'kolofon' ) ),
+				esc_html__( 'Restore defaults', 'kolofon' )
 			);
 			break;
 	}
@@ -371,12 +371,12 @@ function render_field( $args ) {
  */
 function handle_reset() {
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( esc_html__( 'You are not allowed to do that.', 'menj-bio' ) );
+		wp_die( esc_html__( 'You are not allowed to do that.', 'kolofon' ) );
 	}
 
-	check_admin_referer( 'menj_bio_reset' );
+	check_admin_referer( 'kolofon_reset' );
 
-	update_option( MENJ_BIO_OPTION_KEY, get_defaults() );
+	update_option( KOLOFON_OPTION_KEY, get_defaults() );
 
 	redirect_to_options( 'reset-ok' );
 }
@@ -395,8 +395,8 @@ function render_options_page() {
 	// no section and no fields.
 	$form_tabs = get_form_tabs();
 	?>
-	<div class="wrap menj-bio-wrap">
-		<h1><?php esc_html_e( 'Theme Options', 'menj-bio' ); ?></h1>
+	<div class="wrap kolofon-wrap">
+		<h1><?php esc_html_e( 'Theme Options', 'kolofon' ); ?></h1>
 
 		<?php
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only status flag set by our own redirect.
@@ -422,14 +422,14 @@ function render_options_page() {
 		 * tab reference this form by id, which HTML5 permits.
 		 */
 		?>
-		<form id="menj-bio-import-form" method="post" enctype="multipart/form-data"
-			action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="menj-bio-hidden-form">
-			<input type="hidden" name="action" value="menj_bio_import" />
-			<?php wp_nonce_field( 'menj_bio_import' ); ?>
+		<form id="kolofon-import-form" method="post" enctype="multipart/form-data"
+			action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="kolofon-hidden-form">
+			<input type="hidden" name="action" value="kolofon_import" />
+			<?php wp_nonce_field( 'kolofon_import' ); ?>
 		</form>
 
-		<h2 class="screen-reader-text"><?php esc_html_e( 'Settings sections', 'menj-bio' ); ?></h2>
-		<div class="nav-tab-wrapper menj-bio-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Theme options sections', 'menj-bio' ); ?>">
+		<h2 class="screen-reader-text"><?php esc_html_e( 'Settings sections', 'kolofon' ); ?></h2>
+		<div class="nav-tab-wrapper kolofon-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Theme options sections', 'kolofon' ); ?>">
 			<?php foreach ( $tabs as $slug => $label ) : ?>
 				<button type="button" role="tab" id="tabctl-<?php echo esc_attr( $slug ); ?>"
 					class="nav-tab" data-tab="<?php echo esc_attr( $slug ); ?>"
@@ -439,11 +439,11 @@ function render_options_page() {
 			<?php endforeach; ?>
 		</div>
 
-		<form action="options.php" method="post" class="menj-bio-form">
+		<form action="options.php" method="post" class="kolofon-form">
 			<?php settings_fields( OPTION_GROUP ); ?>
 
 			<?php foreach ( array_keys( $form_tabs ) as $slug ) : ?>
-				<div class="menj-bio-panel" id="tab-<?php echo esc_attr( $slug ); ?>" role="tabpanel"
+				<div class="kolofon-panel" id="tab-<?php echo esc_attr( $slug ); ?>" role="tabpanel"
 					aria-labelledby="tabctl-<?php echo esc_attr( $slug ); ?>" tabindex="0">
 					<table class="form-table" role="presentation">
 						<?php do_settings_fields( OPTION_PAGE, $slug ); ?>
@@ -454,11 +454,11 @@ function render_options_page() {
 			<?php submit_button(); ?>
 		</form>
 
-		<div class="menj-bio-panel" id="tab-system" role="tabpanel" aria-labelledby="tabctl-system" tabindex="0">
+		<div class="kolofon-panel" id="tab-system" role="tabpanel" aria-labelledby="tabctl-system" tabindex="0">
 			<?php render_system_panel(); ?>
 		</div>
 
-		<div class="menj-bio-panel menj-bio-docs-panel" id="tab-docs" role="tabpanel" aria-labelledby="tabctl-docs" tabindex="0">
+		<div class="kolofon-panel kolofon-docs-panel" id="tab-docs" role="tabpanel" aria-labelledby="tabctl-docs" tabindex="0">
 			<?php render_docs_panel(); ?>
 		</div>
 	</div>

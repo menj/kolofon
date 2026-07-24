@@ -2,11 +2,11 @@
 /**
  * Security headers, comment removal, head cleanup, XML-RPC disable.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.0.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -74,7 +74,7 @@ function disable_file_editors() {
  * @return bool
  */
 function file_editors_disabled() {
-	$stored = get_option( MENJ_BIO_OPTION_KEY, array() );
+	$stored = get_option( KOLOFON_OPTION_KEY, array() );
 
 	if ( is_array( $stored ) && array_key_exists( 'disable_file_edit', $stored ) ) {
 		return 1 === intval( $stored['disable_file_edit'] );
@@ -100,8 +100,8 @@ function block_file_editor_screens() {
 
 	if ( in_array( $pagenow, array( 'theme-editor.php', 'plugin-editor.php' ), true ) ) {
 		wp_die(
-			esc_html__( 'File editing is disabled.', 'menj-bio' ),
-			esc_html__( 'File editing disabled', 'menj-bio' ),
+			esc_html__( 'File editing is disabled.', 'kolofon' ),
+			esc_html__( 'File editing disabled', 'kolofon' ),
 			array( 'response' => 403 )
 		);
 	}

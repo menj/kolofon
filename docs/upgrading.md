@@ -20,16 +20,36 @@ the full contract.
 | 4 | Extensibility | Done in 1.3.0 |
 | 5 | Content features | Done in 1.4.0 |
 | 6 | Layout restructure | Done in 1.5.0 |
-| 7 | Quality and hardening | 2 of 4 shipped |
+| 7 | Quality and hardening | 3 shipped, 1 declined |
 
 Construction is complete. What remains is verification against a real
-environment: PHPCS findings (1.3), the core-block dequeue check (7.2), a test
-suite (7.3), and an update checker (7.4).
+environment: PHPCS findings (1.3) and the core-block dequeue check (7.2).
+Both are unblocking not by writing more code but by pointing them at a running
+WordPress instance. The test suite (7.3) was shipped in 2.8.0 after reading
+the parent theme's Playwright setup — scoped to smoke tests rather than the
+PHPUnit harness I'd been overthinking. The GitHub updater (7.4) was declined
+in 2.9.8 — manual zip upload is the chosen workflow.
 
-Also shipped outside the numbered plan: content-architecture decisions in
-1.1.0 (sections, tags, chooser), the 2.0.0 palette reduction and its migration
-routine, hero email icon fix (2.0.1), and the font-stack changes in 2.1.0
-through 2.3.0.
+Also shipped outside the numbered plan, since the 2.x line has done more work
+than the roadmap anticipated:
+
+- **2.0.x** — palette reduction to Ivory/Charcoal/Auto (2.0.0) with its
+  migration routine, plus the hero email icon fix (2.0.1).
+- **2.1–2.5** — the font stack line, culminating in the current five stacks
+  (Editorial serif default, XCharter, Special Elite, the typewriter hybrid,
+  Plaintext) with self-hosted webfonts in 2.4.0 and the typewriter revival
+  in 2.5.0.
+- **2.5.1** and **2.6.0** — blog index URL resolver and auto-provisioning.
+- **2.7.x** — Book WP layout patterns (index list style, section eyebrow) and
+  the follow-up fixes for unstyled page-index templates and the search-form
+  label.
+- **2.8.x** — cwtheme catch-up (Playwright, section filter row, one dequeue,
+  hidden search label), plus the typewriter rhythm and full justification
+  on post content.
+- **2.9.x** — Chris Wiegman's cwplugin patterns (RSS enclosures, fediverse
+  meta, Permissions-Policy), plus the extended hover-preview redesign that
+  landed at 2.9.6, the login notice palette fix (2.9.5), and the columns
+  date format at 2.9.8.
 
 ---
 
@@ -39,8 +59,8 @@ Recorded so the roadmap reflects reality rather than intent.
 
 **Coding standards.** `phpcs.xml` layers the WordPress standard with
 VariableAnalysis, `Generic.Commenting.Todo`, and PHPCompatibilityWP at
-`testVersion 8.0-`, enforcing the `menj_bio` / `MENJ\Bio` / `MENJ_BIO` prefixes
-and the `menj-bio` text domain. `composer.json` carries dev dependencies only.
+`testVersion 8.0-`, enforcing the `kolofon` / `Kolofon` / `KOLOFON` prefixes
+and the `kolofon` text domain. `composer.json` carries dev dependencies only.
 
 **Release automation.** `lint.yml` runs a parallel syntax sweep then PHPCS on
 push and pull request, validates `theme.json`, and fails the build if any
@@ -102,7 +122,7 @@ streams pretty-printed JSON, import parses and validates against the known key
 set, reset already exists.
 
 This matters more here than in a larger theme because every setting lives in
-one `menj_bio_options` row. A single bad save loses the lot. Drops onto the
+one `kolofon_options` row. A single bad save loses the lot. Drops onto the
 existing Advanced tab.
 
 Port from Rodolfo's `inc/options-actions.php`.
@@ -167,7 +187,7 @@ called and strings are already wrapped, so this is mostly tooling. Malay
 
 *Effort: small.*
 
-**Exit criteria.** `languages/menj-bio.pot` exists and covers every wrapped
+**Exit criteria.** `languages/kolofon.pot` exists and covers every wrapped
 string (met, 144 strings). Deactivating Rank Math produces theme tags and
 reactivating it produces exactly one set (verify on the live site). A shared
 URL previews correctly on at least two platforms (verify after deploying).
@@ -249,13 +269,13 @@ alter behaviour without editing parent files. Candidates:
 
 | Hook | Type | Purpose |
 | --- | --- | --- |
-| `menj_bio_defaults` | filter | Amend or extend `get_defaults()` |
-| `menj_bio_colour_presets` | filter | Register additional colour schemes |
-| `menj_bio_font_stacks` | filter | Register additional font stacks |
-| `menj_bio_social_platforms` | filter | Add or remove social platforms |
-| `menj_bio_root_css` | filter | Amend the emitted `:root` block |
-| `menj_bio_option_tabs` | filter | Register a new options tab |
-| `menj_bio_before_hero` / `menj_bio_after_hero` | action | Inject markup around the hero |
+| `kolofon_defaults` | filter | Amend or extend `get_defaults()` |
+| `kolofon_colour_presets` | filter | Register additional colour schemes |
+| `kolofon_font_stacks` | filter | Register additional font stacks |
+| `kolofon_social_platforms` | filter | Add or remove social platforms |
+| `kolofon_root_css` | filter | Amend the emitted `:root` block |
+| `kolofon_option_tabs` | filter | Register a new options tab |
+| `kolofon_before_hero` / `kolofon_after_hero` | action | Inject markup around the hero |
 
 **The real problem, stated plainly.** `opt()` caches statically on first call,
 and `sanitize()` writes only keys it already knows about. A filtered-in option
@@ -269,7 +289,7 @@ core of the options system.*
 ### 4.2 Options API generalisation. Shipped in 1.3.0
 
 The options page hard-codes its tabs and registers fields inline. Moving
-registration into a declarative array lets `menj_bio_option_tabs` work without
+registration into a declarative array lets `kolofon_option_tabs` work without
 touching `render_options_page()`.
 
 *Effort: medium. Depends on 4.1.*
@@ -411,28 +431,45 @@ skip link.
 dequeues of `wp-block-library`, `global-styles`, and `classic-theme-styles` do
 not break pages that legitimately use core blocks, which needs a live install.
 
-### 7.3 Testing
+### 7.3 Testing. Shipped in 2.8.0
 
-- Unit tests for `sanitize()` covering clamps, enum fallbacks, and the email
-  normalisation path.
-- A parity assertion that every key in `get_social_platforms()` has a matching
-  default, since the field loop, sanitiser, and renderer all depend on it.
-- A smoke test that every module named in `$menj_bio_modules` exists.
-- Playwright end-to-end coverage when there is enough front-end behaviour to
-  warrant it. The upstream repository's `tests/e2e/` is the model.
+Playwright smoke tests at `tests/e2e/`, adapted from the parent theme's setup
+(chriswiegman-theme 12.9.7). Four tests: home page renders, hero heading is
+visible, Recent Posts section is present, `/blog` resolves, no PHP errors in
+output. Reporter set to list + HTML + GitHub. Config wired to
+`@wordpress/scripts` for the base Playwright config.
 
-Partially addressed in 1.0.0: `lint.yml` already asserts the documentation set
-is complete and lowercase, and validates `theme.json`.
+Deliberately not shipped:
 
-### 7.4 GitHub release updater
+- **Unit tests for `sanitize()`.** Would need PHPUnit + WP-Test-Suite scaffolding
+  for a theme small enough that the parity audit (run before every build)
+  catches the same regressions faster.
+- **Parity assertion for social platforms.** The parity audit already runs
+  this check across all option keys, including the `social_*` loop.
+- **Module existence smoke.** The PHP `require` in `functions.php` fails loudly
+  on any missing module, which is the same signal.
 
-`release.yml` already builds and publishes. This is the consuming half: an
-update checker that surfaces a notice under Appearance, Themes when a new tag
-is cut.
+The pattern that shipped is the honest scope for a bio microsite: catch "site
+is broken" cheaply, not every possible regression exhaustively.
 
-**Decision required.** Vendor `YahnisElsts/plugin-update-checker` as we did
-Parsedown, keeping the zip self-contained at roughly 200 KB, or require a
-Composer install step.
+### 7.4 GitHub release updater. Declined
+
+`release.yml` already builds and publishes. The consuming half — an update
+checker that surfaces a notice under Appearance, Themes when a new tag is cut
+— was left as a decision between vendoring `YahnisElsts/plugin-update-checker`
+(zip self-contained, ~200 KB heavier) and requiring a Composer install step
+(zero bloat, more setup for the site owner).
+
+Declined in 2.9.8. Manual zip upload from the GitHub release page is the
+chosen workflow. Neither dependency posture is worth the trade for a single-
+user microsite where the theme is updated infrequently and by hand. The
+`release.yml` output is still useful: it produces the correctly-versioned zip
+that gets uploaded through `Appearance > Themes > Add New > Upload Theme`.
+
+Left recorded here rather than removed, because the decision is a real one
+and a future maintainer may weigh it differently. Nothing about the theme
+would need to change to add this later; the option checker is a standalone
+concern.
 
 ---
 
@@ -501,6 +538,13 @@ objection was wrong: the illustration needs no commissioning, because WordPress
 already has a slot for it. The featured image is the illustration, and posts
 without one render no preview. Recorded rather than deleted, because the
 failure mode was assuming a dependency that the platform already supplies.
+
+**Further extended in 2.10.0.** The "no preview for image-less posts" rule was
+itself wrong under scrutiny: on a bio microsite that publishes intermittently,
+image-less posts are common and treating them as second-class rows reads badly.
+2.10.0 adds a typographic peek for those rows, sharing the same anchor and
+shape. The lesson iterates: even reasonable design decisions can compound into
+subtle user-experience failures over time.
 
 ---
 

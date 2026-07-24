@@ -10,11 +10,11 @@
  * placeholder. No JavaScript is involved: visibility is driven by :hover and
  * :focus-within, so keyboard users get the same behaviour as pointer users.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.0.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -30,31 +30,24 @@ function previews_enabled() {
 /**
  * Class list for a post list wrapper.
  *
- * Adds `has-previews` only when previews are enabled and at least one post in
- * the query carries a featured image. The stylesheet reserves the right-hand
- * gutter on that class alone, so a list that can never show a preview keeps
- * its full width.
+ * Adds `has-previews` whenever previews are enabled — every row now gets a
+ * peek (photographic when a featured image exists, typographic when not), so
+ * the gutter mechanic applies list-wide rather than being conditional on the
+ * query's thumbnail state.
  *
- * @param \WP_Query|null $query Query to inspect. Defaults to the main query.
+ * @param \WP_Query|null $query Kept in the signature for backward compat with
+ *                              existing callers; no longer consulted since
+ *                              every row emits a preview.
  * @return string
  */
 function post_list_classes( $query = null ) {
 	$classes = 'post-list';
 
-	if ( ! previews_enabled() ) {
-		return $classes;
-	}
-
-	if ( ! $query instanceof \WP_Query ) {
-		global $wp_query;
-		$query = $wp_query;
-	}
-
-	foreach ( (array) $query->posts as $post ) {
-		if ( has_post_thumbnail( $post ) ) {
-			$classes .= ' has-previews';
-			break;
-		}
+	if ( previews_enabled() ) {
+		// Every row gets a preview (photographic or typographic), so the
+		// gutter mechanic activates for the whole list whenever previews
+		// are enabled — no need to inspect individual posts.
+		$classes .= ' has-previews';
 	}
 
 	return $classes;
@@ -93,12 +86,12 @@ function render_pagination( $query = null ) {
 	$prev = $paged > 1 ? get_previous_posts_page_link() : '';
 	$next = $paged < $total_pages ? get_next_posts_page_link( $total_pages ) : '';
 	?>
-	<nav class="pagination" aria-label="<?php esc_attr_e( 'Pagination', 'menj-bio' ); ?>">
+	<nav class="pagination" aria-label="<?php esc_attr_e( 'Pagination', 'kolofon' ); ?>">
 		<p class="pagination-count">
 			<?php
 			printf(
 				/* translators: 1: first item on this page, 2: last item on this page, 3: total items */
-				esc_html__( '%1$s to %2$s of %3$s', 'menj-bio' ),
+				esc_html__( '%1$s to %2$s of %3$s', 'kolofon' ),
 				esc_html( number_format_i18n( $first ) ),
 				esc_html( number_format_i18n( $last ) ),
 				esc_html( number_format_i18n( $found ) )
@@ -110,7 +103,7 @@ function render_pagination( $query = null ) {
 			<?php if ( $prev ) : ?>
 				<a class="pagination-link" href="<?php echo esc_url( $prev ); ?>" rel="prev">
 					<span aria-hidden="true">&larr;</span>
-					<span class="screen-reader-text"><?php esc_html_e( 'Newer posts', 'menj-bio' ); ?></span>
+					<span class="screen-reader-text"><?php esc_html_e( 'Newer posts', 'kolofon' ); ?></span>
 				</a>
 			<?php else : ?>
 				<span class="pagination-link is-disabled" aria-hidden="true">&larr;</span>
@@ -119,7 +112,7 @@ function render_pagination( $query = null ) {
 			<?php if ( $next ) : ?>
 				<a class="pagination-link" href="<?php echo esc_url( $next ); ?>" rel="next">
 					<span aria-hidden="true">&rarr;</span>
-					<span class="screen-reader-text"><?php esc_html_e( 'Older posts', 'menj-bio' ); ?></span>
+					<span class="screen-reader-text"><?php esc_html_e( 'Older posts', 'kolofon' ); ?></span>
 				</a>
 			<?php else : ?>
 				<span class="pagination-link is-disabled" aria-hidden="true">&rarr;</span>
@@ -154,12 +147,13 @@ function post_list_item( $args = array() ) {
 	}
 
 	// Each style has its own default date treatment. Stacked keeps the site
-	// date format; columns wants a compact month-day to keep the column
-	// narrow; index wants the year alone, since the row list reads as an
-	// annotated table of contents where the exact day would be noise.
+	// date format; columns shows the full day-month-year on every row, so
+	// there's never any ambiguity about when a post was written; index wants
+	// the year alone, since the row list reads as an annotated table of
+	// contents where the exact day would be noise.
 	if ( '' === $args['date_format'] ) {
 		if ( 'columns' === $style ) {
-			$date = get_the_date( 'M j' );
+			$date = get_the_date( 'j M Y' );
 		} elseif ( 'index' === $style ) {
 			$date = get_the_date( 'Y' );
 		} else {
@@ -169,22 +163,32 @@ function post_list_item( $args = array() ) {
 		$date = get_the_date( $args['date_format'] );
 	}
 
-	$preview   = '';
-	$has_thumb = has_post_thumbnail();
+	$preview = '';
 
-	if ( previews_enabled() && $has_thumb ) {
-		$preview = sprintf(
-			'<span class="post-preview" aria-hidden="true">%s</span>',
-			get_the_post_thumbnail(
-				null,
-				'medium',
-				array(
-					'loading'  => 'lazy',
-					'decoding' => 'async',
-					'alt'      => '',
+	if ( previews_enabled() ) {
+		if ( has_post_thumbnail() ) {
+			$preview = sprintf(
+				'<span class="post-preview" aria-hidden="true">%s</span>',
+				get_the_post_thumbnail(
+					null,
+					'medium',
+					array(
+						'loading'  => 'lazy',
+						'decoding' => 'async',
+						'alt'      => '',
+					)
 				)
-			)
-		);
+			);
+		} else {
+			// Typographic placeholder for image-less posts. Same 3:2 anchor,
+			// same slot in the layout, but the peek shows the post title
+			// over a subtle palette background — so posts without a featured
+			// image still get a peek and don't feel like second-class rows.
+			$preview = sprintf(
+				'<span class="post-preview is-typographic" aria-hidden="true"><span class="post-preview-title">%s</span></span>',
+				esc_html( wp_trim_words( get_the_title(), 10, '…' ) )
+			);
+		}
 	}
 
 	$classes = 'post-item';

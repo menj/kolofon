@@ -13,11 +13,11 @@
  * sidebar layout, because a row of digits in a horizontal top bar reads as
  * noise where a vertical list reads as an index.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.5.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -92,7 +92,7 @@ function index_nav_items( $items, $args ) {
 			continue;
 		}
 
-		$item->menj_bio_index = $position;
+		$item->kolofon_index = $position;
 		++$position;
 	}
 
@@ -110,16 +110,16 @@ function index_nav_items( $items, $args ) {
  * @return string
  */
 function number_nav_item( $title, $item ) {
-	if ( is_admin() || ! isset( $item->menj_bio_index ) ) {
+	if ( is_admin() || ! isset( $item->kolofon_index ) ) {
 		return $title;
 	}
 
 	// Ten digits exist; later items go unnumbered rather than wrapping.
-	if ( $item->menj_bio_index > 9 ) {
+	if ( $item->kolofon_index > 9 ) {
 		return $title;
 	}
 
-	return '<span class="nav-num" aria-hidden="true">' . intval( $item->menj_bio_index ) . '</span>' . $title;
+	return '<span class="nav-num" aria-hidden="true">' . intval( $item->kolofon_index ) . '</span>' . $title;
 }
 
 /**
@@ -130,8 +130,8 @@ function number_nav_item( $title, $item ) {
  * @return array
  */
 function nav_key_attribute( $atts, $item ) {
-	if ( keyboard_nav_enabled() && isset( $item->menj_bio_index ) && $item->menj_bio_index <= 9 ) {
-		$atts['data-mb-key'] = (string) intval( $item->menj_bio_index );
+	if ( keyboard_nav_enabled() && isset( $item->kolofon_index ) && $item->kolofon_index <= 9 ) {
+		$atts['data-mb-key'] = (string) intval( $item->kolofon_index );
 	}
 
 	return $atts;
@@ -146,10 +146,10 @@ function enqueue_keyboard_nav() {
 	}
 
 	wp_enqueue_script(
-		'menj-bio-keyboard-nav',
-		MENJ_BIO_URI . 'assets/js/keyboard-nav.js',
+		'kolofon-keyboard-nav',
+		KOLOFON_URI . 'assets/js/keyboard-nav.js',
 		array(),
-		MENJ_BIO_VERSION,
+		KOLOFON_VERSION,
 		true
 	);
 }
@@ -178,7 +178,7 @@ function render_sidebar_social() {
 						echo protected_mailto( // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- builder escapes internally.
 							$meta['url'],
 							esc_html( $meta['label'] ) . '<span class="sidebar-social-arrow" aria-hidden="true">&#8599;</span>',
-							array( 'class' => 'sidebar-social-link mb-email' )
+							array( 'class' => 'sidebar-social-link k-email' )
 						);
 						?>
 					<?php else : ?>

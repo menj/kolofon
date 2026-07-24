@@ -4,11 +4,11 @@
  *
  * Patterns themselves live in /patterns/ and are auto-registered by WordPress.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.0.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -24,8 +24,8 @@ function register_pattern_category() {
 	}
 
 	register_block_pattern_category(
-		'menj-bio',
-		array( 'label' => __( 'menj.bio', 'menj-bio' ) )
+		'kolofon',
+		array( 'label' => __( 'menj.bio', 'kolofon' ) )
 	);
 }
 
@@ -40,16 +40,16 @@ function register_block_styles() {
 	register_block_style(
 		'core/separator',
 		array(
-			'name'  => 'menj-bio-hairline',
-			'label' => __( 'Hairline', 'menj-bio' ),
+			'name'  => 'kolofon-hairline',
+			'label' => __( 'Hairline', 'kolofon' ),
 		)
 	);
 
 	register_block_style(
 		'core/quote',
 		array(
-			'name'  => 'menj-bio-accent',
-			'label' => __( 'Accent border', 'menj-bio' ),
+			'name'  => 'kolofon-accent',
+			'label' => __( 'Accent border', 'kolofon' ),
 		)
 	);
 }

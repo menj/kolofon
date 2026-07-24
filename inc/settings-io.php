@@ -2,7 +2,7 @@
 /**
  * Settings portability: export, import, reset.
  *
- * Every setting the theme owns lives in one `menj_bio_options` row, which
+ * Every setting the theme owns lives in one `kolofon_options` row, which
  * makes a configuration cheap to move between installs and cheap to lose to a
  * single bad save. These three handlers cover both.
  *
@@ -11,18 +11,18 @@
  * options form uses, so a hand-edited or hostile file cannot introduce a key
  * the theme does not recognise or a value outside its allowed range.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.0.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
 const EXPORT_FORMAT = 1;
 
-add_action( 'admin_post_menj_bio_export', __NAMESPACE__ . '\\handle_export' );
-add_action( 'admin_post_menj_bio_import', __NAMESPACE__ . '\\handle_import' );
+add_action( 'admin_post_kolofon_export', __NAMESPACE__ . '\\handle_export' );
+add_action( 'admin_post_kolofon_import', __NAMESPACE__ . '\\handle_import' );
 
 /**
  * Assert the current request may manage theme settings.
@@ -31,7 +31,7 @@ add_action( 'admin_post_menj_bio_import', __NAMESPACE__ . '\\handle_import' );
  */
 function assert_can_manage( $action ) {
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( esc_html__( 'You are not allowed to do that.', 'menj-bio' ), '', array( 'response' => 403 ) );
+		wp_die( esc_html__( 'You are not allowed to do that.', 'kolofon' ), '', array( 'response' => 403 ) );
 	}
 
 	check_admin_referer( $action );
@@ -46,7 +46,7 @@ function assert_can_manage( $action ) {
 function redirect_to_options( $status, $tab = 'advanced' ) {
 	$url = add_query_arg(
 		array(
-			'page'      => 'menj-bio-options',
+			'page'      => 'kolofon-options',
 			'mb_status' => rawurlencode( $status ),
 		),
 		admin_url( 'themes.php' )
@@ -60,22 +60,22 @@ function redirect_to_options( $status, $tab = 'advanced' ) {
  * Stream the current settings as a JSON download.
  */
 function handle_export() {
-	assert_can_manage( 'menj_bio_export' );
+	assert_can_manage( 'kolofon_export' );
 
-	$stored  = get_option( MENJ_BIO_OPTION_KEY, array() );
+	$stored  = get_option( KOLOFON_OPTION_KEY, array() );
 	$options = wp_parse_args( is_array( $stored ) ? $stored : array(), get_defaults() );
 
 	$payload = array(
 		'format'       => EXPORT_FORMAT,
-		'theme'        => 'menj-bio',
-		'version'      => MENJ_BIO_VERSION,
+		'theme'        => 'kolofon',
+		'version'      => KOLOFON_VERSION,
 		'exported'     => gmdate( 'c' ),
 		'site'         => home_url( '/' ),
 		'options'      => $options,
 	);
 
 	$filename = sprintf(
-		'menj-bio-settings-%s-%s.json',
+		'kolofon-settings-%s-%s.json',
 		sanitize_title( wp_parse_url( home_url(), PHP_URL_HOST ) ),
 		gmdate( 'Ymd-His' )
 	);
@@ -92,10 +92,10 @@ function handle_export() {
  * Read an uploaded JSON file and replace the stored settings.
  */
 function handle_import() {
-	assert_can_manage( 'menj_bio_import' );
+	assert_can_manage( 'kolofon_import' );
 
 	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- file upload, validated below.
-	$file = isset( $_FILES['menj_bio_import_file'] ) ? $_FILES['menj_bio_import_file'] : null;
+	$file = isset( $_FILES['kolofon_import_file'] ) ? $_FILES['kolofon_import_file'] : null;
 
 	if ( ! is_array( $file ) || ! isset( $file['error'] ) || UPLOAD_ERR_OK !== (int) $file['error'] ) {
 		redirect_to_options( 'import-nofile' );
@@ -121,7 +121,7 @@ function handle_import() {
 		redirect_to_options( 'import-invalid' );
 	}
 
-	if ( ! isset( $data['theme'] ) || 'menj-bio' !== $data['theme'] ) {
+	if ( ! isset( $data['theme'] ) || 'kolofon' !== $data['theme'] ) {
 		redirect_to_options( 'import-wrongtheme' );
 	}
 
@@ -136,7 +136,7 @@ function handle_import() {
 	$prepared = wp_parse_args( $known, get_defaults() );
 	$clean    = sanitize_options( $prepared );
 
-	update_option( MENJ_BIO_OPTION_KEY, $clean );
+	update_option( KOLOFON_OPTION_KEY, $clean );
 
 	redirect_to_options( 'import-ok' );
 }
@@ -150,31 +150,31 @@ function get_status_messages() {
 	return array(
 		'import-ok'        => array(
 			'type' => 'success',
-			'text' => __( 'Settings imported.', 'menj-bio' ),
+			'text' => __( 'Settings imported.', 'kolofon' ),
 		),
 		'reset-ok'         => array(
 			'type' => 'success',
-			'text' => __( 'Defaults restored.', 'menj-bio' ),
+			'text' => __( 'Defaults restored.', 'kolofon' ),
 		),
 		'import-nofile'    => array(
 			'type' => 'error',
-			'text' => __( 'No file was uploaded.', 'menj-bio' ),
+			'text' => __( 'No file was uploaded.', 'kolofon' ),
 		),
 		'import-size'      => array(
 			'type' => 'error',
-			'text' => __( 'That file is empty or larger than 256 KB, so it is not a settings export.', 'menj-bio' ),
+			'text' => __( 'That file is empty or larger than 256 KB, so it is not a settings export.', 'kolofon' ),
 		),
 		'import-unreadable' => array(
 			'type' => 'error',
-			'text' => __( 'The uploaded file could not be read.', 'menj-bio' ),
+			'text' => __( 'The uploaded file could not be read.', 'kolofon' ),
 		),
 		'import-invalid'   => array(
 			'type' => 'error',
-			'text' => __( 'That file is not valid JSON, or has no options to import.', 'menj-bio' ),
+			'text' => __( 'That file is not valid JSON, or has no options to import.', 'kolofon' ),
 		),
 		'import-wrongtheme' => array(
 			'type' => 'error',
-			'text' => __( 'That export belongs to a different theme.', 'menj-bio' ),
+			'text' => __( 'That export belongs to a different theme.', 'kolofon' ),
 		),
 	);
 }

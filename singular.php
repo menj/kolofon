@@ -2,7 +2,7 @@
 /**
  * Template for individual posts and pages.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  */
 
 get_header();
@@ -22,7 +22,7 @@ while ( have_posts() ) :
 						// before they read the title, which is otherwise the
 						// only anchor for a post arrived at from search or a
 						// social share.
-						$primary_section = \MENJ\Bio\get_primary_section( get_the_ID() );
+						$primary_section = \Kolofon\get_primary_section( get_the_ID() );
 						if ( $primary_section ) :
 							$section_desc = term_description( $primary_section->term_id, 'category' );
 							?>
@@ -66,7 +66,7 @@ while ( have_posts() ) :
 
 					wp_link_pages(
 						array(
-							'before' => '<nav class="page-links">' . esc_html__( 'Pages:', 'menj-bio' ),
+							'before' => '<nav class="page-links">' . esc_html__( 'Pages:', 'kolofon' ),
 							'after'  => '</nav>',
 						)
 					);
@@ -76,8 +76,8 @@ while ( have_posts() ) :
 		</article>
 
 		<?php if ( 'post' === get_post_type() ) : ?>
-			<nav class="post-nav container" aria-label="<?php esc_attr_e( 'Post navigation', 'menj-bio' ); ?>">
-				<?php \MENJ\Bio\render_adjacent_links(); ?>
+			<nav class="post-nav container" aria-label="<?php esc_attr_e( 'Post navigation', 'kolofon' ); ?>">
+				<?php \Kolofon\render_adjacent_links(); ?>
 			</nav>
 		<?php endif; ?>
 	</main>

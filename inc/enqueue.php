@@ -2,11 +2,11 @@
 /**
  * Front-end asset registration.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.0.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -55,19 +55,19 @@ function enqueue_assets() {
 	wp_dequeue_style( 'classic-theme-styles' );
 
 	wp_enqueue_style(
-		'menj-bio-main',
-		MENJ_BIO_URI . 'assets/css/main.css',
+		'kolofon-main',
+		KOLOFON_URI . 'assets/css/main.css',
 		array(),
-		MENJ_BIO_VERSION
+		KOLOFON_VERSION
 	);
 
 	// The navigation toggle is only useful when there is a menu to collapse.
 	if ( has_nav_menu( 'primary' ) ) {
 		wp_enqueue_script(
-			'menj-bio-nav-toggle',
-			MENJ_BIO_URI . 'assets/js/nav-toggle.js',
+			'kolofon-nav-toggle',
+			KOLOFON_URI . 'assets/js/nav-toggle.js',
 			array(),
-			MENJ_BIO_VERSION,
+			KOLOFON_VERSION,
 			true
 		);
 	}

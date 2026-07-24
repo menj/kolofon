@@ -5,11 +5,11 @@
  * Front-end: printed in wp_head after the main stylesheet so it overrides.
  * Editor: added via wp_add_inline_style on the editor sheet.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.0.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -58,7 +58,7 @@ function resolve_palette( $scheme ) {
  */
 function palette_vars( $c ) {
 	return sprintf(
-		'--mb-bg:%s;--mb-text:%s;--mb-accent:%s;--mb-muted:%s;--mb-rule:%s;',
+		'--k-bg:%s;--k-text:%s;--k-accent:%s;--k-muted:%s;--k-rule:%s;',
 		esc_html( $c['bg'] ),
 		esc_html( $c['text'] ),
 		esc_html( $c['accent'] ),
@@ -106,7 +106,7 @@ function build_root_css() {
 	$body_rem  = round( intval( opt( 'hero_body_size' ) ) / 16, 4 );
 
 	$css = sprintf(
-		':root{--mb-bg:%s;--mb-text:%s;--mb-accent:%s;--mb-muted:%s;--mb-rule:%s;--mb-font-body:%s;--mb-font-heading:%s;--mb-container:%dpx;--mb-portrait:%dpx;--mb-preview:%dpx;--mb-lede-heading-max:%srem;--mb-lede-heading-min:%srem;--mb-lede-body:%srem;}',
+		':root{--k-bg:%s;--k-text:%s;--k-accent:%s;--k-muted:%s;--k-rule:%s;--k-font-body:%s;--k-font-heading:%s;--k-container:%dpx;--k-portrait:%dpx;--k-preview:%dpx;--k-lede-heading-max:%srem;--k-lede-heading-min:%srem;--k-lede-body:%srem;}',
 		esc_html( $bg ),
 		esc_html( $text ),
 		esc_html( $accent ),
@@ -141,21 +141,21 @@ function build_root_css() {
 	 * @param string $css Rendered :root block, including the dark-mode block
 	 *                    when the Auto scheme is active.
 	 */
-	return apply_filters( 'menj_bio_root_css', $css );
+	return apply_filters( 'kolofon_root_css', $css );
 }
 
 /**
  * Attach the vars inline to the front-end main stylesheet.
  */
 function attach_inline_vars() {
-	wp_add_inline_style( 'menj-bio-main', build_root_css() );
+	wp_add_inline_style( 'kolofon-main', build_root_css() );
 }
 
 /**
  * Attach the vars inline to the block editor.
  */
 function attach_editor_inline_vars() {
-	wp_register_style( 'menj-bio-editor-vars', false, array(), MENJ_BIO_VERSION );
-	wp_enqueue_style( 'menj-bio-editor-vars' );
-	wp_add_inline_style( 'menj-bio-editor-vars', build_root_css() );
+	wp_register_style( 'kolofon-editor-vars', false, array(), KOLOFON_VERSION );
+	wp_enqueue_style( 'kolofon-editor-vars' );
+	wp_add_inline_style( 'kolofon-editor-vars', build_root_css() );
 }

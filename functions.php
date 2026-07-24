@@ -2,23 +2,23 @@
 /**
  * menj.bio theme bootstrap.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.0.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'MENJ_BIO_VERSION', '2.9.4' );
-define( 'MENJ_BIO_DIR', trailingslashit( get_template_directory() ) );
-define( 'MENJ_BIO_URI', trailingslashit( get_template_directory_uri() ) );
-define( 'MENJ_BIO_OPTION_KEY', 'menj_bio_options' );
+define( 'KOLOFON_VERSION', '2.10.2' );
+define( 'KOLOFON_DIR', trailingslashit( get_template_directory() ) );
+define( 'KOLOFON_URI', trailingslashit( get_template_directory_uri() ) );
+define( 'KOLOFON_OPTION_KEY', 'kolofon_options' );
 
 /**
  * Load module files. Order matters: defaults first, then everything that reads defaults.
  */
-$menj_bio_modules = array(
+$kolofon_modules = array(
 	'defaults',
 	'hooks',
 	'options-schema',
@@ -44,10 +44,11 @@ $menj_bio_modules = array(
 	'system-report',
 	'dynamic-css',
 	'blocks',
+	'migration-notice',
 );
 
-foreach ( $menj_bio_modules as $menj_bio_module ) {
-	require MENJ_BIO_DIR . 'inc/' . $menj_bio_module . '.php';
+foreach ( $kolofon_modules as $kolofon_module ) {
+	require KOLOFON_DIR . 'inc/' . $kolofon_module . '.php';
 }
 
-unset( $menj_bio_modules, $menj_bio_module );
+unset( $kolofon_modules, $kolofon_module );

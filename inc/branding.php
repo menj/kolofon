@@ -2,11 +2,11 @@
 /**
  * Branding: custom-logo support, favicon fallback, bundled default assets.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.0.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -37,7 +37,7 @@ function add_custom_logo_support() {
  * @return string
  */
 function brand_asset_url( $file ) {
-	return MENJ_BIO_URI . 'assets/img/' . ltrim( $file, '/' );
+	return KOLOFON_URI . 'assets/img/' . ltrim( $file, '/' );
 }
 
 /**

@@ -2,11 +2,11 @@
 /**
  * Theme setup: supports, nav menus, image sizes, widget areas.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.0.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -18,7 +18,7 @@ add_filter( 'intermediate_image_sizes_advanced', __NAMESPACE__ . '\\trim_default
  * Register theme supports and translation domain.
  */
 function setup() {
-	load_theme_textdomain( 'menj-bio', MENJ_BIO_DIR . 'languages' );
+	load_theme_textdomain( 'kolofon', KOLOFON_DIR . 'languages' );
 
 	add_theme_support( 'automatic-feed-links' );
 	add_theme_support( 'post-thumbnails' );
@@ -32,8 +32,8 @@ function setup() {
 
 	register_nav_menus(
 		array(
-			'primary' => __( 'Primary Menu', 'menj-bio' ),
-			'footer'  => __( 'Footer Menu', 'menj-bio' ),
+			'primary' => __( 'Primary Menu', 'kolofon' ),
+			'footer'  => __( 'Footer Menu', 'kolofon' ),
 		)
 	);
 
@@ -47,9 +47,9 @@ function setup() {
 function register_widget_areas() {
 	register_sidebar(
 		array(
-			'name'          => __( 'Intro', 'menj-bio' ),
+			'name'          => __( 'Intro', 'kolofon' ),
 			'id'            => 'intro',
-			'description'   => __( 'The intro area at the top of the home page.', 'menj-bio' ),
+			'description'   => __( 'The intro area at the top of the home page.', 'kolofon' ),
 			'before_widget' => '<div class="intro-widget">',
 			'after_widget'  => '</div>',
 			'before_title'  => '<h2 class="widget-title">',

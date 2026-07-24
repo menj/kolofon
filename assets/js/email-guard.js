@@ -40,7 +40,7 @@
 	}
 
 	function init() {
-		var links = document.querySelectorAll( 'a.mb-email[data-mbe]' );
+		var links = document.querySelectorAll( 'a.k-email[data-mbe]' );
 		Array.prototype.forEach.call( links, activate );
 	}
 

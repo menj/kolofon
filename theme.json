@@ -11,11 +11,11 @@
 			"defaultDuotone": false,
 			"defaultGradients": false,
 			"palette": [
-				{ "slug": "background", "color": "var(--mb-bg)",     "name": "Background" },
-				{ "slug": "text",       "color": "var(--mb-text)",   "name": "Text" },
-				{ "slug": "accent",     "color": "var(--mb-accent)", "name": "Accent" },
-				{ "slug": "muted",      "color": "var(--mb-muted)",  "name": "Muted" },
-				{ "slug": "rule",       "color": "var(--mb-rule)",   "name": "Rule" }
+				{ "slug": "background", "color": "var(--k-bg)",     "name": "Background" },
+				{ "slug": "text",       "color": "var(--k-text)",   "name": "Text" },
+				{ "slug": "accent",     "color": "var(--k-accent)", "name": "Accent" },
+				{ "slug": "muted",      "color": "var(--k-muted)",  "name": "Muted" },
+				{ "slug": "rule",       "color": "var(--k-rule)",   "name": "Rule" }
 			]
 		},
 		"typography": {
@@ -43,23 +43,23 @@
 			]
 		},
 		"layout": {
-			"contentSize": "var(--mb-container)",
-			"wideSize": "calc(var(--mb-container) + 200px)"
+			"contentSize": "var(--k-container)",
+			"wideSize": "calc(var(--k-container) + 200px)"
 		}
 	},
 	"styles": {
 		"color": {
-			"background": "var(--mb-bg)",
-			"text": "var(--mb-text)"
+			"background": "var(--k-bg)",
+			"text": "var(--k-text)"
 		},
 		"typography": {
-			"fontFamily": "var(--mb-font-body)",
+			"fontFamily": "var(--k-font-body)",
 			"lineHeight": "1.65"
 		},
 		"elements": {
-			"link": { "color": { "text": "var(--mb-accent)" } },
+			"link": { "color": { "text": "var(--k-accent)" } },
 			"heading": {
-				"typography": { "fontFamily": "var(--mb-font-heading)", "lineHeight": "1.2" }
+				"typography": { "fontFamily": "var(--k-font-heading)", "lineHeight": "1.2" }
 			}
 		}
 	}

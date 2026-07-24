@@ -1,8 +1,8 @@
 <?php
 /**
  * Title: Bio Card
- * Slug: menj-bio/bio-card
- * Categories: menj-bio
+ * Slug: kolofon/bio-card
+ * Categories: kolofon
  * Description: Portrait, name, one-line description, and a short bio paragraph.
  */
 ?>
@@ -21,15 +21,15 @@
 	<!-- wp:column {"verticalAlignment":"center"} -->
 	<div class="wp-block-column is-vertically-aligned-center">
 		<!-- wp:heading {"level":2} -->
-		<h2 class="wp-block-heading"><?php echo esc_html__( 'Your name here', 'menj-bio' ); ?></h2>
+		<h2 class="wp-block-heading"><?php echo esc_html__( 'Your name here', 'kolofon' ); ?></h2>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"textColor":"muted"} -->
-		<p class="has-muted-color has-text-color"><?php echo esc_html__( 'A short one-line description of what you do.', 'menj-bio' ); ?></p>
+		<p class="has-muted-color has-text-color"><?php echo esc_html__( 'A short one-line description of what you do.', 'kolofon' ); ?></p>
 		<!-- /wp:paragraph -->
 
 		<!-- wp:paragraph -->
-		<p><?php echo esc_html__( 'Write a longer paragraph here. Keep it factual, direct, and free of filler.', 'menj-bio' ); ?></p>
+		<p><?php echo esc_html__( 'Write a longer paragraph here. Keep it factual, direct, and free of filler.', 'kolofon' ); ?></p>
 		<!-- /wp:paragraph -->
 	</div>
 	<!-- /wp:column -->

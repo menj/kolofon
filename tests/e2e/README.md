@@ -1,6 +1,6 @@
 # Tests
 
-Smoke tests for menj-bio, using Playwright.
+Smoke tests for kolofon, using Playwright.
 
 ## Running
 

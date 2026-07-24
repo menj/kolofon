@@ -5,11 +5,11 @@
  * Single source of truth. Both the Options page (for placeholder / reset)
  * and the dynamic CSS module read from here.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.0.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -98,11 +98,11 @@ function get_defaults() {
 	 *
 	 * Adding a key here makes it a real option: it gains a value through
 	 * `opt()`, and it is sanitised and stored on save. Register a matching
-	 * callback on `menj_bio_option_sanitizers` unless plain text is correct.
+	 * callback on `kolofon_option_sanitizers` unless plain text is correct.
 	 *
 	 * @param array $defaults Default values.
 	 */
-	$defaults = apply_filters( 'menj_bio_defaults', get_raw_defaults() );
+	$defaults = apply_filters( 'kolofon_defaults', get_raw_defaults() );
 
 	if ( filters_settled() ) {
 		$cache = $defaults;
@@ -149,7 +149,7 @@ function get_colour_presets() {
 	 *
 	 * @param array $presets Slug to preset definition.
 	 */
-	return apply_filters( 'menj_bio_colour_presets', $presets );
+	return apply_filters( 'kolofon_colour_presets', $presets );
 }
 
 /**
@@ -217,7 +217,7 @@ function get_font_stacks() {
 	 *
 	 * @param array $stacks Slug to stack definition.
 	 */
-	return apply_filters( 'menj_bio_font_stacks', $stacks );
+	return apply_filters( 'kolofon_font_stacks', $stacks );
 }
 
 /**
@@ -230,10 +230,10 @@ function get_font_stacks() {
  */
 function get_portrait_styles() {
 	$styles = array(
-		'floating' => __( 'Floating (transparent cut-out, no mask)', 'menj-bio' ),
-		'circle'   => __( 'Circle', 'menj-bio' ),
-		'rounded'  => __( 'Rounded square', 'menj-bio' ),
-		'square'   => __( 'Square', 'menj-bio' ),
+		'floating' => __( 'Floating (transparent cut-out, no mask)', 'kolofon' ),
+		'circle'   => __( 'Circle', 'kolofon' ),
+		'rounded'  => __( 'Rounded square', 'kolofon' ),
+		'square'   => __( 'Square', 'kolofon' ),
 	);
 
 	/**
@@ -241,7 +241,7 @@ function get_portrait_styles() {
 	 *
 	 * @param array $styles Slug to label.
 	 */
-	return apply_filters( 'menj_bio_portrait_styles', $styles );
+	return apply_filters( 'kolofon_portrait_styles', $styles );
 }
 
 /**
@@ -273,7 +273,7 @@ function opt( $key ) {
 	static $cache = null;
 
 	if ( null === $cache ) {
-		$stored   = get_option( MENJ_BIO_OPTION_KEY, array() );
+		$stored   = get_option( KOLOFON_OPTION_KEY, array() );
 		$resolved = wp_parse_args( is_array( $stored ) ? $stored : array(), get_defaults() );
 
 		// Hold the memo only once every filter has had a chance to register.

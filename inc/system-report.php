@@ -7,11 +7,11 @@
  * bundled parser loaded, which icon is winning, which mode is a feature in,
  * where is the portrait coming from.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.4.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -27,41 +27,41 @@ function get_system_report() {
 
 	// Versions.
 	$rows[] = array(
-		'label' => __( 'Theme version', 'menj-bio' ),
-		'value' => MENJ_BIO_VERSION,
+		'label' => __( 'Theme version', 'kolofon' ),
+		'value' => KOLOFON_VERSION,
 		'note'  => is_child_theme()
-			? __( 'Running as the parent of an active child theme.', 'menj-bio' )
-			: __( 'Running directly, no child theme active.', 'menj-bio' ),
+			? __( 'Running as the parent of an active child theme.', 'kolofon' )
+			: __( 'Running directly, no child theme active.', 'kolofon' ),
 	);
 
 	// Markdown parser.
 	$parser = docs_parser();
 	$rows[] = array(
-		'label' => __( 'Documentation parser', 'menj-bio' ),
-		'value' => $parser ? get_class( $parser ) : __( 'Unavailable', 'menj-bio' ),
+		'label' => __( 'Documentation parser', 'kolofon' ),
+		'value' => $parser ? get_class( $parser ) : __( 'Unavailable', 'kolofon' ),
 		'note'  => $parser
-			? __( 'Documentation renders as HTML on the Documentation tab.', 'menj-bio' )
-			: __( 'Documentation falls back to escaped source in a pre block.', 'menj-bio' ),
+			? __( 'Documentation renders as HTML on the Documentation tab.', 'kolofon' )
+			: __( 'Documentation falls back to escaped source in a pre block.', 'kolofon' ),
 	);
 
 	// Icon precedence.
 	$has_site_icon = (bool) get_option( 'site_icon' );
 	$rows[]        = array(
-		'label' => __( 'Favicon source', 'menj-bio' ),
-		'value' => $has_site_icon ? __( 'Site Icon (Customiser)', 'menj-bio' ) : __( 'Theme bundled icons', 'menj-bio' ),
+		'label' => __( 'Favicon source', 'kolofon' ),
+		'value' => $has_site_icon ? __( 'Site Icon (Customiser)', 'kolofon' ) : __( 'Theme bundled icons', 'kolofon' ),
 		'note'  => $has_site_icon
-			? __( 'A Site Icon is set, so WordPress emits it and the theme stands down.', 'menj-bio' )
-			: __( 'No Site Icon set; the theme emits its bundled favicon set.', 'menj-bio' ),
+			? __( 'A Site Icon is set, so WordPress emits it and the theme stands down.', 'kolofon' )
+			: __( 'No Site Icon set; the theme emits its bundled favicon set.', 'kolofon' ),
 	);
 
 	// Email protection.
 	$modes  = get_email_modes();
 	$mode   = email_mode();
 	$rows[] = array(
-		'label' => __( 'Email protection', 'menj-bio' ),
+		'label' => __( 'Email protection', 'kolofon' ),
 		'value' => isset( $modes[ $mode ] ) ? $modes[ $mode ] : $mode,
 		'note'  => 'js' === $mode
-			? __( 'The decoder script is enqueued only on pages that render a protected link.', 'menj-bio' )
+			? __( 'The decoder script is enqueued only on pages that render a protected link.', 'kolofon' )
 			: '',
 	);
 
@@ -71,13 +71,13 @@ function get_system_report() {
 	$label   = isset( $presets[ $scheme ]['label'] ) ? $presets[ $scheme ]['label'] : $scheme;
 
 	if ( 'auto' === $scheme ) {
-		$note = __( 'Ivory when the device prefers light, Charcoal when it prefers dark.', 'menj-bio' );
+		$note = __( 'Ivory when the device prefers light, Charcoal when it prefers dark.', 'kolofon' );
 	} else {
 		$note = '';
 	}
 
 	$rows[] = array(
-		'label' => __( 'Colour scheme', 'menj-bio' ),
+		'label' => __( 'Colour scheme', 'kolofon' ),
 		'value' => $label,
 		'note'  => $note,
 	);
@@ -85,34 +85,34 @@ function get_system_report() {
 	// Portrait source.
 	$portrait = opt( 'hero_portrait' );
 	$rows[]   = array(
-		'label' => __( 'Hero portrait', 'menj-bio' ),
-		'value' => $portrait ? __( 'Uploaded image', 'menj-bio' ) : __( 'Bundled default', 'menj-bio' ),
-		'note'  => $portrait ? esc_url( $portrait ) : MENJ_BIO_URI . 'assets/img/profile.png',
+		'label' => __( 'Hero portrait', 'kolofon' ),
+		'value' => $portrait ? __( 'Uploaded image', 'kolofon' ) : __( 'Bundled default', 'kolofon' ),
+		'note'  => $portrait ? esc_url( $portrait ) : KOLOFON_URI . 'assets/img/profile.png',
 	);
 
 	// Metadata ownership.
 	$detected = detected_seo_plugin();
 	$emitting = ( '' === $detected ) && 1 === intval( opt( 'emit_meta_tags' ) );
 	$rows[]   = array(
-		'label' => __( 'Meta tags and schema', 'menj-bio' ),
-		'value' => $emitting ? __( 'Emitted by the theme', 'menj-bio' ) : __( 'Standing down', 'menj-bio' ),
+		'label' => __( 'Meta tags and schema', 'kolofon' ),
+		'value' => $emitting ? __( 'Emitted by the theme', 'kolofon' ) : __( 'Standing down', 'kolofon' ),
 		'note'  => '' !== $detected
 			? sprintf(
 				/* translators: %s: plugin name */
-				__( '%s is active and owns this output.', 'menj-bio' ),
+				__( '%s is active and owns this output.', 'kolofon' ),
 				$detected
 			)
-			: ( $emitting ? '' : __( 'Disabled on the Advanced tab.', 'menj-bio' ) ),
+			: ( $emitting ? '' : __( 'Disabled on the Advanced tab.', 'kolofon' ) ),
 	);
 
 	// File editors.
 	$config_locked = defined( 'DISALLOW_FILE_EDIT' ) && DISALLOW_FILE_EDIT;
 	$rows[]        = array(
-		'label' => __( 'File editors', 'menj-bio' ),
-		'value' => ( $config_locked || file_editors_disabled() ) ? __( 'Disabled', 'menj-bio' ) : __( 'Available', 'menj-bio' ),
+		'label' => __( 'File editors', 'kolofon' ),
+		'value' => ( $config_locked || file_editors_disabled() ) ? __( 'Disabled', 'kolofon' ) : __( 'Available', 'kolofon' ),
 		'note'  => $config_locked
-			? __( 'Locked by DISALLOW_FILE_EDIT in wp-config.php, which takes precedence over the theme setting.', 'menj-bio' )
-			: __( 'Controlled by the theme setting on the Advanced tab.', 'menj-bio' ),
+			? __( 'Locked by DISALLOW_FILE_EDIT in wp-config.php, which takes precedence over the theme setting.', 'kolofon' )
+			: __( 'Controlled by the theme setting on the Advanced tab.', 'kolofon' ),
 	);
 
 	// Blog index page — where "View all" points, and whether the activation
@@ -133,18 +133,18 @@ function get_system_report() {
 	);
 
 	if ( $page_for_posts ) {
-		$blog_source = __( 'Settings > Reading (Posts page)', 'menj-bio' );
+		$blog_source = __( 'Settings > Reading (Posts page)', 'kolofon' );
 	} elseif ( ! empty( $blog_template_pages ) ) {
-		$blog_source = __( 'Page with Blog Index template', 'menj-bio' );
+		$blog_source = __( 'Page with Blog Index template', 'kolofon' );
 	} else {
-		$blog_source = __( 'Convention (/blog); no page found', 'menj-bio' );
+		$blog_source = __( 'Convention (/blog); no page found', 'kolofon' );
 	}
 
 	$rows[] = array(
-		'label' => __( 'Blog index', 'menj-bio' ),
+		'label' => __( 'Blog index', 'kolofon' ),
 		'value' => $blog_url,
 		'note'  => empty( $blog_template_pages ) && ! $page_for_posts
-			? __( 'No page provisioned. Reactivate the theme to trigger the activation hook, or set a Posts page under Settings > Reading.', 'menj-bio' )
+			? __( 'No page provisioned. Reactivate the theme to trigger the activation hook, or set a Posts page under Settings > Reading.', 'kolofon' )
 			: $blog_source,
 	);
 
@@ -152,22 +152,22 @@ function get_system_report() {
 	$sections = get_sections();
 	$slugs    = parse_section_slugs( opt( 'section_slugs' ) );
 	$rows[]   = array(
-		'label' => __( 'Sections', 'menj-bio' ),
+		'label' => __( 'Sections', 'kolofon' ),
 		'value' => sprintf(
 			/* translators: 1: resolved count, 2: configured count */
-			__( '%1$d of %2$d configured slugs resolve', 'menj-bio' ),
+			__( '%1$d of %2$d configured slugs resolve', 'kolofon' ),
 			count( $sections ),
 			count( $slugs )
 		),
 		'note'  => count( $sections ) < count( $slugs )
-			? __( 'At least one configured slug has no matching category. The Sections tab lists which.', 'menj-bio' )
+			? __( 'At least one configured slug has no matching category. The Sections tab lists which.', 'kolofon' )
 			: '',
 	);
 
 	// Documentation set.
 	$docs   = list_docs();
 	$rows[] = array(
-		'label' => __( 'Documentation files', 'menj-bio' ),
+		'label' => __( 'Documentation files', 'kolofon' ),
 		'value' => (string) count( $docs ),
 		'note'  => implode( ', ', array_keys( $docs ) ),
 	);
@@ -177,7 +177,7 @@ function get_system_report() {
 	 *
 	 * @param array $rows Report rows.
 	 */
-	return apply_filters( 'menj_bio_system_report', $rows );
+	return apply_filters( 'kolofon_system_report', $rows );
 }
 
 /**
@@ -185,8 +185,8 @@ function get_system_report() {
  */
 function render_system_panel() {
 	?>
-	<div class="menj-bio-system-panel">
-		<table class="widefat striped menj-bio-system-table">
+	<div class="kolofon-system-panel">
+		<table class="widefat striped kolofon-system-table">
 			<tbody>
 				<?php foreach ( get_system_report() as $row ) : ?>
 					<tr>

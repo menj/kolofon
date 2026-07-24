@@ -28,7 +28,7 @@ can weigh the trade honestly.
    can be set but never read, or read but never sanitised.
 3. **`opt()` and `get_defaults()` must not memoise until `after_setup_theme`
    has fired.** The `filters_settled()` guard protects this. Failure mode:
-   options filtered in through `menj_bio_defaults` are silently dropped from
+   options filtered in through `kolofon_defaults` are silently dropped from
    sanitisation on save, because the registry was frozen too early.
 4. **`protected_mailto()` owns the `class` and `rel` attributes of the anchor
    it builds and merges caller values into a single deduplicated attribute.**
@@ -42,11 +42,24 @@ can weigh the trade honestly.
    silently overwriting the user's choice.
 6. **Reviving a previously-retired slug with new semantics requires a one-shot
    migration flag.** The 2.5.0 typewriter revival illustrates: without the
-   `menj_bio_typewriter_reset` flag, either the old meaning survives (visual
+   `kolofon_typewriter_reset` flag, either the old meaning survives (visual
    drift for existing users) or every new selection is rewritten on the next
    load (option is un-pickable).
-7. **Text domain is `menj-bio`.** Every user-facing string passes through a
+7. **Text domain is `kolofon`.** Every user-facing string passes through a
    gettext function with this domain, verified against the `.pot` file.
+8. **Absolutely-positioned elements must have their containing block audited
+   before shipping.** When a CSS design assumes a preview positions against
+   `.post-list`, the DOM chain must actually deliver that: no intermediate
+   ancestor may have `position: relative` unless deliberate. Failure mode: the
+   2.9.4 hover preview shipped three times before catching that
+   `.post-item a` had `position: relative` set for an older design, silently
+   redirecting the containing block one level down and breaking the reserved
+   gutter mechanic. The DOM is the source of truth, not the abstraction.
+9. **The activation hook (`after_switch_theme`) must be idempotent.** The
+   2.6.0 blog page auto-provisioning relies on this: on reactivation it
+   checks by template (not slug) for an existing Blog Index page and does
+   nothing if one is present. Failure mode: reactivating the theme would
+   create a `blog-2`, `blog-3`, ... every time the user cycled themes.
 
 ## File-of-record map
 
@@ -54,12 +67,14 @@ For quick lookup: when two files disagree, the file named here wins.
 
 | Fact | File of record | Notes |
 | --- | --- | --- |
-| Theme version | `style.css` `Version:` header | Mirror to `functions.php` `MENJ_BIO_VERSION` constant. |
+| Theme version | `style.css` `Version:` header | Mirror to `functions.php` `KOLOFON_VERSION` constant. |
 | Minimum WordPress | `style.css` `Requires at least:` | 6.4. |
 | Minimum PHP | `style.css` `Requires PHP:` | 8.0. |
-| Stored option payload | `menj_bio_options` (single row) | Everything, through `opt()`. |
-| Migration state | Discrete options like `menj_bio_typewriter_reset` | Not inside the main payload, so migration rules can gate on them without lookup overhead. |
+| Stored option payload | `kolofon_options` (single row) | Everything, through `opt()`. |
+| Migration state | Discrete options like `kolofon_typewriter_reset` | Not inside the main payload, so migration rules can gate on them without lookup overhead. |
 | Documentation set | `docs/` lowercase filenames | CI (`.github/workflows/lint.yml`) fails on uppercase. |
+| Repository | [github.com/menj/kolofon](https://github.com/menj/kolofon) | Mirror of `Theme URI` and `Update URI` in `style.css`. |
+| Release archives | [github.com/menj/kolofon/releases](https://github.com/menj/kolofon/releases) | Built by `.github/workflows/release.yml` on tag push; tag must match `Version:` in `style.css`. |
 
 ## Authority map
 
@@ -80,11 +95,13 @@ For quick lookup: when two files disagree, the file named here wins.
 | Section registry and order | `get_sections()` in `inc/sections.php`, resolved from the `section_slugs` option | Chooser, enforcement, adjacent links |
 | Primary-section resolution | `get_primary_section()` in `inc/sections.php` | Section eyebrow on single posts; any future callers wanting a stable "which section is this post in" answer |
 | Blog index URL | `get_blog_index_url()` in `inc/sections.php` | Home page "View all"; section chooser; blog auto-provisioning; System tab diagnostic; smoke test |
+| Blog page auto-provisioning | `ensure_blog_index_page()` in `inc/activation.php` on `after_switch_theme` | Fresh installs get `/blog` without site owner intervention. Idempotent by template check, not slug. |
 | Test suite | `tests/e2e/specs/*.spec.js` (Playwright) | CI; local sanity check before release |
 | RSS feed enclosures and content thumbnails | `inc/syndication.php` | Feed reader compatibility |
 | Fediverse creator meta | `derive_fediverse_handle()` in `inc/syndication.php` | Mastodon verification on singulars |
+| Rename migration flag | `kolofon_rename_migration_notice` option, autoload disabled | Consumed once by `inc/migration-notice.php`, deleted on dismiss |
 | Tag rendering | `render_post_tags()`, `render_tag_index()` in `inc/tags.php` | Post lists, single posts, `[menj_tags]` |
-| Page states | `get_page_states()` in `inc/page-states.php`, meta key `_menj_bio_page_state` | Editor meta box, nav badge, content notice |
+| Page states | `get_page_states()` in `inc/page-states.php`, meta key `_kolofon_page_state` | Editor meta box, nav badge, content notice |
 | Palette resolution | `resolve_palette()` in `inc/dynamic-css.php` | `build_root_css()`, both light and dark blocks |
 | System report rows | `get_system_report()` in `inc/system-report.php` | System tab |
 | Chrome layout | `chrome_layout()` in `inc/chrome.php` | Header branch, body class, numbering, shortcuts |
@@ -93,17 +110,18 @@ For quick lookup: when two files disagree, the file named here wins.
 | SEO plugin detection | `get_known_seo_plugins()` in `inc/meta.php` | `emit_meta_tags()`, `emit_schema()`, Advanced tab notice |
 | Heading inline allowlist | `allowed_heading_html()` in `inc/defaults.php` | `sanitize()`, `home.php` |
 | Pagination markup | `render_pagination()` in `inc/post-list.php` | `index.php` |
-| Stored option payload | `menj_bio_options` (single WP option, array) | Everything, via `opt()` |
-| Theme version | `MENJ_BIO_VERSION` in `functions.php` | Asset cache-busting, docs meta strip |
-| Theme paths and URIs | `MENJ_BIO_DIR`, `MENJ_BIO_URI` in `functions.php` | Every module |
+| Stored option payload | `kolofon_options` (single WP option, array) | Everything, via `opt()` |
+| Theme version | `KOLOFON_VERSION` in `functions.php` | Asset cache-busting, docs meta strip |
+| Theme paths and URIs | `KOLOFON_DIR`, `KOLOFON_URI` in `functions.php` | Every module |
 | Bundled brand assets | `assets/img/` via `brand_asset_url()` in `inc/branding.php` | Hero portrait fallback, favicon, apple-touch-icon, Android icon |
 | Runtime colour and typography | `:root` custom properties from `build_root_css()` | `assets/css/main.css`, `assets/css/editor.css`, `theme.json` |
 | Documentation list and order | `list_docs()` in `inc/docs.php` | Documentation tab sub-nav |
 | Post list markup | `post_list_item()` and `post_list_classes()` in `inc/post-list.php` | `home.php`, `index.php`, `page-blog.php` |
+| Hover preview content | `post_list_item()`, emits `<img>` for posts with featured images and `<span class="post-preview-title">` for those without | Every row gets a peek regardless of thumbnail state |
 
 ## Option keys
 
-All keys live inside the single `menj_bio_options` array option. There are no
+All keys live inside the single `kolofon_options` array option. There are no
 loose options in `wp_options`.
 
 ### Identity
@@ -193,7 +211,7 @@ switch as data and is visible to REST.
 returns false whenever a known SEO plugin is active, regardless of the option,
 because emitting a second set of Open Graph tags or a second JSON-LD graph is
 worse than emitting none: consumers disagree about which wins. Override with
-the `menj_bio_seo_plugin_active` filter for a plugin the list does not know.
+the `kolofon_seo_plugin_active` filter for a plugin the list does not know.
 
 `disable_file_edit` is read directly from the stored option rather than through
 `opt()`, because it runs at theme load before the options module registers
@@ -224,8 +242,8 @@ stored rows from earlier versions on load.
 | `portrait_size` | int px | `220` | 120 to 400 |
 | `portrait_style` | enum | `floating` | see `get_portrait_styles()` |
 | `hover_preview` | bool | `1` | 0 or 1 |
-| `preview_size` | int px | `240` | 140 to 400 |
-| `list_style` | enum | `stacked` | `stacked` or `columns` |
+| `preview_size` | int px | `140` | 100 to 240 |
+| `list_style` | enum | `stacked` | `stacked`, `columns`, or `index` |
 | `chrome_layout` | enum | `topbar` | `topbar` or `sidebar` |
 | `keyboard_nav` | bool | `1` | sidebar layout only |
 | `sidebar_social_heading` | text | `Stay in touch` | |
@@ -288,23 +306,23 @@ WordPress collapses its own admin chrome.
 
 ## Extension points
 
-Twelve hooks, all named `menj_bio_*`.
+Twelve hooks, all named `kolofon_*`.
 
 | Hook | Type | Purpose |
 | --- | --- | --- |
-| `menj_bio_defaults` | filter | Add or amend option defaults |
-| `menj_bio_option_sanitizers` | filter | Register a callback for an option key |
-| `menj_bio_sanitized_options` | filter | Amend the whole array before storage |
-| `menj_bio_option_tabs` | filter | Add a tab to the options page |
-| `menj_bio_option_fields` | filter | Add a field to a tab |
-| `menj_bio_colour_presets` | filter | Register a colour scheme (renderer shows it; Auto pairing stays Ivory and Charcoal) |
-| `menj_bio_font_stacks` | filter | Register a font stack |
-| `menj_bio_portrait_styles` | filter | Register a portrait style |
-| `menj_bio_social_platforms` | filter | Add or remove a social platform |
-| `menj_bio_root_css` | filter | Amend the emitted `:root` block |
-| `menj_bio_seo_plugin_active` | filter | Override SEO plugin detection |
-| `menj_bio_before_hero` | action | Inject markup above the hero |
-| `menj_bio_after_hero` | action | Inject markup below the hero |
+| `kolofon_defaults` | filter | Add or amend option defaults |
+| `kolofon_option_sanitizers` | filter | Register a callback for an option key |
+| `kolofon_sanitized_options` | filter | Amend the whole array before storage |
+| `kolofon_option_tabs` | filter | Add a tab to the options page |
+| `kolofon_option_fields` | filter | Add a field to a tab |
+| `kolofon_colour_presets` | filter | Register a colour scheme (renderer shows it; Auto pairing stays Ivory and Charcoal) |
+| `kolofon_font_stacks` | filter | Register a font stack |
+| `kolofon_portrait_styles` | filter | Register a portrait style |
+| `kolofon_social_platforms` | filter | Add or remove a social platform |
+| `kolofon_root_css` | filter | Amend the emitted `:root` block |
+| `kolofon_seo_plugin_active` | filter | Override SEO plugin detection |
+| `kolofon_before_hero` | action | Inject markup above the hero |
+| `kolofon_after_hero` | action | Inject markup below the hero |
 
 ### The caching rule, and why it exists
 
@@ -354,7 +372,7 @@ add. Every built-in boolean already has one.
 
 1. Adding an option means adding it to `get_defaults()` first, then the field
    registration, then the sanitiser. Three places, always in that order.
-2. Never call `get_option( 'menj_bio_options' )` directly. Use `opt()`, which
+2. Never call `get_option( 'kolofon_options' )` directly. Use `opt()`, which
    merges stored values over defaults and caches per request.
 3. Never hard-code a colour or a configurable size in a stylesheet. Add a
    custom property instead.
@@ -364,7 +382,7 @@ add. Every built-in boolean already has one.
 5. Adding a social platform means one entry in `get_social_platforms()` and
    one matching key in `get_defaults()`. The field loop, sanitiser loop, and
    renderer pick it up with no further edits.
-6. Bump `MENJ_BIO_VERSION` on any asset change, since it is the cache-buster.
+6. Bump `KOLOFON_VERSION` on any asset change, since it is the cache-buster.
 7. `hero_heading` is the one option that permits markup, restricted to
    `mark`, `em`, `strong`, and `br` through `allowed_heading_html()`. Anywhere
    it is used as plain text, attribute, or structured data it must go through

@@ -11,11 +11,11 @@
  * offered rather than forced, because the strongest mode has a real cost:
  * without JavaScript the link needs a fallback.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.0.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -49,7 +49,7 @@ function email_shortcode( $atts ) {
 		return '';
 	}
 
-	$classes = trim( 'mb-email ' . $atts['class'] );
+	$classes = trim( 'k-email ' . $atts['class'] );
 	$attrs   = array( 'class' => $classes );
 
 	if ( '' !== $atts['text'] ) {
@@ -58,7 +58,7 @@ function email_shortcode( $atts ) {
 		// No label given, so the address itself is the label. In JS mode the
 		// markup ships a masked placeholder and the script fills it in.
 		if ( 'js' === email_mode() ) {
-			$inner                 = esc_html__( 'Show email address', 'menj-bio' );
+			$inner                 = esc_html__( 'Show email address', 'kolofon' );
 			$attrs['data-mbe-fill'] = '1';
 		} else {
 			$inner = antispambot( strip_mailto( $email ) );
@@ -75,9 +75,9 @@ function email_shortcode( $atts ) {
  */
 function get_email_modes() {
 	return array(
-		'js'       => __( 'JavaScript rebuild (strongest)', 'menj-bio' ),
-		'entities' => __( 'HTML entities (works without JavaScript)', 'menj-bio' ),
-		'off'      => __( 'Off, emit plain mailto:', 'menj-bio' ),
+		'js'       => __( 'JavaScript rebuild (strongest)', 'kolofon' ),
+		'entities' => __( 'HTML entities (works without JavaScript)', 'kolofon' ),
+		'off'      => __( 'Off, emit plain mailto:', 'kolofon' ),
 	);
 }
 
@@ -151,10 +151,10 @@ function protected_mailto( $email, $inner_html, $attrs = array() ) {
 
 	$mode = email_mode();
 
-	// The JS-mode template needs its own mb-email class, and HTML drops a
+	// The JS-mode template needs its own k-email class, and HTML drops a
 	// second class attribute on the same element, silently discarding the
 	// caller's. So the class is merged here and emitted exactly once.
-	$classes = trim( 'mb-email ' . ( isset( $attrs['class'] ) ? (string) $attrs['class'] : '' ) );
+	$classes = trim( 'k-email ' . ( isset( $attrs['class'] ) ? (string) $attrs['class'] : '' ) );
 	unset( $attrs['class'] );
 
 	$attr_html = ' class="' . esc_attr( implode( ' ', array_unique( explode( ' ', $classes ) ) ) ) . '"';
@@ -252,11 +252,11 @@ function maybe_enqueue_email_guard() {
 	}
 
 	wp_register_script(
-		'menj-bio-email-guard',
-		MENJ_BIO_URI . 'assets/js/email-guard.js',
+		'kolofon-email-guard',
+		KOLOFON_URI . 'assets/js/email-guard.js',
 		array(),
-		MENJ_BIO_VERSION,
+		KOLOFON_VERSION,
 		true
 	);
-	wp_enqueue_script( 'menj-bio-email-guard' );
+	wp_enqueue_script( 'kolofon-email-guard' );
 }

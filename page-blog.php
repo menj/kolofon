@@ -4,7 +4,7 @@
  *
  * Chronological blog list, grouped by year.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  */
 
 get_header();
@@ -28,7 +28,7 @@ get_header();
 				)
 			);
 
-			$sections = \MENJ\Bio\get_sections();
+			$sections = \Kolofon\get_sections();
 			?>
 
 			<div class="content-meta">
@@ -36,15 +36,15 @@ get_header();
 					<?php
 					printf(
 						/* translators: %d: post count */
-						esc_html( _n( '%d post', '%d posts', $blog_query->found_posts, 'menj-bio' ) ),
+						esc_html( _n( '%d post', '%d posts', $blog_query->found_posts, 'kolofon' ) ),
 						intval( $blog_query->found_posts )
 					);
 					?>
 				</p>
 				<?php if ( ! empty( $sections ) ) : ?>
-					<nav class="content-filter" aria-label="<?php esc_attr_e( 'Filter by section', 'menj-bio' ); ?>">
-						<span class="content-filter-label"><?php esc_html_e( 'Sections:', 'menj-bio' ); ?></span>
-						<a class="content-filter-link is-current" href="<?php echo esc_url( \MENJ\Bio\get_blog_index_url() ); ?>"><?php esc_html_e( 'All', 'menj-bio' ); ?></a>
+					<nav class="content-filter" aria-label="<?php esc_attr_e( 'Filter by section', 'kolofon' ); ?>">
+						<span class="content-filter-label"><?php esc_html_e( 'Sections:', 'kolofon' ); ?></span>
+						<a class="content-filter-link is-current" href="<?php echo esc_url( \Kolofon\get_blog_index_url() ); ?>"><?php esc_html_e( 'All', 'kolofon' ); ?></a>
 						<?php foreach ( $sections as $section ) : ?>
 							<a class="content-filter-link" href="<?php echo esc_url( get_category_link( $section ) ); ?>">
 								<?php echo esc_html( $section->name ); ?>
@@ -67,16 +67,16 @@ get_header();
 							if ( null !== $current_year ) :
 								echo '</ul></section>';
 							endif;
-							echo '<section class="year-group"><h2 class="year-heading">' . esc_html( $year ) . '</h2><ul class="' . esc_attr( \MENJ\Bio\post_list_classes( $blog_query ) ) . '">';
+							echo '<section class="year-group"><h2 class="year-heading">' . esc_html( $year ) . '</h2><ul class="' . esc_attr( \Kolofon\post_list_classes( $blog_query ) ) . '">';
 							$current_year = $year;
 						endif;
-						\MENJ\Bio\post_list_item( array( 'date_format' => 'M j' ) );
+						\Kolofon\post_list_item( array( 'date_format' => 'M j' ) );
 					endwhile;
 					echo '</ul></section>';
 					wp_reset_postdata();
 				else :
 					?>
-					<p><?php esc_html_e( 'No posts yet.', 'menj-bio' ); ?></p>
+					<p><?php esc_html_e( 'No posts yet.', 'kolofon' ); ?></p>
 					<?php
 				endif;
 				?>

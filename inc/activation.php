@@ -17,11 +17,11 @@
  * that was renamed or moved is still recognised, and a deleted page is
  * recreated on the next activation.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   2.6.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -68,7 +68,7 @@ function ensure_blog_index_page() {
 	// notice that only ever fires on activation.
 	$page_id = wp_insert_post(
 		array(
-			'post_title'     => __( 'Blog', 'menj-bio' ),
+			'post_title'     => __( 'Blog', 'kolofon' ),
 			'post_name'      => 'blog',
 			'post_status'    => 'publish',
 			'post_type'      => 'page',
@@ -83,13 +83,13 @@ function ensure_blog_index_page() {
 	);
 
 	if ( is_wp_error( $page_id ) ) {
-		error_log( sprintf( '[menj-bio] Could not create blog index page: %s', $page_id->get_error_message() ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		error_log( sprintf( '[kolofon] Could not create blog index page: %s', $page_id->get_error_message() ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		return 0;
 	}
 
 	$post = get_post( $page_id );
 	if ( $post && 'blog' !== $post->post_name ) {
-		error_log( sprintf( '[menj-bio] Blog index page created at slug "%s" because "/blog" was taken. Rename or remove the other page if desired.', $post->post_name ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		error_log( sprintf( '[kolofon] Blog index page created at slug "%s" because "/blog" was taken. Rename or remove the other page if desired.', $post->post_name ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 	}
 
 	return (int) $page_id;

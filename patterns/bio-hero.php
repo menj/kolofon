@@ -1,8 +1,8 @@
 <?php
 /**
  * Title: Bio Hero
- * Slug: menj-bio/bio-hero
- * Categories: menj-bio
+ * Slug: kolofon/bio-hero
+ * Categories: kolofon
  * Description: Two-column hero with intro copy, native social icons, and a circular portrait.
  */
 ?>
@@ -11,14 +11,14 @@
 	<!-- wp:column {"verticalAlignment":"top","width":"66.66%"} -->
 	<div class="wp-block-column is-vertically-aligned-top" style="flex-basis:66.66%">
 		<!-- wp:heading {"level":1,"fontSize":"x-large"} -->
-		<h1 class="wp-block-heading has-x-large-font-size"><?php echo esc_html__( "Hi, I'm Mohd Elfie", 'menj-bio' ); ?></h1>
+		<h1 class="wp-block-heading has-x-large-font-size"><?php echo esc_html__( "Hi, I'm Mohd Elfie", 'kolofon' ); ?></h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"large"} -->
-		<p class="has-large-font-size"><?php echo esc_html__( 'Writer, apologist, and developer. Replace this paragraph with your own introduction.', 'menj-bio' ); ?></p>
+		<p class="has-large-font-size"><?php echo esc_html__( 'Writer, apologist, and developer. Replace this paragraph with your own introduction.', 'kolofon' ); ?></p>
 		<!-- /wp:paragraph -->
 
-		<!-- wp:social-links {"iconColor":"muted","iconColorValue":"var(--mb-muted)","openInNewTab":true} -->
+		<!-- wp:social-links {"iconColor":"muted","iconColorValue":"var(--k-muted)","openInNewTab":true} -->
 		<ul class="wp-block-social-links has-icon-color">
 			<!-- wp:social-link {"url":"#","service":"mastodon"} /-->
 			<!-- wp:social-link {"url":"#","service":"github"} /-->

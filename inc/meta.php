@@ -12,11 +12,11 @@
  * for runs Rank Math, so shipping without that guard would have produced
  * duplicates on day one.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.1.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -77,7 +77,7 @@ function seo_plugin_active() {
 	 *
 	 * @param bool $active Whether a known SEO plugin was detected.
 	 */
-	return (bool) apply_filters( 'menj_bio_seo_plugin_active', $active );
+	return (bool) apply_filters( 'kolofon_seo_plugin_active', $active );
 }
 
 /**
@@ -169,7 +169,7 @@ function meta_title() {
 
 	if ( is_search() ) {
 		/* translators: %s: search term */
-		return sprintf( __( 'Search results for %s', 'menj-bio' ), get_search_query() );
+		return sprintf( __( 'Search results for %s', 'kolofon' ), get_search_query() );
 	}
 
 	return get_bloginfo( 'name', 'display' );

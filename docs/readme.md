@@ -1,7 +1,7 @@
 # menj.bio theme
 
 Modernist, minimalist WordPress theme for the personal bio microsite at
-[menj.bio](https://menj.bio/).
+[menj.bio](https://menj.bio/). Source: [github.com/menj/kolofon](https://github.com/menj/kolofon).
 
 - Classic PHP templates with hybrid block-editor support (`theme.json`, block
   patterns, block styles)
@@ -24,7 +24,7 @@ Modernist, minimalist WordPress theme for the personal bio microsite at
 ## Directory layout
 
 ```
-menj-bio/
+kolofon/
 ├── style.css                 Theme header
 ├── functions.php             Constants and the inc/ module loader
 ├── theme.json                Editor palette, typography, spacing
@@ -58,6 +58,10 @@ menj-bio/
 │   ├── meta.php           Open Graph, schema, SEO plugin detection
 │   ├── docs.php           Markdown documentation rendering via Parsedown
 │   ├── system-report.php  System tab, theme-owned runtime facts
+│   ├── activation.php     Auto-provisions blog index page on theme switch
+│   ├── webfonts.php       Self-hosted webfont loading, per active stack
+│   ├── syndication.php    RSS feed featured images, fediverse:creator meta
+│   ├── migration-notice.php  Post-rename admin notice, one-shot
 │   ├── dynamic-css.php    Emits :root custom properties, dark-mode block
 │   └── blocks.php         Pattern category and block styles
 ├── assets/
@@ -71,13 +75,18 @@ menj-bio/
 │   │   ├── email-guard.js    Rebuilds obfuscated mailto links
 │   │   ├── single-section.js Single-choice categories in the block editor
 │   │   └── admin-options.js  Tab widget, colour picker, media picker
-│   └── img/
-│       ├── profile.png       Portrait, hero fallback
-│       ├── favicon.png       32x32
-│       ├── icon-192.png      Android
-│       └── apple-touch-icon.png
+│   ├── img/
+│   │   ├── profile.png       Portrait, hero fallback
+│   │   ├── favicon.png       32x32
+│   │   ├── icon-192.png      Android
+│   │   └── apple-touch-icon.png
+│   └── fonts/
+│       ├── xcharter/         Bitstream Charter extended, 4 weights, opt-in via stack
+│       └── special-elite/    Typewriter face, 1 weight, opt-in via stack
+├── tests/
+│   └── e2e/                  Playwright smoke tests
 ├── languages/
-│   └── menj-bio.pot          Translation template
+│   └── kolofon.pot          Translation template
 ├── patterns/
 │   ├── bio-hero.php
 │   ├── bio-card.php
@@ -97,7 +106,7 @@ menj-bio/
 ## Theme options
 
 Everything configurable is controlled from **Appearance, Theme Options**. The
-page uses the Settings API with a single stored option, `menj_bio_options`, and
+page uses the Settings API with a single stored option, `kolofon_options`, and
 switches tabs client-side so all fields save in one request.
 
 | Tab | Controls |
@@ -166,7 +175,7 @@ than emitting none, because consumers disagree about which wins.
 For a plugin the list does not know, filter it:
 
 ```php
-add_filter( 'menj_bio_seo_plugin_active', '__return_true' );
+add_filter( 'kolofon_seo_plugin_active', '__return_true' );
 ```
 
 ### Settings portability
@@ -207,10 +216,20 @@ of harvesters, which are a fetch and a regex.
 
 ### Hover previews
 
-Hovering or keyboard-focusing a post row reveals that post's featured image
-beside the list. Pure CSS, gated on pointer capability and screen width, and it
-honours reduced-motion preferences. Posts without a featured image render no
-preview.
+Hovering or keyboard-focusing a post row reveals a peek at a fixed anchor at
+the top of the list. The list stays compact by default and expands its right
+gutter smoothly on hover, so the peek lands in dedicated space rather than
+overlapping row text. Moving between rows swaps the peek content but the
+anchor stays put — no cursor-chasing layout.
+
+Every row gets a peek. Posts with a featured image show it as a photographic
+tile, enforced to a 3:2 landscape aspect regardless of source dimensions.
+Posts without a featured image show a typographic tile — the post title
+clamped to three lines in the theme's heading font, over a subtle
+palette-tinted background — sharing the same anchor and shape. No dead space
+for image-less posts, no per-row jitter from mixed behaviour.
+
+Pure CSS, gated on pointer capability and screen width, honours reduced-motion.
 
 ## Documentation
 
@@ -229,6 +248,9 @@ the four above, with a label derived from the filename. CI fails the build if
 any filename contains an uppercase letter.
 
 ## Development
+
+Source lives at [github.com/menj/kolofon](https://github.com/menj/kolofon).
+Issues, pull requests, and release tags are there.
 
 No asset build step. CSS and JavaScript are hand-written and ship as-is, so a
 clone runs immediately.
@@ -259,7 +281,7 @@ field registration, then the sanitiser. Adding a social platform means one
 entry in `get_social_platforms()` and one matching default; the field loop,
 sanitiser, and renderer pick it up with no further changes.
 
-The theme exposes one filter so far, `menj_bio_seo_plugin_active`. A general
+The theme exposes one filter so far, `kolofon_seo_plugin_active`. A general
 hook surface is phase 4 of the roadmap.
 
 ## Font stacks
@@ -272,14 +294,16 @@ Five options. Slug-to-label map, in radio order on the Appearance tab:
 - **Office memo** (`typewriter`). Hybrid: system monospace for reading, Special Elite for headings.
 - **Plaintext** (`mono`). System monospace end to end. Loads nothing.
 
-The webfont stacks are independent: choosing Charter, but loud loads XCharter; choosing Typed loads Special Elite. Adding a stack means registering it through `menj_bio_font_stacks`, optionally with a `webfont` key.
+The webfont stacks are independent: choosing Charter, but loud loads XCharter; choosing Typed loads Special Elite. Adding a stack means registering it through `kolofon_font_stacks`, optionally with a `webfont` key.
+
+Typewriter and monospace stacks (`typed`, `office-memo`, `plaintext`) get typewriter-accurate leading — 1.9 line-height with 1rem paragraph spacing — because monospace type has taller x-height relative to em and reads crowded at proportional-serif rhythm. Post body copy is fully justified with no CSS hyphenation, since that's how a print manuscript wears its ragged word-spacing. Both details apply through the `font-<slug>` body class so future stacks that identify as monospace-family inherit them.
 
 ## Attribution
 
 Forked from the [Chris Wiegman Theme](https://github.com/ChrisWiegman/chriswiegman-theme)
 v12.7.0 by Chris Wiegman, GPL v2. The fork retains the security posture,
 image-size trimming, comment removal, and head cleanup, and adds the options
-page, colour system, hybrid block support, patterns, and the `MENJ\Bio`
+page, colour system, hybrid block support, patterns, and the `Kolofon`
 namespace. See `changelog.md` for the full delta.
 
 ### Third-party

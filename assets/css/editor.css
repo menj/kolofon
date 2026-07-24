@@ -4,9 +4,9 @@
  */
 
 .editor-styles-wrapper {
-	background: var(--mb-bg);
-	color: var(--mb-text);
-	font-family: var(--mb-font-body);
+	background: var(--k-bg);
+	color: var(--k-text);
+	font-family: var(--k-font-body);
 	font-size: 17px;
 	line-height: 1.65;
 }
@@ -16,8 +16,8 @@
 .editor-styles-wrapper h4,
 .editor-styles-wrapper h5,
 .editor-styles-wrapper h6 {
-	font-family: var(--mb-font-heading);
-	color: var(--mb-text);
+	font-family: var(--k-font-heading);
+	color: var(--k-text);
 	letter-spacing: -0.01em;
 	line-height: 1.2;
 }
@@ -25,16 +25,16 @@
 .editor-styles-wrapper h2 { font-size: 1.65rem; }
 .editor-styles-wrapper h3 { font-size: 1.25rem; }
 
-.editor-styles-wrapper a { color: var(--mb-accent); }
+.editor-styles-wrapper a { color: var(--k-accent); }
 
 .editor-styles-wrapper blockquote {
-	border-left: 3px solid var(--mb-rule);
+	border-left: 3px solid var(--k-rule);
 	padding-left: 1.15rem;
-	color: var(--mb-muted);
+	color: var(--k-muted);
 }
-.editor-styles-wrapper .is-style-menj-bio-accent { border-left-color: var(--mb-accent); }
-.editor-styles-wrapper hr.is-style-menj-bio-hairline { border-top: 1px solid var(--mb-rule); opacity: 0.5; }
+.editor-styles-wrapper .is-style-kolofon-accent { border-left-color: var(--k-accent); }
+.editor-styles-wrapper hr.is-style-kolofon-hairline { border-top: 1px solid var(--k-rule); opacity: 0.5; }
 
-.editor-styles-wrapper .wp-block { max-width: var(--mb-container); }
-.editor-styles-wrapper .wp-block[data-align="wide"] { max-width: calc(var(--mb-container) + 200px); }
+.editor-styles-wrapper .wp-block { max-width: var(--k-container); }
+.editor-styles-wrapper .wp-block[data-align="wide"] { max-width: calc(var(--k-container) + 200px); }
 .editor-styles-wrapper .wp-block[data-align="full"] { max-width: none; }

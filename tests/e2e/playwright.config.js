@@ -2,7 +2,7 @@ const { defineConfig } = require('@playwright/test');
 const path = require('path');
 
 /**
- * Playwright configuration for menj-bio smoke tests.
+ * Playwright configuration for kolofon smoke tests.
  *
  * Adapted from the parent theme's approach (chriswiegman-theme 12.9.7): a
  * minimal test suite that verifies the theme boots and renders its expected

@@ -21,11 +21,11 @@
  *      hard-coded function body. Any key present in the filtered defaults is
  *      sanitised and stored, whether the theme declared it or a filter did.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.2.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -45,7 +45,37 @@ add_action( 'after_setup_theme', __NAMESPACE__ . '\\migrate_stored_options', 20 
  * `custom_muted`, `custom_rule`.
  */
 function migrate_stored_options() {
-	$stored = get_option( MENJ_BIO_OPTION_KEY, array() );
+	// 3.0.0 theme rename: menj-bio → Kolofon. If a legacy options row exists
+	// under the old key and we do not yet have a new row, copy it over. Then
+	// delete the old row so subsequent loads read only from the new key. The
+	// same rule applies to migration-flag options.
+	$legacy = get_option( 'menj_bio_options', null );
+	$fresh  = get_option( KOLOFON_OPTION_KEY, null );
+
+	if ( is_array( $legacy ) && null === $fresh ) {
+		update_option( KOLOFON_OPTION_KEY, $legacy );
+		delete_option( 'menj_bio_options' );
+
+		// Record what happened so the admin notice can show confirmation on
+		// the next admin page load. Autoloading disabled: this is one-shot
+		// info a dismissal will delete, no reason to keep it in cache.
+		update_option(
+			'kolofon_rename_migration_notice',
+			array(
+				'count' => count( $legacy ),
+				'at'    => time(),
+			),
+			false
+		);
+	}
+
+	$legacy_flag = get_option( 'menj_bio_typewriter_reset', null );
+	if ( null !== $legacy_flag && null === get_option( 'kolofon_typewriter_reset', null ) ) {
+		update_option( 'kolofon_typewriter_reset', $legacy_flag, false );
+		delete_option( 'menj_bio_typewriter_reset' );
+	}
+
+	$stored = get_option( KOLOFON_OPTION_KEY, array() );
 
 	if ( ! is_array( $stored ) || empty( $stored ) ) {
 		return;
@@ -86,21 +116,21 @@ function migrate_stored_options() {
 		} elseif ( in_array( $stored['font_stack'], array( 'system', 'humanist', 'hybrid', 'grotesque' ), true ) ) {
 			$stored['font_stack'] = 'editorial';
 			$dirty                = true;
-		} elseif ( 'typewriter' === $stored['font_stack'] && ! get_option( 'menj_bio_typewriter_reset' ) ) {
+		} elseif ( 'typewriter' === $stored['font_stack'] && ! get_option( 'kolofon_typewriter_reset' ) ) {
 			$stored['font_stack'] = 'editorial';
 			$dirty                = true;
-			update_option( 'menj_bio_typewriter_reset', 1, false );
+			update_option( 'kolofon_typewriter_reset', 1, false );
 		}
 	}
 
 	// Set the flag on any migration pass so the typewriter reset never fires
 	// on a fresh 2.5 install that has never had the old typewriter.
-	if ( ! get_option( 'menj_bio_typewriter_reset' ) ) {
-		update_option( 'menj_bio_typewriter_reset', 1, false );
+	if ( ! get_option( 'kolofon_typewriter_reset' ) ) {
+		update_option( 'kolofon_typewriter_reset', 1, false );
 	}
 
 	if ( $dirty ) {
-		update_option( MENJ_BIO_OPTION_KEY, $stored );
+		update_option( KOLOFON_OPTION_KEY, $stored );
 	}
 }
 
@@ -207,12 +237,12 @@ function get_option_sanitizers() {
 	/**
 	 * Filter the sanitiser registry.
 	 *
-	 * Add an entry when adding an option through `menj_bio_defaults`, otherwise
+	 * Add an entry when adding an option through `kolofon_defaults`, otherwise
 	 * the value is stored with `sanitize_text_field`.
 	 *
 	 * @param array<string, callable> $map Key to callback.
 	 */
-	return apply_filters( 'menj_bio_option_sanitizers', $map );
+	return apply_filters( 'kolofon_option_sanitizers', $map );
 }
 
 /**
@@ -251,5 +281,5 @@ function sanitize_options( $input ) {
 	 * @param array $clean Sanitised values.
 	 * @param array $input Raw input.
 	 */
-	return apply_filters( 'menj_bio_sanitized_options', $clean, $input );
+	return apply_filters( 'kolofon_sanitized_options', $clean, $input );
 }

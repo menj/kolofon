@@ -2,7 +2,7 @@
 const { test, expect } = require('@playwright/test');
 
 /**
- * Smoke tests for menj-bio.
+ * Smoke tests for kolofon.
  *
  * These are not exhaustive. They verify the theme boots without a PHP fatal,
  * that the home page renders its expected landmarks, and that key routes

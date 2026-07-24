@@ -1,5 +1,131 @@
 # Changelog
 
+## 3.0.1
+
+### Added
+- Migration confirmation notice. When the 3.0.0 rename migration copies a legacy `menj_bio_options` row into `kolofon_options`, it now also records how many settings were migrated. On the next admin page load a dismissible success notice appears reporting the count and offering an "Open Kolofon Options" button. Gives the site owner positive confirmation the migration ran rather than trusting silence.
+- New module `inc/migration-notice.php`. Notice fires only when the migration flag exists, dismisses via `admin-post.php` with a nonce (permanent removal) or the standard is-dismissible X (session only). Capability-gated to `manage_options`.
+
+### Not covered by the notice
+- A child theme's `Template:` header. If any site running Kolofon has a child theme naming `menj-bio` as its Template, the child breaks on activation and no notice about it will appear — the notice only reports what the migration handled, not what a child theme's config might need updating. Recorded in `docs/upgrading.md`.
+
+
+## 3.0.0 — theme rename to Kolofon
+
+Major bump per invariant 5: the text domain and option row key both change, which is exactly the class of breaking schema change semver requires a major bump for. Full rename, applied consistently across every layer.
+
+### Renamed
+
+- Theme name: `menj.bio` → **Kolofon** (Malay spelling of "colophon" — the printer's mark at the end of a manuscript recording who set the type).
+- Directory: `menj-bio/` → `kolofon/`.
+- Text domain: `menj-bio` → `kolofon`. All 372 user-facing gettext strings retranslated in the .pot file.
+- PHP namespace: `MENJ\Bio` → `Kolofon`. All 26 namespace declarations and 87 fully-qualified references updated.
+- PHP constants: `MENJ_BIO_VERSION`, `MENJ_BIO_URI`, `MENJ_BIO_DIR`, `MENJ_BIO_OPTION_KEY` → `KOLOFON_*`.
+- Filter/action prefixes: `menj_bio_*` → `kolofon_*`. Breaks any child-theme code that hooked the theme's filters.
+- Option row key: `menj_bio_options` → `kolofon_options`. Migrated (see below).
+- CSS variables: `--mb-*` → `--k-*`. 152 references.
+- CSS classes: `.menj-bio-*` → `.kolofon-*`, `.mb-email` → `.k-email`, `.mb-font-*` → `.k-font-*`. 132 rules touched.
+- Translation file: `languages/menj-bio.pot` → `languages/kolofon.pot`.
+- Test suite comments and Composer package name.
+
+### Migrated
+
+A one-shot migration runs on `after_setup_theme` at priority 20 (the same hook that handles other stored-option migrations):
+
+1. Reads the legacy `menj_bio_options` row.
+2. If it exists AND `kolofon_options` does not, copies the payload verbatim.
+3. Deletes the legacy row.
+4. Same rule applies to `menj_bio_typewriter_reset` (the migration flag from 2.5.0).
+
+Idempotent: on subsequent loads the legacy rows are gone, so the migration is a no-op. No user-facing action required — a site upgrading from 2.10.x to 3.0.0 keeps every setting intact.
+
+### Not renamed
+
+- Author: `Mohd Elfie Nieshaem Juferi` (still MENJ, still your name).
+- GitHub username: `menj` in URLs. The *repo* moves from `menj/menj-bio` to `menj/kolofon`.
+- Domain: `menj.bio` stays the site URL. Kolofon is the theme running on it.
+
+### Why the name
+
+A colophon is the printer's mark at the end of a manuscript — historically containing the scribe's identity, the tools used, sometimes the date and location of setting. A bio microsite is exactly the same idea in web form: a small object recording who you are, what tools you used, when you set the type. The Malay spelling ties the name to your linguistic identity without foregrounding it.
+
+### Sceptical note
+
+Renaming a theme in-place is unusual and creates one durable trap: search engines and RSS readers may have cached "menj.bio Theme" as the name. If Kolofon shows up anywhere with a mixed identity, it's a caching artefact, not a bug in the theme itself.
+
+
+## 2.10.2
+
+### Docs
+- **Root-level `README.md`** added. GitHub renders it on the repository landing page at [github.com/menj/kolofon](https://github.com/menj/kolofon), where the four docs inside `docs/` are not visible as a landing. Points inward to `docs/` for full documentation. Follows GitHub capitalisation convention rather than the theme's `docs/` lowercase convention, since invariant #7 in `ssot.md` specifically scopes lowercase to the four canonical files inside `docs/`.
+- **Repository named in `docs/readme.md`.** Opening line now cites [github.com/menj/kolofon](https://github.com/menj/kolofon) alongside the site, and the Development section explicitly points at the source repo.
+- **Repository and release archive locations recorded in `docs/ssot.md`** file-of-record map. Names the release workflow's version-tag constraint alongside.
+
+
+## 2.10.1
+
+### Docs
+- Hover previews description in `readme.md` rewritten to cover the 2.10.0 typographic peek: both photographic and typographic tiles now share the same anchor.
+- `ssot.md` corrected: `preview_size` default is 140 (not 240), clamp range is 100–240 (not 140–400), `list_style` accepts `index` alongside `stacked` and `columns`. Hover preview content now named in the authority map.
+- `upgrading.md` — the 1.0.0 "hover-revealed illustration cards" reasoning extended with a 2.10.0 footnote: the "no preview for image-less posts" rule was itself a subtle failure and got corrected.
+
+
+## 2.10.0
+
+### Added
+- **Typographic hover previews for posts without a featured image.** Same 3:2 anchor and same slot in the list layout as the photographic version, but the peek renders the post title (up to 10 words, three-line clamp) in the theme's heading font over a subtle palette-derived background. Image-less posts now get a peek of their own rather than being second-class rows.
+
+### Changed
+- `post_list_classes()` simplified: the `has-previews` class now attaches whenever previews are enabled, since every row emits a preview (photographic or typographic). Previously it inspected the query for at-least-one-thumbnail. The `$query` parameter stays in the signature for backward compatibility but is no longer consulted.
+
+### Notes
+- The design intent, in one line: a bio microsite that publishes intermittently will often have image-less posts, and treating them as "the hover feature doesn't apply to you" reads as second-class. Turning the placeholder into an editorial affordance is closer to the spirit of the theme than either always-empty gutters or per-row jitter.
+
+
+## 2.9.9
+
+### Roadmap
+- Phase 7.4 (GitHub release updater) declined. Manual zip upload from the GitHub release page is the chosen workflow. Neither vendoring `plugin-update-checker` (~200 KB) nor requiring Composer earns its cost for a single-user microsite updated by hand. `docs/upgrading.md` updated to record the decision and its reasoning; nothing about the theme needs to change to add it later, since an update checker is a standalone concern.
+- Construction is complete. Two items remain, both environmental verification rather than code: PHPCS findings (1.3) and the core-block dequeue check (7.2). Both need a running WordPress instance to run against.
+
+### Docs
+- `ssot.md` gained two hard invariants from this session's mistakes: containing-block audits (the 2.9.4–2.9.6 hover-preview saga) and activation-hook idempotency (the 2.6.0 blog-page auto-provisioning).
+- Directory listing in `readme.md` updated with `activation.php`, `webfonts.php`, `syndication.php`, `assets/fonts/`, and `tests/`.
+- Hover preview description in `readme.md` rewritten to match the 2.9.6 behaviour.
+
+
+## 2.9.8
+
+### Changed
+- Columns list style now shows the full day-month-year on every row as `j M Y` — "24 JUL 2026". Uniform format across every row regardless of year. Retires the 2.9.7 conditional-year behaviour in favour of always-visible dates. Column width stays at 6.5rem, still fits the format cleanly. Uppercase transform on the column handles JUL/DEC.
+
+
+## 2.9.7
+
+### Fixed
+- Columns list style hid the year on every date, which was defensible when the whole list was from the current year but silently ambiguous when it spanned years — a 2024 post and a 2026 post rendered identically. Now the year is shown only when the post's year differs from the current year: current-year posts stay compact as "Jul 24", older posts render as "Dec 4, 2024". Self-heals across the year boundary — a post from 2026 will automatically start showing as "Jul 24, 2026" once 2027 arrives.
+- Date column widened from 3.6rem to 6.5rem to accommodate the longer format when it appears. `white-space: nowrap` added as a safeguard against the year wrapping if font metrics vary.
+
+
+## 2.9.6
+
+### Fixed
+- Hover preview landing in the wrong place, overlapping row text instead of the reserved gutter. Root cause: `.post-item a` had `position: relative` set for an older design, which made the anchor the preview's containing block. `right: 0` on the preview then measured against the row's right edge (the content area) rather than the list's right edge (which includes the gutter). The whole gutter mechanic was defeated because the preview never learned about the padding-right expansion at all.
+- Removed `position: relative` from `.post-item a`. Nothing else depended on it — checked every rule in the stylesheet before removing. The preview now positions against `.post-list.has-previews`, which has `position: relative`, and lands in the gutter as designed.
+
+### On 2.9.4 through 2.9.6
+- Three versions in a row on the same hover preview. The visualiser turn showed me correct behaviour in an abstraction, and I shipped code assuming the abstraction matched the real DOM. It did not, because a legacy `position: relative` on the row anchor was breaking the containing-block chain in ways only the actual browser could reveal. The lesson recorded for the trail: when the visualiser and the shipped result diverge, the DOM is the source of truth. Look at what the real element positions against, not what you meant it to position against.
+
+
+## 2.9.5
+
+### Fixed
+- Login screen notice boxes ("You are now logged out," authentication errors, password reset confirmations) inherited WordPress default styling: white background, pale grey text, thin left border. On the Charcoal palette this rendered as a bright block sitting incongruously on the dark surface. Now the notice adopts the site palette: `$bg` background, `$text` colour, `$rule` border, accent-coloured left stripe. `#login_error` covered alongside `.message` and `.notice`, since WordPress uses that separate ID for authentication failures.
+
+### Note on the trade
+- Error notices and success notices now share the accent-coloured stripe rather than red-vs-green. Menj-bio uses one accent per palette and doesn't have a distinct danger colour; introducing one would break the palette discipline. The wording of the notice carries the semantic — "logged out" versus "password incorrect" — which is enough for a login screen used by the site owner.
+
+
 ## 2.9.4
 
 ### Changed
@@ -92,8 +218,8 @@ Four things brought forward from the parent theme (Chris Wiegman's chriswiegman-
 - **Search form label hidden with `.screen-reader-text` positioning** rather than the visible label with dedicated styling that 2.7.1 added. Rethink prompted by seeing the parent theme use `display: none` on the label — that's the a11y-wrong version of the same instinct, but the instinct itself is correct. Menj-bio's approach positions the label off-screen so it stays in the accessibility tree. The 2.7.1 layout for `.search-form` is preserved.
 
 ### On not adopting
-- Post-column customisation for CPTs (parent theme's `includes/post_columns/`): the parent has speaking-engagement post types menj-bio doesn't have. Not applicable.
-- SCSS build pipeline: menj-bio hand-writes CSS by policy.
+- Post-column customisation for CPTs (parent theme's `includes/post_columns/`): the parent has speaking-engagement post types kolofon doesn't have. Not applicable.
+- SCSS build pipeline: kolofon hand-writes CSS by policy.
 - The parent theme's SCSS `page-index.scss` component. Menj-bio has the equivalent styling now (shipped in 2.7.1), though I only realised on this reading that 2.7.1 was reconstructing something that already existed in the parent — the fix was correct, the framing "the class had no rules" was wrong. Recorded for the next reviewer.
 
 
@@ -251,7 +377,7 @@ policy reserves for a major with a migration routine.
 - **Page states.** A page can be marked as planned in its editor sidebar: it stays in the navigation carrying a badge, and its content is replaced by a short notice, with the excerpt serving as the description of what the page will contain. The deliberate inverse of unlisting: an empty site with intent reads as a roadmap. Badge and notice text are configurable on the Advanced tab. State lives in post meta, so it survives a theme switch and is visible to REST.
 - **Columns post list style.** Date and section in narrow uppercase monospace columns, then the title. Selected on the Layout tab; the default remains the stacked layout so existing installs are unchanged. Sections render one term per post by construction. Collapses back to stacked below 560px.
 - **Auto dark mode.** A fifth colour scheme that pairs a light palette with a dark one and lets the device decide, defaulting to Ivory with Charcoal. The light palette is emitted as the base so browsers without media query support get a complete theme; the dark palette rides `prefers-color-scheme: dark`; `color-scheme: light dark` is declared. The pairing is configurable across every scheme except Auto itself, including Custom.
-- **System tab.** Ten rows of theme-owned runtime facts, deliberately not restating Site Health: parser availability, favicon precedence, email protection mode, colour scheme with its Auto pairing, portrait source, metadata ownership including which SEO plugin forced a stand-down, file editor state and what locked it, section slug resolution, and the documentation set. Filterable through `menj_bio_system_report`.
+- **System tab.** Ten rows of theme-owned runtime facts, deliberately not restating Site Health: parser availability, favicon precedence, email protection mode, colour scheme with its Auto pairing, portrait source, metadata ownership including which SEO plugin forced a stand-down, file editor state and what locked it, section slug resolution, and the documentation set. Filterable through `kolofon_system_report`.
 
 ### Changed
 - Palette resolution extracted to `resolve_palette()`, shared by both blocks of the Auto emission.
@@ -261,11 +387,11 @@ policy reserves for a major with a migration routine.
 ## 1.3.0
 
 ### Added
-- `menj_bio_option_fields` filter registers a field on any tab, through the same code path as the theme's own fields.
+- `kolofon_option_fields` filter registers a field on any tab, through the same code path as the theme's own fields.
 - `inc/options-schema.php` declares tabs and fields as data rather than as a sequence of registration calls.
 
 ### Changed
-- A settings section is now created for every tab automatically, so adding a tab through `menj_bio_option_tabs` no longer requires knowing that tabs and sections are separate concepts in the Settings API.
+- A settings section is now created for every tab automatically, so adding a tab through `kolofon_option_tabs` no longer requires knowing that tabs and sections are separate concepts in the Settings API.
 - `register_settings()` reduced from 36 inline registration calls to two loops over the schema.
 - The tab list has one source, `get_option_tabs()`, consumed by both the section registration and the rendered tab strip, so the two cannot drift.
 - Field help text may be a callable, resolved at registration. Used by the file editor and metadata toggles, which report what `wp-config.php` and the active SEO plugin are doing.
@@ -277,7 +403,7 @@ All 45 fields, 42 options plus 3 action buttons, verified present after the refa
 
 ### Added
 - **Extension points.** Twelve hooks let a child theme or plugin add options, tabs, colour schemes, font stacks, portrait styles, and social platforms, amend the emitted `:root` block, override SEO plugin detection, and inject markup around the hero, all without editing a parent file.
-- `menj_bio_option_sanitizers` registers a sanitiser callback per option key.
+- `kolofon_option_sanitizers` registers a sanitiser callback per option key.
 
 ### Fixed
 - **The coupling that made extension unsafe.** `opt()` memoised on first call and the sanitiser wrote only keys it named literally, so an option added by a filter would be read from a pre-filter cache and then discarded on the next save. Silent data loss. Two changes resolve it: neither `opt()` nor `get_defaults()` retains a memo until `after_setup_theme` has fired, and sanitising is now driven by a registry keyed on the filtered defaults rather than a hard-coded body.
@@ -297,8 +423,8 @@ All 45 fields, 42 options plus 3 action buttons, verified present after the refa
 - Branded login screen. The mark resolves through Custom Logo, then Site Icon, then the bundled portrait, and the colours come from the active scheme rather than a second hard-coded palette. Retires the `login-logo` plugin on the live site.
 - Three block patterns: link list, callout, and contact block. The callout is styled with the accent colour and the contact block embeds the protected email shortcode.
 - **Meta tags and structured data.** Open Graph, Twitter card, canonical, and description tags, plus a JSON-LD graph carrying `Person`, `WebSite`, and `BlogPosting` on single posts, with `sameAs` populated from the configured social profiles. The share image falls back through featured image, configured portrait, then the bundled portrait.
-- SEO plugin detection covering Yoast, Rank Math, All in One SEO, SEOPress, Slim SEO, and The SEO Framework. When one is active the theme stands down entirely and the Advanced tab says which plugin owns the output. Filterable through `menj_bio_seo_plugin_active`, which is also the theme's first public filter.
-- Translation template at `languages/menj-bio.pot`, covering 144 strings across 26 files.
+- SEO plugin detection covering Yoast, Rank Math, All in One SEO, SEOPress, Slim SEO, and The SEO Framework. When one is active the theme stands down entirely and the Advanced tab says which plugin owns the output. Filterable through `kolofon_seo_plugin_active`, which is also the theme's first public filter.
+- Translation template at `languages/kolofon.pot`, covering 144 strings across 26 files.
 - **Sections.** A new Sections tab establishes mutually exclusive categories: a post belongs to exactly one, and tags carry topics that cut across them. Which categories count as sections, and in what order, is configured as a list of slugs, so nothing is hard-coded.
 - Single-category enforcement on `save_post`, which is authoritative and therefore also covers REST, WP-CLI, Quick Edit, and imports. When several categories are present the theme keeps the first configured section in configured order, falling back to the first assigned category. The rule is deterministic.
 - `assets/js/single-section.js` makes the block editor category panel behave as a single-choice list, keeping whichever term was added last. The server enforces the same rule regardless, so this is a courtesy rather than a control.
@@ -341,7 +467,7 @@ by Chris Wiegman (GPL v2).
 - `prefers-reduced-motion` now applies globally rather than to the hover preview alone.
 - Admin options page gained responsive rules at 782px, where WordPress collapses its own chrome: tabs and the documentation sub-nav scroll horizontally instead of stacking, inputs go full width, colour presets stack, and wide markdown tables scroll inside the panel.
 - `add_theme_support( 'custom-logo' )` for Site Identity uploader; header renders the custom logo when set, otherwise the text site title.
-- `Theme URI` and `Update URI` headers point to `https://github.com/menj/menj-bio`, reserving the theme slug against wp.org collisions.
+- `Theme URI` and `Update URI` headers point to `https://github.com/menj/kolofon`, reserving the theme slug against wp.org collisions.
 - `Author URI` updated to `https://github.com/menj`.
 - Documentation tab footer shows repo URL and current theme version.
 - `social_github` default pre-filled with `https://github.com/menj`.
@@ -357,7 +483,7 @@ by Chris Wiegman (GPL v2).
 - Hover previews on post lists. Hovering or keyboard-focusing a row reveals that post's featured image beside the list. Pure CSS, no JavaScript: driven by `:hover` and `:focus-within`, gated behind `(hover: hover) and (pointer: fine)` so touch devices are unaffected, and honouring `prefers-reduced-motion`. Posts without a featured image render no preview. Controlled by `hover_preview` (default on) and `preview_size` (default 240px, range 140 to 400).
 - The hovered row lifts into a soft card, tinted with `color-mix()` so it works against every colour preset.
 - `inc/post-list.php` added: `post_list_item()` and `post_list_classes()` render every post list in the theme, so the hover markup exists in one place. `home.php`, `index.php`, and `page-blog.php` now share it. Archive rows also gained an optional excerpt dek.
-- Two block patterns (`bio-hero`, `bio-card`) and a `menj-bio` pattern category.
+- Two block patterns (`bio-hero`, `bio-card`) and a `kolofon` pattern category.
 - Two block styles: hairline separator and accent-bordered quote.
 - Modular structure: `inc/` split into `defaults.php`, `setup.php`, `enqueue.php`, `security.php`, `options.php`, `dynamic-css.php`, `blocks.php`.
 - Referrer-Policy security header added alongside the existing set.
@@ -366,7 +492,7 @@ by Chris Wiegman (GPL v2).
 - 404 template, custom search form, skip link.
 
 ### Phase 1 (roadmap)
-- Settings export and import on the Advanced tab. Export streams every setting as pretty-printed JSON; import discards unrecognised keys, then runs the same `sanitize()` the options form uses, so clamps, enum fallbacks, and escaping apply identically to a file and a form post. Both handlers are nonce-checked and gated on `manage_options`. Upload is capped at 256 KB and rejected unless it declares `"theme": "menj-bio"`.
+- Settings export and import on the Advanced tab. Export streams every setting as pretty-printed JSON; import discards unrecognised keys, then runs the same `sanitize()` the options form uses, so clamps, enum fallbacks, and escaping apply identically to a file and a form post. Both handlers are nonce-checked and gated on `manage_options`. Upload is capped at 256 KB and rejected unless it declares `"theme": "kolofon"`.
 - Reset, import, and export now share one status-message system, replacing the single ad-hoc reset notice.
 - Documentation rendering hardened: `setMarkupEscaped( true )` alongside safe mode so raw HTML in a source file is escaped rather than emitted; `method_exists()` guards on every Parsedown setter so an older copy loaded by another plugin cannot fatal; and a transient keyed on `md5( slug + filemtime + version + engine )` so an edited file invalidates its own cache. When no parser is available the source is shown escaped inside a `pre` rather than rendering nothing.
 
@@ -382,8 +508,8 @@ by Chris Wiegman (GPL v2).
 - Navigation links weighted 600.
 - Section headings ("Recent Posts") now use the accent colour at 1.75rem/700.
 - Hero stacking breakpoint raised from 720px to 860px to suit the wider default.
-- Namespace `CW\Theme` → `MENJ\Bio`.
-- Text domain `chriswiegman-theme` → `menj-bio`.
+- Namespace `CW\Theme` → `Kolofon`.
+- Text domain `chriswiegman-theme` → `kolofon`.
 - Hand-written CSS in `assets/css/main.css`; SCSS build removed.
 - Enqueue moved out of `functions.php` into `inc/enqueue.php`.
 - Front-end styles now consume CSS custom properties instead of hard-coded colours.

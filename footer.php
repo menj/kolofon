@@ -2,7 +2,7 @@
 /**
  * The site footer.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  */
 
 ?>
@@ -11,7 +11,7 @@
 <footer class="site-footer" role="contentinfo">
 	<div class="container">
 		<?php if ( has_nav_menu( 'footer' ) ) : ?>
-			<nav class="footer-nav" aria-label="<?php esc_attr_e( 'Footer', 'menj-bio' ); ?>">
+			<nav class="footer-nav" aria-label="<?php esc_attr_e( 'Footer', 'kolofon' ); ?>">
 				<?php
 				wp_nav_menu(
 					array(
@@ -26,7 +26,7 @@
 		<?php endif; ?>
 
 		<div class="footer-text">
-			<?php echo wp_kses_post( \MENJ\Bio\opt( 'footer_text' ) ); ?>
+			<?php echo wp_kses_post( \Kolofon\opt( 'footer_text' ) ); ?>
 		</div>
 	</div>
 </footer>

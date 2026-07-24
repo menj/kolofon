@@ -5,11 +5,11 @@
  * Reads *.md files from the /docs/ directory and renders them on the
  * Documentation tab of the Theme Options page using Parsedown.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.0.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -30,7 +30,7 @@ function docs_parser() {
 	}
 
 	if ( ! class_exists( 'Parsedown' ) ) {
-		$bundled = MENJ_BIO_DIR . 'vendor/parsedown/Parsedown.php';
+		$bundled = KOLOFON_DIR . 'vendor/parsedown/Parsedown.php';
 		if ( is_readable( $bundled ) ) {
 			require_once $bundled;
 		}
@@ -92,7 +92,7 @@ function render_doc( $slug ) {
 	$parser = docs_parser();
 	$engine = $parser ? 'parsedown' : 'none';
 	$mtime  = filemtime( $path );
-	$key    = 'menj_bio_doc_' . md5( $slug . '|' . $mtime . '|' . MENJ_BIO_VERSION . '|' . $engine );
+	$key    = 'kolofon_doc_' . md5( $slug . '|' . $mtime . '|' . KOLOFON_VERSION . '|' . $engine );
 
 	$cached = get_transient( $key );
 	if ( is_string( $cached ) ) {
@@ -107,7 +107,7 @@ function render_doc( $slug ) {
 	if ( ! $parser ) {
 		// Without a parser, show the source rather than nothing. Escaped and
 		// preformatted, so it stays readable and cannot inject markup.
-		$html = '<p><em>' . esc_html__( 'Markdown could not be rendered, so the source is shown below.', 'menj-bio' ) . '</em></p>'
+		$html = '<p><em>' . esc_html__( 'Markdown could not be rendered, so the source is shown below.', 'kolofon' ) . '</em></p>'
 			. '<pre>' . esc_html( $markdown ) . '</pre>';
 	} else {
 		$html = wp_kses_post( $parser->text( $markdown ) );
@@ -129,10 +129,10 @@ function render_doc( $slug ) {
  */
 function get_doc_manifest() {
 	return array(
-		'readme'    => __( 'Readme', 'menj-bio' ),
-		'ssot'      => __( 'SSOT', 'menj-bio' ),
-		'upgrading' => __( 'Upgrading', 'menj-bio' ),
-		'changelog' => __( 'Changelog', 'menj-bio' ),
+		'readme'    => __( 'Readme', 'kolofon' ),
+		'ssot'      => __( 'SSOT', 'kolofon' ),
+		'upgrading' => __( 'Upgrading', 'kolofon' ),
+		'changelog' => __( 'Changelog', 'kolofon' ),
 	);
 }
 
@@ -157,7 +157,7 @@ function derive_doc_label( $slug ) {
  * @return array<string, array{label:string, path:string}>
  */
 function list_docs() {
-	$dir      = MENJ_BIO_DIR . 'docs/';
+	$dir      = KOLOFON_DIR . 'docs/';
 	$out      = array();
 	$manifest = get_doc_manifest();
 
@@ -199,19 +199,19 @@ function list_docs() {
 function render_docs_panel() {
 	$docs = list_docs();
 	if ( empty( $docs ) ) {
-		echo '<p>' . esc_html__( 'No documentation files found in the docs/ directory.', 'menj-bio' ) . '</p>';
+		echo '<p>' . esc_html__( 'No documentation files found in the docs/ directory.', 'kolofon' ) . '</p>';
 		return;
 	}
 
 	$requested = isset( $_GET['doc'] ) ? sanitize_key( wp_unslash( $_GET['doc'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only navigation.
 	$active    = isset( $docs[ $requested ] ) ? $requested : array_key_first( $docs );
 
-	$base_url = admin_url( 'themes.php?page=menj-bio-options' );
+	$base_url = admin_url( 'themes.php?page=kolofon-options' );
 
-	echo '<nav class="menj-bio-docs-nav" aria-label="' . esc_attr__( 'Documents', 'menj-bio' ) . '">';
+	echo '<nav class="kolofon-docs-nav" aria-label="' . esc_attr__( 'Documents', 'kolofon' ) . '">';
 	foreach ( $docs as $slug => $meta ) {
 		$url    = add_query_arg( 'doc', $slug, $base_url ) . '#tab-docs';
-		$class  = 'menj-bio-doc-link' . ( $slug === $active ? ' is-current' : '' );
+		$class  = 'kolofon-doc-link' . ( $slug === $active ? ' is-current' : '' );
 		printf(
 			'<a href="%1$s" class="%2$s">%3$s</a>',
 			esc_url( $url ),
@@ -221,15 +221,15 @@ function render_docs_panel() {
 	}
 	echo '</nav>';
 
-	echo '<article class="menj-bio-doc-body">';
+	echo '<article class="kolofon-doc-body">';
 	echo render_doc( $active ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- already run through wp_kses_post.
 	echo '</article>';
 
 	// Repo + version strip.
 	printf(
-		'<p class="menj-bio-doc-meta">%1$s <a href="%2$s" target="_blank" rel="noopener noreferrer">%2$s</a> &middot; v%3$s</p>',
-		esc_html__( 'Source:', 'menj-bio' ),
-		'https://github.com/menj/menj-bio',
-		esc_html( MENJ_BIO_VERSION )
+		'<p class="kolofon-doc-meta">%1$s <a href="%2$s" target="_blank" rel="noopener noreferrer">%2$s</a> &middot; v%3$s</p>',
+		esc_html__( 'Source:', 'kolofon' ),
+		'https://github.com/menj/kolofon',
+		esc_html( KOLOFON_VERSION )
 	);
 }

@@ -11,11 +11,11 @@
  * on tag archives, since offering it there would imply a filter that does not
  * apply, and a section breakdown is shown instead.
  *
- * @package MENJ\Bio
+ * @package Kolofon
  * @since   1.1.0
  */
 
-namespace MENJ\Bio;
+namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -63,7 +63,7 @@ function render_post_tags( $post_id = null, $limit = 0, $class = '' ) {
 				echo esc_html(
 					sprintf(
 						/* translators: %s: number of additional tags */
-						_n( '+%s more', '+%s more', $total - $limit, 'menj-bio' ),
+						_n( '+%s more', '+%s more', $total - $limit, 'kolofon' ),
 						number_format_i18n( $total - $limit )
 					)
 				);
@@ -144,7 +144,7 @@ function render_tag_sections( $query = null ) {
 		<?php
 		printf(
 			/* translators: %s: list of linked section names */
-			esc_html__( 'Spans: %s', 'menj-bio' ),
+			esc_html__( 'Spans: %s', 'kolofon' ),
 			wp_kses_post( implode( ', ', $names ) )
 		);
 		?>
