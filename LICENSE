@@ -1,0 +1,20 @@
+menj.bio theme
+Copyright (C) 2026 Mohd Elfie Nieshaem Juferi
+
+Portions Copyright (C) Chris Wiegman, from the Chris Wiegman Theme v12.7.0.
+See docs/changelog.md for the fork history and delta.
+
+This theme vendors Parsedown 1.8.0 (Copyright (c) 2013-2018 Emanuil Rusev)
+under the MIT License. See vendor/parsedown/LICENSE.txt for the full text.
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License, version 2, as published
+by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+The full text of the GNU General Public License v2 is available at:
+http://www.gnu.org/licenses/gpl-2.0.html

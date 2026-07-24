@@ -1,0 +1,1282 @@
+/*!
+ * menj.bio main stylesheet
+ * All colours and fonts are driven by :root custom properties
+ * injected inline from the Theme Options (see inc/dynamic-css.php).
+ */
+
+/* ------- Reset ------- */
+*, *::before, *::after { box-sizing: border-box; }
+html {
+	-webkit-text-size-adjust: 100%;
+	overflow-x: hidden;
+}
+body {
+	margin: 0;
+	background: var(--mb-bg);
+	color: var(--mb-text);
+	font-family: var(--mb-font-body);
+	font-size: 17px;
+	line-height: 1.65;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	overflow-wrap: break-word;
+}
+img, svg, video, iframe, embed, object { max-width: 100%; height: auto; display: block; }
+
+/* Long unbroken strings (URLs, code identifiers) must not force a scrollbar. */
+h1, h2, h3, h4, h5, h6, p, li, dd, dt, figcaption, blockquote {
+	overflow-wrap: break-word;
+	hyphens: auto;
+}
+a { overflow-wrap: break-word; }
+
+/* Wide tables scroll inside their own box rather than stretching the page. */
+.content table,
+.e-content table {
+	display: block;
+	width: 100%;
+	max-width: 100%;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	border-collapse: collapse;
+}
+.wp-block-table { overflow-x: auto; }
+
+/* ------- Typography ------- */
+h1, h2, h3, h4, h5, h6 {
+	font-family: var(--mb-font-heading);
+	color: var(--mb-text);
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+	margin: 2rem 0 0.75rem;
+}
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.65rem; }
+h3 { font-size: 1.25rem; }
+p, ul, ol, blockquote, pre, figure { margin: 0 0 1.15rem; }
+a {
+	color: var(--mb-accent);
+	text-decoration: none;
+	border-bottom: 1px solid transparent;
+	transition: border-color 0.15s ease;
+}
+a:hover, a:focus { border-bottom-color: var(--mb-accent); }
+blockquote {
+	border-left: 3px solid var(--mb-rule);
+	margin: 1.5rem 0;
+	padding: 0.25rem 0 0.25rem 1.15rem;
+	color: var(--mb-muted);
+}
+blockquote.is-style-menj-bio-accent { border-left-color: var(--mb-accent); }
+hr, hr.wp-block-separator {
+	border: 0;
+	border-top: 1px solid var(--mb-rule);
+	margin: 2rem 0;
+}
+hr.is-style-menj-bio-hairline { border-top-width: 1px; opacity: 0.5; }
+code, pre {
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.92em;
+}
+pre {
+	background: var(--mb-rule);
+	padding: 1rem 1.15rem;
+	overflow-x: auto;
+	border-radius: 2px;
+}
+:not(pre) > code {
+	background: var(--mb-rule);
+	padding: 0.1em 0.35em;
+	border-radius: 2px;
+}
+
+/* ------- Skip link ------- */
+.skip-link.screen-reader-text {
+	position: absolute;
+	left: -9999px;
+	top: auto;
+	overflow: hidden;
+}
+.skip-link.screen-reader-text:focus {
+	left: 6px;
+	top: 6px;
+	background: var(--mb-text);
+	color: var(--mb-bg);
+	padding: 0.5rem 0.75rem;
+	z-index: 100;
+}
+
+/* ------- Layout ------- */
+.container {
+	max-width: var(--mb-container);
+	margin: 0 auto;
+	padding: 0 1.25rem;
+}
+.site-content { min-height: 60vh; }
+
+/* ------- Header ------- */
+.site-header {
+	padding: 1.25rem 0;
+	border-bottom: 1px solid var(--mb-rule);
+}
+.site-header .container {
+	max-width: none;
+	padding: 0 2rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1.5rem;
+	flex-wrap: wrap;
+}
+.site-title {
+	margin: 0;
+	font-family: var(--mb-font-heading);
+	font-size: 1.15rem;
+	font-weight: 600;
+	letter-spacing: -0.005em;
+}
+.site-title a {
+	color: var(--mb-text);
+	border-bottom: 0;
+}
+.site-branding .custom-logo-link {
+	display: inline-block;
+	line-height: 0;
+	border-bottom: 0;
+}
+.site-branding .custom-logo {
+	max-height: 48px;
+	width: auto;
+}
+.site-nav .nav-menu,
+.footer-nav .nav-menu {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	gap: 1.25rem;
+	flex-wrap: wrap;
+}
+.site-nav .nav-menu a,
+.footer-nav .nav-menu a {
+	color: var(--mb-muted);
+	font-size: 0.95rem;
+	font-weight: 600;
+	border-bottom: 0;
+}
+.site-nav .nav-menu a:hover,
+.site-nav .nav-menu .current-menu-item a,
+.footer-nav .nav-menu a:hover {
+	color: var(--mb-text);
+}
+
+/* ------- Hero ------- */
+.hero-eyebrow {
+	margin: 0 0 0.9rem;
+	font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+	font-size: 0.78rem;
+	font-weight: 500;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--mb-accent);
+}
+
+/* A marked phrase inside a heading takes the accent colour. mark is the
+   semantic element for this, so the browser default background is cleared
+   rather than a span being invented to avoid it. */
+.hero-heading mark,
+.content mark,
+.e-content mark {
+	background: transparent;
+	color: var(--mb-accent);
+	padding: 0;
+}
+
+.hero {
+	padding: 4rem 0 3rem;
+	border-bottom: 1px solid var(--mb-rule);
+}
+.hero-inner {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) var(--mb-portrait);
+	gap: 4rem;
+	align-items: center;
+}
+.hero-heading {
+	font-size: clamp(var(--mb-lede-heading-min), 4.5vw, var(--mb-lede-heading-max));
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: 1.08;
+	margin: 0 0 1.25rem;
+	text-wrap: balance;
+}
+.hero-body {
+	font-size: var(--mb-lede-body);
+	line-height: 1.7;
+	color: var(--mb-text);
+	max-width: 60ch;
+}
+.hero-body p:last-child { margin-bottom: 0; }
+.hero-social {
+	margin-top: 1.75rem;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.9rem;
+	color: var(--mb-text);
+	font-weight: 600;
+}
+.hero-social-label { margin-right: 0.25rem; }
+.hero-social-icons {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	align-items: center;
+}
+.hero-social-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	color: var(--mb-muted);
+	border: 1px solid var(--mb-rule);
+	background: transparent;
+	transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.hero-social-link:hover,
+.hero-social-link:focus-visible {
+	color: var(--mb-bg);
+	background: var(--mb-accent);
+	border-color: var(--mb-accent);
+	transform: translateY(-1px);
+	outline: none;
+}
+.hero-social-link svg { display: block; }
+.hero-portrait {
+	width: var(--mb-portrait);
+	justify-self: end;
+}
+.hero-portrait img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+/* Floating: transparent cut-out, no mask, no background. */
+.hero-portrait.is-floating img {
+	object-fit: contain;
+	filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.18));
+}
+
+/* Masked variants crop to a fixed square and fill the frame. */
+.hero-portrait.is-circle,
+.hero-portrait.is-rounded,
+.hero-portrait.is-square {
+	aspect-ratio: 1 / 1;
+	overflow: hidden;
+	background: var(--mb-rule);
+}
+.hero-portrait.is-circle { border-radius: 50%; }
+.hero-portrait.is-rounded { border-radius: 12px; }
+.hero-portrait.is-square { border-radius: 0; }
+.hero-portrait.is-circle img,
+.hero-portrait.is-rounded img,
+.hero-portrait.is-square img {
+	height: 100%;
+	object-fit: cover;
+}
+.intro-widget { margin-top: 1.5rem; }
+.widget-title { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mb-muted); }
+
+/* ------- Section headings ------- */
+.section-heading {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 1rem;
+	color: var(--mb-accent);
+	font-size: 1.75rem;
+	font-weight: 700;
+	letter-spacing: -0.015em;
+	border-bottom: 1px solid var(--mb-rule);
+	padding-bottom: 0.5rem;
+	margin: 2rem 0 1rem;
+}
+.section-link {
+	font-size: 0.95rem;
+	font-weight: 600;
+	color: var(--mb-muted);
+	border-bottom: 1px solid var(--mb-rule);
+}
+.section-link:hover { color: var(--mb-accent); border-bottom-color: var(--mb-accent); }
+
+/* ------- Post list ------- */
+.post-list {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	position: relative;
+}
+.post-item { border-bottom: 1px solid var(--mb-rule); }
+.post-item a {
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 1rem;
+	padding: 0.85rem 0;
+	color: var(--mb-text);
+	border-bottom: 0;
+}
+.post-item-main {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	min-width: 0;
+}
+.post-item a:hover .post-title { color: var(--mb-accent); }
+.post-item .post-title { font-family: var(--mb-font-heading); font-size: 1.05rem; font-weight: 600; }
+.post-item .post-dek { color: var(--mb-muted); font-size: 0.95rem; line-height: 1.5; }
+.post-item .post-date { color: var(--mb-muted); font-size: 0.9rem; white-space: nowrap; }
+
+/* ------- Hover preview -------
+   The featured image, revealed as a floating peek beside the list on hover.
+   Behaviour: zero reserved gutter by default. When any row in a list with
+   previews is hovered, the list expands its right padding to make room, and
+   the peek appears at a fixed anchor at the top of the list. Moving between
+   rows swaps the preview image but the anchor stays put — the peek does not
+   chase the cursor down the list.
+   Pointer devices only. */
+.post-preview { display: none; }
+
+@media (hover: hover) and (pointer: fine) and (min-width: 1024px) {
+	/* The list is the positioning context, owns the gutter, and anchors the
+	   peek at its top edge. */
+	.post-list.has-previews {
+		position: relative;
+		padding-right: 0;
+		transition: padding-right 0.28s cubic-bezier(0.2, 0, 0.2, 1);
+	}
+	.post-list.has-previews:hover {
+		padding-right: calc(var(--mb-preview) + 1.5rem);
+	}
+
+	/* Preview is absolutely positioned within the list, not the row.
+	   Same top for every row — this is the "fixed anchor" behaviour. */
+	.post-preview {
+		display: block;
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: var(--mb-preview);
+		aspect-ratio: 3 / 2;
+		opacity: 0;
+		transform: translateX(-4px);
+		pointer-events: none;
+		transition: opacity 0.18s ease 0.05s, transform 0.18s ease 0.05s;
+		z-index: 10;
+	}
+	.post-preview img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
+		border-radius: 8px;
+		background: var(--mb-rule);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+	}
+
+	.post-item.has-preview a:hover .post-preview,
+	.post-item.has-preview a:focus-visible .post-preview,
+	.post-item.has-preview:focus-within .post-preview {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+/* Respect the reader's motion preference: no transitions, but the interaction
+   still works — the gutter opens and the preview appears, just instantly. */
+@media (hover: hover) and (pointer: fine) and (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+	.post-list.has-previews,
+	.post-preview {
+		transition: none;
+	}
+}
+
+/* ------- Index list style -------
+   Adapted from Book WP's TOC pattern. A hairline-ruled row list where the
+   title carries the eye, the year sits right-aligned as a small annotation,
+   and the excerpt wraps onto its own line. Hover shifts the whole row
+   rightward by a rem so the reader senses the click target before landing
+   on it. The row IS the click target; nothing else on the row is clickable. */
+.post-item.is-index a {
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	padding: 1rem 0.4rem;
+	transition: color 0.18s, padding-left 0.18s;
+}
+.post-item.is-index a:hover { padding-left: 1.4rem; }
+.post-item.is-index .post-item-main { flex: 1 1 auto; min-width: 0; }
+.post-item.is-index .post-title {
+	font-family: var(--mb-font-heading);
+	font-size: 1.15rem;
+	line-height: 1.3;
+	overflow-wrap: break-word;
+}
+.post-item.is-index .post-date {
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.75rem;
+	font-style: italic;
+	color: var(--mb-muted);
+	white-space: nowrap;
+	margin-left: auto;
+	align-self: baseline;
+}
+.post-item.is-index .post-dek {
+	display: block;
+	flex-basis: 100%;
+	font-size: 0.9rem;
+	font-style: italic;
+	color: var(--mb-muted);
+	margin-top: 0.15rem;
+	padding-left: 0.4rem;
+	line-height: 1.5;
+}
+
+/* ------- Columns list style ------- */
+/* Date and section in narrow monospace columns, then the title. The fixed
+   widths are what make consecutive rows read as a table without being one. */
+.post-item.is-columns a {
+	align-items: baseline;
+	justify-content: flex-start;
+	gap: 1.25rem;
+}
+.post-col {
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.78rem;
+	letter-spacing: 0.04em;
+	white-space: nowrap;
+	flex: 0 0 auto;
+}
+.post-col-date {
+	width: 3.6rem;
+	color: var(--mb-muted);
+	text-transform: uppercase;
+}
+.post-col-section {
+	width: 7.5rem;
+	color: var(--mb-accent);
+	text-transform: uppercase;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.post-item.is-columns .post-item-main { flex: 1 1 auto; }
+
+/* ------- Navigation badge ------- */
+.nav-badge {
+	display: inline-block;
+	margin-left: 0.35rem;
+	padding: 0.1rem 0.5rem;
+	border: 1px solid var(--mb-accent);
+	border-radius: 999px;
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.62rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--mb-accent);
+	vertical-align: middle;
+}
+
+/* ------- Planned page notice ------- */
+.planned-notice {
+	border: 1px dashed var(--mb-rule);
+	border-radius: 10px;
+	padding: 1.5rem 1.75rem;
+	margin: 1rem 0 2rem;
+}
+.planned-notice .planned-badge-line { margin: 0 0 0.75rem; }
+.planned-notice .planned-description {
+	font-size: 1.05rem;
+	margin: 0 0 0.5rem;
+}
+.planned-notice .planned-note {
+	color: var(--mb-muted);
+	margin: 0;
+	font-size: 0.92rem;
+}
+
+/* ------- Tags ------- */
+/* Inline tags sit under a title in a list row, so they read as metadata
+   rather than competing with the title. */
+.tags-inline {
+	list-style: none;
+	margin: 0.15rem 0 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+}
+.tags-inline li { margin: 0; }
+.tags-inline a {
+	font-size: 0.78rem;
+	color: var(--mb-muted);
+	border-bottom: 0;
+	letter-spacing: 0.01em;
+}
+.tags-inline a::before { content: "#"; opacity: 0.55; }
+.tags-inline a:hover { color: var(--mb-accent); }
+.tags-more { font-size: 0.78rem; color: var(--mb-muted); opacity: 0.7; }
+
+/* Section breakdown on a tag archive. */
+.tag-sections {
+	margin: 0.5rem 0 0;
+	font-size: 0.9rem;
+	color: var(--mb-muted);
+}
+.tag-sections a { color: var(--mb-accent); }
+
+/* Browsable topic index. */
+.tag-index {
+	list-style: none;
+	margin: 1rem 0 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+.tag-index li { margin: 0; }
+.tag-index a {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.4rem;
+	padding: 0.3rem 0.7rem;
+	border: 1px solid var(--mb-rule);
+	border-radius: 4px;
+	font-size: 0.88rem;
+	color: var(--mb-muted);
+}
+.tag-index a:hover,
+.tag-index a:focus-visible {
+	color: var(--mb-accent);
+	border-color: var(--mb-accent);
+}
+.tag-count {
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.72rem;
+	opacity: 0.7;
+}
+
+/* ------- Section chooser ------- */
+.section-chooser { margin: 0 0 1.5rem; }
+.section-list {
+	list-style: none;
+	margin: 0;
+	padding: 0 0 0.5rem;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem 0.5rem;
+	border-bottom: 1px solid var(--mb-rule);
+}
+.section-item { margin: 0; }
+.section-link {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.4rem;
+	padding: 0.35rem 0.75rem;
+	border: 1px solid var(--mb-rule);
+	border-radius: 999px;
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: var(--mb-muted);
+	background: transparent;
+	transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.section-link:hover,
+.section-link:focus-visible {
+	color: var(--mb-accent);
+	border-color: var(--mb-accent);
+}
+.section-link.is-current {
+	color: var(--mb-bg);
+	background: var(--mb-accent);
+	border-color: var(--mb-accent);
+}
+.section-count {
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.75rem;
+	opacity: 0.7;
+	font-weight: 400;
+}
+
+/* ------- Recent section ------- */
+.recent { padding: 2.5rem 0 3rem; }
+
+/* ------- Single ------- */
+.content-header { margin: 3rem 0 1.75rem; }
+
+/* ------- Page-index templates (404, blog listing, other stubs) -------
+   These templates use `.page-index` as their root article class and expect
+   the same vertical rhythm and centred column as a singular post, without
+   inheriting the singular-post schema markup or e-content typography. */
+.page-index .content {
+	max-width: 42em;
+	line-height: 1.65;
+}
+.page-index .content > p { margin: 0 0 1.2rem; }
+.page-index .content > p:last-child { margin-bottom: 0; }
+.page-index .description {
+	font-size: 1.05rem;
+	color: var(--mb-muted);
+	max-width: 42em;
+	line-height: 1.5;
+	margin: 0.5rem 0 0;
+}
+.page-index .year-heading {
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.75rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--mb-muted);
+	margin: 2rem 0 0.5rem;
+}
+.page-index .year-group:first-child .year-heading { margin-top: 0; }
+
+/* Filter row on the blog index: post count on one line, section pills on
+   the next. Adapted from Chris Wiegman's parent theme, category-filter
+   pattern from 12.10.0. */
+.content-meta {
+	margin: 0 0 2.5rem;
+	padding: 0.75rem 0;
+	border-top: 1px solid var(--mb-rule);
+	border-bottom: 1px solid var(--mb-rule);
+}
+.content-meta .post-count {
+	margin: 0 0 0.75rem;
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.8rem;
+	color: var(--mb-muted);
+	letter-spacing: 0.06em;
+}
+.content-filter {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.75rem 1rem;
+	font-size: 0.92rem;
+}
+.content-filter-label {
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.72rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--mb-muted);
+}
+.content-filter-link {
+	border-bottom: 0;
+	color: var(--mb-text);
+}
+.content-filter-link:hover,
+.content-filter-link:focus-visible { color: var(--mb-accent); }
+.content-filter-link.is-current {
+	color: var(--mb-accent);
+	font-weight: 600;
+}
+
+/* Native search form: WordPress renders `.search-form` with a label wrapping
+   the input, then a submit button. The button inherits system font by
+   default, which reads as a foreign element on a page in the site's font. */
+.search-form { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: 1.25rem 0; }
+/* Hide the "Search for:" label. Its purpose is fulfilled by the placeholder
+   plus the aria-label WordPress applies to the input. Follows the parent
+   theme's convention of visually stripping the label rather than restyling
+   around it, and stays accessible: screen-reader-text keeps it in the tree. */
+.search-form label { position: absolute; left: -9999px; }
+.search-form .search-field {
+	flex: 1 1 auto;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid var(--mb-rule);
+	border-radius: 4px;
+	font-family: var(--mb-font-body);
+	font-size: 1rem;
+	background: var(--mb-bg);
+	color: var(--mb-text);
+}
+.search-form .search-submit {
+	padding: 0.55rem 1.2rem;
+	border: 1px solid var(--mb-text);
+	border-radius: 4px;
+	background: var(--mb-text);
+	color: var(--mb-bg);
+	font-family: var(--mb-font-body);
+	font-size: 0.95rem;
+	cursor: pointer;
+}
+.search-form .search-submit:hover,
+.search-form .search-submit:focus-visible {
+	background: var(--mb-accent);
+	border-color: var(--mb-accent);
+}
+
+/* Section eyebrow above post titles. Reinforces which section the reader is
+   in on a post arrived at from search or a share, where the section chooser
+   is nowhere in sight. */
+.section-eyebrow { margin-bottom: 1rem; }
+.section-eyebrow-name {
+	display: inline-block;
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.7rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--mb-accent);
+	border-bottom: 0;
+}
+.section-eyebrow-name:hover { color: var(--mb-text); }
+.section-eyebrow-desc {
+	margin-top: 0.35rem;
+	font-size: 0.92rem;
+	font-style: italic;
+	color: var(--mb-muted);
+	max-width: 42em;
+	line-height: 1.5;
+}
+.post-title { margin: 0.25rem 0; }
+.meta { color: var(--mb-muted); font-size: 0.9rem; }
+.dt-published { text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.85rem; }
+.tags { list-style: none; padding: 0; margin: 1rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tags li a {
+	display: inline-block;
+	padding: 0.2rem 0.6rem;
+	border: 1px solid var(--mb-rule);
+	border-radius: 2px;
+	font-size: 0.8rem;
+	color: var(--mb-muted);
+}
+.tags li a:hover { border-color: var(--mb-accent); color: var(--mb-accent); }
+.featured-image { margin: 1.5rem 0; }
+.e-content h2 { margin-top: 2.5rem; }
+
+/* Post body copy is justified with no hyphenation. This will produce visible
+   rivers of word-spacing on narrow lines, particularly on monospaced stacks
+   where the browser can only redistribute at word boundaries. That is the
+   honest cost of full justification without CSS hyphenation, and is the
+   deliberate choice: a print manuscript wears the same ragged word-spacing
+   rather than mangling words at the syllable, and the theme follows suit.
+   Scoped to running post text only — headings, figures, blockquotes, and
+   list items keep their own alignment. */
+.e-content > p,
+.e-content > ul li,
+.e-content > ol li { text-align: justify; }
+
+/* ------- Pagination ------- */
+.pagination {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
+	margin-top: 2rem;
+	padding-top: 1rem;
+	border-top: 1px solid var(--mb-rule);
+}
+.pagination-count {
+	margin: 0;
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.82rem;
+	letter-spacing: 0.04em;
+	color: var(--mb-muted);
+}
+.pagination-controls { display: flex; gap: 0.5rem; }
+.pagination-link {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	border: 1px solid var(--mb-rule);
+	border-radius: 6px;
+	color: var(--mb-muted);
+	border-bottom: 1px solid var(--mb-rule);
+	transition: color 0.15s ease, border-color 0.15s ease;
+}
+.pagination-link:hover,
+.pagination-link:focus-visible {
+	color: var(--mb-accent);
+	border-color: var(--mb-accent);
+}
+.pagination-link.is-disabled { opacity: 0.35; }
+
+/* ------- Callout pattern ------- */
+.menj-callout {
+	border-left: 3px solid var(--mb-accent);
+	background: color-mix(in srgb, var(--mb-accent) 6%, var(--mb-bg));
+	border-radius: 0 6px 6px 0;
+}
+.menj-callout > *:last-child { margin-bottom: 0; }
+
+/* ------- Post navigation ------- */
+.post-nav {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 2rem 1.25rem 3rem;
+	color: var(--mb-muted);
+	font-size: 0.95rem;
+}
+
+/* ------- Blog index page (year groups) ------- */
+.year-group { margin-bottom: 2rem; }
+.year-heading {
+	font-family: var(--mb-font-heading);
+	font-size: 1rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--mb-muted);
+	margin: 2rem 0 0.5rem;
+}
+
+/* ------- Search form ------- */
+.search-form {
+	display: flex;
+	gap: 0.5rem;
+	max-width: 420px;
+}
+.search-form input[type="search"] {
+	flex: 1;
+	padding: 0.5rem 0.75rem;
+	background: transparent;
+	border: 1px solid var(--mb-rule);
+	color: var(--mb-text);
+	font: inherit;
+	border-radius: 2px;
+}
+.search-form input[type="search"]:focus { outline: 2px solid var(--mb-accent); outline-offset: 1px; }
+.search-form .search-submit {
+	padding: 0.5rem 1rem;
+	background: var(--mb-text);
+	color: var(--mb-bg);
+	border: 0;
+	cursor: pointer;
+	font: inherit;
+	border-radius: 2px;
+}
+
+/* ------- Footer ------- */
+.site-footer {
+	margin-top: 4rem;
+	padding: 2rem 0 2.5rem;
+	background: color-mix(in srgb, var(--mb-text) 4%, var(--mb-bg));
+	border-top: 1px solid var(--mb-rule);
+	color: var(--mb-muted);
+	font-size: 0.9rem;
+	text-align: center;
+}
+.site-footer .container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.85rem;
+}
+.site-footer .footer-nav .nav-menu {
+	gap: 2rem;
+	justify-content: center;
+}
+.footer-text { color: var(--mb-muted); }
+.footer-text a { color: var(--mb-muted); border-bottom: 1px solid var(--mb-rule); }
+.footer-text a:hover { color: var(--mb-accent); border-bottom-color: var(--mb-accent); }
+
+/* ------- Alignment for block editor ------- */
+.alignwide { max-width: calc(var(--mb-container) + 200px); margin-left: auto; margin-right: auto; }
+.alignfull { max-width: 100%; }
+.aligncenter { margin-left: auto; margin-right: auto; text-align: center; }
+
+/* ------- Sidebar layout ------- */
+/* The rail-and-card arrangement. Grid on body, card sticky in the rail so it
+   stays in view while the content scrolls. Below 1024px the grid dissolves
+   and the card becomes an ordinary header block, at which point the existing
+   768px navigation collapse takes over. */
+@media (min-width: 1025px) {
+	body.layout-sidebar {
+		display: grid;
+		grid-template-columns: 300px minmax(0, 1fr);
+		gap: 2.5rem;
+		max-width: calc(var(--mb-container) + 340px);
+		margin: 0 auto;
+		padding: 1.5rem;
+	}
+
+	body.layout-sidebar .sidebar-card {
+		grid-column: 1;
+		grid-row: 1 / span 2;
+		align-self: start;
+		position: sticky;
+		top: 1.5rem;
+		max-height: calc(100vh - 3rem);
+		overflow-y: auto;
+	}
+
+	body.layout-sidebar .site-content { grid-column: 2; }
+	body.layout-sidebar .site-footer  { grid-column: 2; }
+
+	/* The content column already limits itself; the rail took its share. */
+	body.layout-sidebar .container {
+		max-width: none;
+		padding-left: 0;
+		padding-right: 0;
+	}
+}
+
+.sidebar-card {
+	background: color-mix(in srgb, var(--mb-text) 3%, var(--mb-bg));
+	border: 1px solid var(--mb-rule);
+	border-radius: 16px;
+	padding: 1.75rem 1.5rem;
+	box-shadow: 0 8px 28px rgba(0, 0, 0, 0.07);
+}
+.sidebar-card .site-branding { margin-bottom: 1.25rem; }
+.sidebar-card .site-title {
+	margin: 0;
+	font-family: var(--mb-font-heading);
+	font-size: 1.45rem;
+	font-style: italic;
+}
+.sidebar-card .site-nav .nav-menu {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+}
+.sidebar-card .site-nav .nav-menu a {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	padding: 0.5rem 0.65rem;
+	border-radius: 8px;
+	color: var(--mb-text);
+	font-weight: 600;
+	font-size: 0.95rem;
+	border-bottom: 0;
+}
+.sidebar-card .site-nav .nav-menu a:hover,
+.sidebar-card .site-nav .nav-menu a:focus-visible {
+	background: color-mix(in srgb, var(--mb-text) 5%, var(--mb-bg));
+	color: var(--mb-accent);
+}
+.sidebar-card .site-nav .current-menu-item > a,
+.sidebar-card .site-nav .current_page_item > a {
+	background: color-mix(in srgb, var(--mb-text) 6%, var(--mb-bg));
+}
+
+/* The boxed digit. aria-hidden, since it duplicates position for sighted
+   users and advertises the shortcut. */
+.nav-num {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1.45rem;
+	height: 1.45rem;
+	border: 1px solid var(--mb-rule);
+	border-radius: 5px;
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.72rem;
+	font-weight: 400;
+	color: var(--mb-muted);
+	flex: 0 0 auto;
+}
+
+/* Stay in touch. */
+.sidebar-social { margin-top: 1.5rem; }
+.sidebar-social-heading {
+	margin: 0 0 0.5rem;
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.7rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--mb-muted);
+}
+.sidebar-social-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+.sidebar-social-list li { border-top: 1px solid var(--mb-rule); }
+.sidebar-social-link {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.55rem 0.15rem;
+	color: var(--mb-text);
+	font-size: 0.92rem;
+	border-bottom: 0;
+}
+.sidebar-social-link:hover,
+.sidebar-social-link:focus-visible { color: var(--mb-accent); }
+.sidebar-social-arrow {
+	color: var(--mb-muted);
+	font-size: 0.8rem;
+}
+
+/* ------- Typewriter-accurate rhythm -------
+   Real typewriters advanced the platen by 1.5x to 2x the character height per
+   line-feed; "double-spaced" was the default for manuscript work. Monospaced
+   type also has a taller x-height relative to em than proportional type, so
+   tight leading reads crowded. Three stacks use monospace or typewriter faces
+   and inherit this rhythm: Typed (special-elite), Office memo (typewriter
+   hybrid), and Plaintext (mono). Editorial serif and XCharter keep the
+   default 1.65 because they are proportional. */
+body.font-special-elite,
+body.font-typewriter,
+body.font-mono { line-height: 1.9; }
+
+/* The hero body, index-style excerpts, blog year groups, and content column
+   all set their own line-height. Scoped overrides so the rhythm carries
+   through consistently instead of only applying at the root. */
+body.font-special-elite .hero-body,
+body.font-typewriter .hero-body,
+body.font-mono .hero-body,
+body.font-special-elite .content,
+body.font-typewriter .content,
+body.font-mono .content,
+body.font-special-elite .e-content,
+body.font-typewriter .e-content,
+body.font-mono .e-content,
+body.font-special-elite .page-index .content,
+body.font-typewriter .page-index .content,
+body.font-mono .page-index .content { line-height: 1.9; }
+
+/* Paragraph spacing tightens slightly to keep the rhythm rather than double
+   it: at 1.9 line-height, the extra bottom margin from 1.2rem starts to feel
+   like a section break rather than a paragraph break. */
+body.font-special-elite .content > p,
+body.font-typewriter .content > p,
+body.font-mono .content > p,
+body.font-special-elite .e-content > p,
+body.font-typewriter .e-content > p,
+body.font-mono .e-content > p { margin-bottom: 1rem; }
+
+/* Post-list dek text (used on the index style) also carries the typewriter
+   rhythm so the entire row reads as one document. */
+body.font-special-elite .post-item .post-dek,
+body.font-typewriter .post-item .post-dek,
+body.font-mono .post-item .post-dek { line-height: 1.85; }
+
+/* ==================================================================
+   RESPONSIVE
+
+   Three content breakpoints, plus capability queries for pointer type.
+
+     1024px  tablet landscape and small laptops
+      768px  tablet portrait, navigation collapses here
+      560px  phones
+
+   The hover-preview block above uses (hover: hover) and (pointer: fine)
+   rather than a width alone, because the deciding factor there is whether
+   a hover state exists at all, not how wide the screen is.
+   ================================================================== */
+
+/* ------- Navigation toggle ------- */
+/* The button is injected by assets/js/nav-toggle.js. Without JavaScript the
+   class is never added, the button never exists, and the menu stays visible
+   as a wrapping list. */
+.nav-toggle {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	margin-left: auto;
+	background: transparent;
+	border: 1px solid var(--mb-rule);
+	border-radius: 6px;
+	color: var(--mb-text);
+	cursor: pointer;
+}
+.nav-toggle:focus-visible {
+	outline: 2px solid var(--mb-accent);
+	outline-offset: 2px;
+}
+.nav-toggle-bars {
+	display: block;
+	width: 18px;
+	height: 12px;
+	position: relative;
+}
+.nav-toggle-bars span {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	height: 2px;
+	background: currentColor;
+	border-radius: 2px;
+	transition: transform 0.18s ease, opacity 0.18s ease;
+}
+.nav-toggle-bars span:nth-child(1) { top: 0; }
+.nav-toggle-bars span:nth-child(2) { top: 5px; }
+.nav-toggle-bars span:nth-child(3) { top: 10px; }
+
+.nav-is-open .nav-toggle-bars span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+.nav-is-open .nav-toggle-bars span:nth-child(2) { opacity: 0; }
+.nav-is-open .nav-toggle-bars span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+/* ------- Tablet landscape ------- */
+@media (max-width: 1024px) {
+	.site-header .container { padding: 0 1.5rem; }
+
+	/* Sidebar card dissolves into an ordinary header. */
+	.sidebar-card {
+		border-radius: 0;
+		border-left: 0;
+		border-right: 0;
+		border-top: 0;
+		box-shadow: none;
+		padding: 1rem 1.25rem;
+	}
+	.sidebar-card .site-nav .nav-menu { flex-direction: row; flex-wrap: wrap; gap: 0.25rem 0.75rem; }
+	.sidebar-card .sidebar-social { display: none; }
+	.nav-num { display: none; }
+	.hero { padding: 3rem 0 2.5rem; }
+	.hero-inner { gap: 2.5rem; }
+}
+
+/* ------- Tablet portrait ------- */
+@media (max-width: 768px) {
+	body { font-size: 16px; }
+
+	.container { padding: 0 1.25rem; }
+	.site-header { padding: 0.85rem 0; }
+	.site-header .container {
+		padding: 0 1.25rem;
+		flex-wrap: wrap;
+		align-items: center;
+	}
+
+	/* Collapse the menu, but only once the toggle exists to reopen it. */
+	.site-header.has-nav-toggle .nav-toggle { display: inline-flex; }
+	.site-header.has-nav-toggle .site-nav {
+		flex-basis: 100%;
+		max-height: 0;
+		overflow: hidden;
+		opacity: 0;
+		transition: max-height 0.22s ease, opacity 0.22s ease;
+	}
+	.site-header.has-nav-toggle.nav-is-open .site-nav {
+		max-height: 70vh;
+		opacity: 1;
+		overflow-y: auto;
+		margin-top: 0.75rem;
+	}
+	.site-nav .nav-menu {
+		flex-direction: column;
+		gap: 0;
+	}
+	.site-nav .nav-menu li { border-top: 1px solid var(--mb-rule); }
+	.site-nav .nav-menu a {
+		display: block;
+		padding: 0.75rem 0;
+		font-size: 1rem;
+	}
+
+	/* Hero stacks, portrait leads. */
+	.hero { padding: 2.25rem 0 2rem; }
+	.hero-inner {
+		grid-template-columns: 1fr;
+		gap: 1.75rem;
+	}
+	.hero-portrait {
+		order: -1;
+		width: min(var(--mb-portrait), 190px);
+		justify-self: start;
+	}
+	.hero-body { max-width: none; }
+
+	.section-heading { font-size: 1.4rem; }
+	.content-header { margin: 2rem 0 1.5rem; }
+
+	.post-nav { flex-direction: column; gap: 0.5rem; }
+	.site-footer .footer-nav .nav-menu { gap: 1.25rem; }
+}
+
+/* ------- Phones ------- */
+@media (max-width: 560px) {
+	.container { padding: 0 1rem; }
+	.site-header .container { padding: 0 1rem; }
+
+	.hero { padding: 1.75rem 0 1.5rem; }
+	.hero-portrait { width: min(var(--mb-portrait), 150px); }
+
+	/* Columns collapse: the two meta columns move above the title. */
+	.post-item.is-columns a { flex-wrap: wrap; gap: 0.2rem 1rem; }
+	.post-item.is-columns .post-item-main { flex-basis: 100%; }
+
+	/* Title over date, so neither is squeezed. */
+	.post-item a {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.2rem;
+		padding: 0.8rem 0;
+	}
+	.post-item .post-date { font-size: 0.82rem; }
+
+	.section-heading {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.25rem;
+	}
+
+	.section-list {
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+		padding-bottom: 0.6rem;
+	}
+	.section-list::-webkit-scrollbar { display: none; }
+	.section-item { flex: 0 0 auto; }
+
+	.search-form { flex-direction: column; max-width: none; }
+	.search-form .search-submit { width: 100%; }
+
+	.site-footer { margin-top: 2.5rem; padding: 1.5rem 0 2rem; }
+	.site-footer .footer-nav .nav-menu { gap: 1rem; justify-content: center; }
+
+	.tags { gap: 0.4rem; }
+	pre { padding: 0.85rem 1rem; font-size: 0.85em; }
+}
+
+/* ------- Touch targets -------
+   Pointer-coarse devices need larger hit areas than a mouse does. 44px is the
+   figure both Apple and WCAG 2.2 settle on. */
+@media (pointer: coarse) {
+	.hero-social-link {
+		width: 44px;
+		height: 44px;
+	}
+	.site-nav .nav-menu a,
+	.footer-nav .nav-menu a {
+		padding-top: 0.6rem;
+		padding-bottom: 0.6rem;
+	}
+	.tags li a { padding: 0.4rem 0.7rem; }
+}
+
+/* ------- Motion ------- */
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* ------- Email guard ------- */
+/* Placeholder anchors are inert until the decoder runs. */
+a.mb-email[data-mbe] { cursor: pointer; }
+a.mb-email.is-resolved { cursor: auto; }
+

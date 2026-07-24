@@ -1,0 +1,18 @@
+/*
+Theme Name: menj.bio
+Theme URI: https://github.com/menj/menj-bio
+Update URI: https://github.com/menj/menj-bio
+Author: Mohd Elfie Nieshaem Juferi
+Author URI: https://github.com/menj
+Description: Modernist, minimalist WordPress theme for the personal bio microsite at menj.bio. Classic PHP templates with hybrid block-editor and theme.json support, tabbed theme options, and variable colour schemes. Forked from the Chris Wiegman Theme v12.7.0 (GPL v2). See docs/changelog.md for fork history and attribution.
+Version: 2.9.4
+Requires at least: 6.4
+Tested up to: 6.7
+Requires PHP: 8.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: menj-bio
+Tags: minimal, one-column, blog, editor-style, block-patterns, custom-colors, custom-menu, threaded-comments, translation-ready
+*/
+
+/* All runtime styling lives in assets/css/main.css. This file exists only for the WordPress theme header. */

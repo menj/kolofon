@@ -1,0 +1,87 @@
+<?php
+/**
+ * Branding: custom-logo support, favicon fallback, bundled default assets.
+ *
+ * @package MENJ\Bio
+ * @since   1.0.0
+ */
+
+namespace MENJ\Bio;
+
+defined( 'ABSPATH' ) || exit;
+
+add_action( 'after_setup_theme', __NAMESPACE__ . '\\add_custom_logo_support' );
+add_action( 'wp_head', __NAMESPACE__ . '\\emit_favicon_fallback', 1 );
+
+/**
+ * Register custom-logo support so Appearance -> Customize -> Site Identity
+ * shows the logo uploader.
+ */
+function add_custom_logo_support() {
+	add_theme_support(
+		'custom-logo',
+		array(
+			'height'      => 100,
+			'width'       => 100,
+			'flex-height' => true,
+			'flex-width'  => true,
+			'header-text' => array( 'site-title' ),
+		)
+	);
+}
+
+/**
+ * URL to a bundled brand asset.
+ *
+ * @param string $file Filename within assets/img/.
+ * @return string
+ */
+function brand_asset_url( $file ) {
+	return MENJ_BIO_URI . 'assets/img/' . ltrim( $file, '/' );
+}
+
+/**
+ * URL to the bundled default portrait.
+ *
+ * @return string
+ */
+function default_portrait_url() {
+	return brand_asset_url( 'profile.png' );
+}
+
+/**
+ * URL to the bundled 32x32 favicon.
+ *
+ * @return string
+ */
+function default_favicon_url() {
+	return brand_asset_url( 'favicon.png' );
+}
+
+/**
+ * Emit fallback icon links only when the site owner has not set a Site Icon
+ * under Settings -> General. WordPress's own icon output wins when configured.
+ *
+ * Icons are flattened onto a solid background because a transparent favicon
+ * disappears against matching browser chrome.
+ */
+function emit_favicon_fallback() {
+	if ( function_exists( 'has_site_icon' ) && has_site_icon() ) {
+		return;
+	}
+
+	$icons = array(
+		array( 'rel' => 'icon', 'file' => 'favicon.png', 'sizes' => '32x32' ),
+		array( 'rel' => 'icon', 'file' => 'icon-192.png', 'sizes' => '192x192' ),
+		array( 'rel' => 'apple-touch-icon', 'file' => 'apple-touch-icon.png', 'sizes' => '180x180' ),
+	);
+
+	foreach ( $icons as $icon ) {
+		printf(
+			'<link rel="%1$s" type="image/png" sizes="%2$s" href="%3$s" />' . "\n",
+			esc_attr( $icon['rel'] ),
+			esc_attr( $icon['sizes'] ),
+			esc_url( brand_asset_url( $icon['file'] ) )
+		);
+	}
+}

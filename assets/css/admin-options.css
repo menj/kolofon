@@ -1,0 +1,203 @@
+/*!
+ * Theme Options page styles.
+ */
+
+.menj-bio-wrap { max-width: 900px; }
+.menj-bio-tabs { margin-top: 1.25rem; }
+/* Without JavaScript every panel stays visible as one long form, which is
+   clumsy but complete. The script adds js-tabs, and only then do panels hide. */
+.menj-bio-panel { padding-top: 1rem; }
+.menj-bio-wrap.js-tabs .menj-bio-panel { display: none; }
+.menj-bio-wrap.js-tabs .menj-bio-panel.is-active { display: block; }
+.menj-bio-wrap:not(.js-tabs) .menj-bio-tabs { display: none; }
+
+.menj-bio-preset {
+	display: inline-block;
+	margin-right: 1.25rem;
+	margin-bottom: 0.35rem;
+}
+
+.menj-bio-form .form-table th { width: 220px; }
+
+
+.menj-bio-image-field .menj-bio-image-url { display: block; margin-bottom: 0.5rem; }
+.menj-bio-image-field .menj-bio-image-choose { margin-right: 0.5rem; }
+.menj-bio-image-preview { margin-top: 0.75rem; }
+.menj-bio-image-preview img { max-width: 160px; height: auto; border: 1px solid #ccd0d4; border-radius: 4px; }
+
+/* Documentation tab */
+.menj-bio-docs-panel { max-width: 780px; }
+.menj-bio-docs-nav {
+	display: flex;
+	gap: 0.5rem;
+	border-bottom: 1px solid #dcdcde;
+	margin-bottom: 1.5rem;
+	padding-bottom: 0.35rem;
+}
+.menj-bio-doc-link {
+	display: inline-block;
+	padding: 0.35rem 0.75rem;
+	text-decoration: none;
+	color: #50575e;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -1px;
+}
+.menj-bio-doc-link:hover { color: #2271b1; }
+.menj-bio-doc-link.is-current {
+	color: #1d2327;
+	border-bottom-color: #2271b1;
+	font-weight: 600;
+}
+.menj-bio-doc-body {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	padding: 1.5rem 2rem;
+	line-height: 1.6;
+	color: #1d2327;
+}
+.menj-bio-doc-body h1 { font-size: 1.75rem; margin: 0 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #dcdcde; }
+.menj-bio-doc-body h2 { font-size: 1.35rem; margin: 2rem 0 0.75rem; padding-bottom: 0.35rem; border-bottom: 1px solid #f0f0f1; }
+.menj-bio-doc-body h3 { font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
+.menj-bio-doc-body p, .menj-bio-doc-body ul, .menj-bio-doc-body ol { margin: 0 0 1rem; }
+.menj-bio-doc-body ul, .menj-bio-doc-body ol { padding-left: 1.5rem; }
+.menj-bio-doc-body li { margin-bottom: 0.35rem; }
+.menj-bio-doc-body a { color: #2271b1; }
+.menj-bio-doc-body code {
+	background: #f0f0f1;
+	padding: 0.1em 0.35em;
+	border-radius: 3px;
+	font-size: 0.92em;
+	font-family: Consolas, Menlo, monospace;
+}
+.menj-bio-doc-body pre {
+	background: #1d2327;
+	color: #f0f0f1;
+	padding: 1rem 1.15rem;
+	border-radius: 4px;
+	overflow-x: auto;
+	font-size: 0.9em;
+}
+.menj-bio-doc-body pre code { background: transparent; color: inherit; padding: 0; }
+.menj-bio-doc-body blockquote {
+	border-left: 3px solid #2271b1;
+	margin: 1rem 0;
+	padding: 0.25rem 0 0.25rem 1rem;
+	color: #50575e;
+}
+.menj-bio-doc-body table {
+	border-collapse: collapse;
+	margin: 1rem 0;
+	width: 100%;
+}
+.menj-bio-doc-body th, .menj-bio-doc-body td {
+	border: 1px solid #dcdcde;
+	padding: 0.5rem 0.75rem;
+	text-align: left;
+}
+.menj-bio-doc-body th { background: #f6f7f7; }
+.menj-bio-doc-meta {
+	margin-top: 1rem;
+	color: #646970;
+	font-size: 0.85rem;
+	text-align: right;
+}
+.menj-bio-doc-meta a { color: #2271b1; text-decoration: none; }
+.menj-bio-doc-meta a:hover { text-decoration: underline; }
+
+/* ------- Responsive -------
+   WordPress collapses its own admin chrome at 782px. These rules stop the
+   theme's additions from being the thing that breaks below that. */
+@media (max-width: 782px) {
+	.menj-bio-wrap { max-width: 100%; }
+
+	/* Tabs scroll horizontally rather than stacking into a tall block. */
+	.menj-bio-tabs {
+		display: flex;
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+		padding-bottom: 2px;
+	}
+	.menj-bio-tabs .nav-tab {
+		white-space: nowrap;
+		flex: 0 0 auto;
+		margin-left: 0;
+		margin-right: 4px;
+	}
+
+	/* Core already stacks .form-table below 782px; make sure our fixed label
+	   column does not fight it. */
+	.menj-bio-form .form-table th {
+		width: auto;
+		padding-bottom: 0;
+	}
+
+	.menj-bio-form input[type="text"],
+	.menj-bio-form input[type="url"],
+	.menj-bio-form textarea {
+		width: 100%;
+		max-width: 100%;
+	}
+
+	.menj-bio-preset {
+		display: block;
+		margin-right: 0;
+		margin-bottom: 0.5rem;
+	}
+
+	.menj-bio-image-field .menj-bio-image-url { width: 100%; }
+
+	/* Docs */
+	.menj-bio-docs-panel { max-width: 100%; }
+	.menj-bio-docs-nav {
+		overflow-x: auto;
+		flex-wrap: nowrap;
+		-webkit-overflow-scrolling: touch;
+	}
+	.menj-bio-doc-link { white-space: nowrap; }
+	.menj-bio-doc-body {
+		padding: 1rem 1.15rem;
+		overflow-wrap: break-word;
+	}
+	.menj-bio-doc-body h1 { font-size: 1.4rem; }
+	.menj-bio-doc-body h2 { font-size: 1.15rem; }
+	.menj-bio-doc-body pre { font-size: 0.82em; }
+
+	/* Wide markdown tables scroll inside the panel. */
+	.menj-bio-doc-body table {
+		display: block;
+		overflow-x: auto;
+		white-space: nowrap;
+	}
+}
+
+/* Import form lives outside the settings form and carries only hidden fields. */
+.menj-bio-hidden-form { display: contents; }
+.menj-bio-import { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.menj-bio-import input[type="file"] { max-width: 100%; }
+
+/* Section slug resolution report */
+.menj-bio-slug-report {
+	margin: 0.65rem 0 0;
+	padding: 0;
+	list-style: none;
+	font-size: 0.9rem;
+}
+.menj-bio-slug-report li {
+	padding: 0.2rem 0;
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+.menj-bio-slug-report code {
+	background: #f0f0f1;
+	padding: 0.1em 0.4em;
+	border-radius: 3px;
+}
+.menj-bio-slug-report .is-ok::before { content: "\2713"; color: #00a32a; font-weight: 700; }
+.menj-bio-slug-report .is-missing::before { content: "\2715"; color: #d63638; font-weight: 700; }
+.menj-bio-slug-report .is-missing { color: #d63638; }
+.menj-bio-slug-count { color: #646970; font-size: 0.85em; }
