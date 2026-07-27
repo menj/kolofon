@@ -21,10 +21,14 @@ defined( 'ABSPATH' ) || exit;
 
 add_action( 'wp_enqueue_scripts', __NAMESPACE__ . '\\maybe_enqueue_email_guard', 30 );
 add_filter( 'the_content', __NAMESPACE__ . '\\filter_content_mailto', 20 );
+add_shortcode( 'kolofon_email', __NAMESPACE__ . '\\email_shortcode' );
+// Back-compat: the shortcode shipped as [menj_email] before the 3.0.0 rename,
+// and existing post content may carry it. Both names run the same handler.
 add_shortcode( 'menj_email', __NAMESPACE__ . '\\email_shortcode' );
 
 /**
- * Shortcode: [menj_email] or [menj_email address="you@example.com" text="Write to me"]
+ * Shortcode: [kolofon_email] or [kolofon_email address="you@example.com" text="Write to me"]
+ * ([menj_email] is kept as a back-compat alias for pre-rename content.)
  *
  * With no address attribute it falls back to the address stored on the
  * Social tab.
@@ -40,7 +44,7 @@ function email_shortcode( $atts ) {
 			'class'   => '',
 		),
 		$atts,
-		'menj_email'
+		'kolofon_email'
 	);
 
 	$email = '' !== $atts['address'] ? $atts['address'] : strip_mailto( opt( social_key( 'email' ) ) );
@@ -54,15 +58,13 @@ function email_shortcode( $atts ) {
 
 	if ( '' !== $atts['text'] ) {
 		$inner = esc_html( $atts['text'] );
-	} else {
 		// No label given, so the address itself is the label. In JS mode the
 		// markup ships a masked placeholder and the script fills it in.
-		if ( 'js' === email_mode() ) {
-			$inner                 = esc_html__( 'Show email address', 'kolofon' );
-			$attrs['data-mbe-fill'] = '1';
-		} else {
-			$inner = antispambot( strip_mailto( $email ) );
-		}
+	} elseif ( 'js' === email_mode() ) {
+		$inner                  = esc_html__( 'Show email address', 'kolofon' );
+		$attrs['data-mbe-fill'] = '1';
+	} else {
+		$inner = antispambot( strip_mailto( $email ) );
 	}
 
 	return protected_mailto( $email, $inner, $attrs );
@@ -110,6 +112,11 @@ function email_guard_needed( $set = null ) {
  * @return string
  */
 function encode_email( $email ) {
+	// The sniff flags these as code-obfuscation markers. Obfuscation is exactly
+	// the point here: the address is masked in the markup so a scraper reading
+	// the HTML does not get a harvestable address. The matching decode runs in
+	// assets/js/email-guard.js. No code is being hidden, only an address.
+	// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode, WordPress.PHP.DiscouragedPHPFunctions.obfuscation_str_rot13
 	return str_rot13( base64_encode( $email ) );
 }
 
@@ -196,7 +203,7 @@ function protected_mailto( $email, $inner_html, $attrs = array() ) {
 	$rel = trim( 'nofollow ' . ( isset( $attrs['rel'] ) ? (string) $attrs['rel'] : '' ) );
 	unset( $attrs['rel'] );
 
-	$attr_html = ' class="' . esc_attr( implode( ' ', array_unique( explode( ' ', $classes ) ) ) ) . '"';
+	$attr_html  = ' class="' . esc_attr( implode( ' ', array_unique( explode( ' ', $classes ) ) ) ) . '"';
 	$attr_html .= ' rel="' . esc_attr( implode( ' ', array_unique( explode( ' ', $rel ) ) ) ) . '"';
 	foreach ( $attrs as $key => $value ) {
 		$attr_html .= sprintf( ' %s="%s"', esc_attr( $key ), esc_attr( $value ) );

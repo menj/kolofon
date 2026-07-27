@@ -1,8 +1,104 @@
 /*!
  * Theme Options page styles.
+ *
+ * Modernist-minimalist admin treatment: fields grouped into cards with a
+ * subtle shadow, checkboxes rendered as toggle switches, and the theme's own
+ * accent (a muted gold) standing in for WordPress blue on the controls this
+ * theme owns. Restrained enough to still read as part of wp-admin.
  */
 
+:root {
+	--kolofon-accent: #b8823c;        /* a darkened Charcoal-palette gold, legible on white */
+	--kolofon-accent-soft: #f3e9db;
+	--kolofon-accent-deep: #8a5e28;   /* the accent pushed darker, for gradient end-stops */
+	--kolofon-accent-safe: #95662d;   /* lightest gold that clears 4.5:1 with white text */
+	--kolofon-card-bg: #fff;
+	--kolofon-card-border: #e2e4e7;
+	--kolofon-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
+	--kolofon-ink: #1d2327;
+	--kolofon-muted: #646970;
+	--kolofon-hairline: #e6e3dd;
+	--kolofon-field-bg: #fdfcfa;
+	--kolofon-field-border: #d8d3ca;
+
+	/* Gradient system. Every gradient on the page is one of these three, so the
+	   treatment reads as a single design language rather than scattered effects.
+	   All are built from the accent tokens above, so retinting the accent
+	   retints the whole page. */
+	/* Carries white text on the version pill and primary buttons, so both stops
+	   must clear WCAG AA for normal text: 4.98:1 and 5.66:1 respectively. The
+	   brighter --kolofon-accent is only 3.34:1 against white and must not be
+	   used as a background for white text. */
+	--kolofon-grad-accent: linear-gradient( 135deg, var(--kolofon-accent-safe) 0%, var(--kolofon-accent-deep) 100% );
+	--kolofon-grad-masthead: linear-gradient( 120deg, color-mix( in srgb, var(--kolofon-accent) 16%, #fff ) 0%, #fff 62% );
+	--kolofon-grad-card: linear-gradient( 180deg, color-mix( in srgb, var(--kolofon-accent) 4%, #fff ) 0%, #fff 100% );
+}
+
 .kolofon-wrap { max-width: 900px; }
+
+/* Masthead: a brand lockup, not a heading with a badge. A dark card with a gold
+   hairline across the top, a tracked eyebrow, the theme name, and one line
+   saying what the screen is for. The screen announces itself before the form
+   begins. */
+.kolofon-masthead {
+	position: relative;
+	margin: 0 0 1.5rem;
+	padding: 1.6rem 1.9rem 1.5rem;
+	border-radius: 10px;
+	overflow: hidden;
+	background: linear-gradient( 115deg, #16130f 0%, #221c14 45%, #14110d 100% );
+	box-shadow: 0 2px 6px rgba( 0, 0, 0, 0.16 );
+}
+.kolofon-masthead::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: linear-gradient( 90deg, var(--kolofon-accent) 0%, var(--kolofon-accent-deep) 55%, transparent 100% );
+}
+.kolofon-masthead-eyebrow {
+	margin: 0 0 0.35rem;
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--kolofon-accent);
+}
+.kolofon-options-title {
+	display: flex;
+	align-items: center;
+	gap: 0.7rem;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 1.75rem;
+	font-weight: 700;
+	line-height: 1.15;
+	color: #fff;
+}
+.kolofon-masthead-desc {
+	margin: 0.5rem 0 0;
+	font-size: 0.88rem;
+	line-height: 1.5;
+	color: #b9b2a6;
+	max-width: 52rem;
+}
+.kolofon-version-pill {
+	display: inline-flex;
+	align-items: center;
+	font-size: 0.68rem;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	line-height: 1;
+	padding: 0.34em 0.72em;
+	border: 1px solid color-mix( in srgb, var(--kolofon-accent) 60%, transparent );
+	border-radius: 999px;
+	color: #e8bd6d;
+	background: color-mix( in srgb, var(--kolofon-accent) 16%, transparent );
+	vertical-align: middle;
+}
 .kolofon-tabs { margin-top: 1.25rem; }
 /* Without JavaScript every panel stays visible as one long form, which is
    clumsy but complete. The script adds js-tabs, and only then do panels hide. */
@@ -11,13 +107,449 @@
 .kolofon-wrap.js-tabs .kolofon-panel.is-active { display: block; }
 .kolofon-wrap:not(.js-tabs) .kolofon-tabs { display: none; }
 
+/* The Save button is visible by default and hidden only while the read-only
+   Documentation tab is active. Keying this on the data attribute rather than a
+   JS inline style means Save can never be left hidden by a script error: if the
+   JS never runs, the attribute is never set, and the button shows. */
+.kolofon-wrap[data-active-tab="docs"] .kolofon-form .submit { display: none; }
+
+/* Tab nav: swap WordPress blue for the theme accent on the active tab. */
+/* Tabs: stock wp-admin renders these as grey boxes with a heavy border. They
+   are restyled as quiet letterspaced labels on a hairline rail, with the active
+   one carried by an accent underline, matching the front end's habit of using
+   rules rather than boxes. */
+.kolofon-tabs {
+	border-bottom: 1px solid var(--kolofon-hairline);
+	padding-bottom: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.15rem;
+}
+.kolofon-tabs .nav-tab {
+	margin: 0;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	border-radius: 0;
+	background: none;
+	padding: 0.7rem 1rem;
+	font-size: 0.76rem;
+	font-weight: 700;
+	letter-spacing: 0.075em;
+	text-transform: uppercase;
+	color: var(--kolofon-muted);
+	transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+}
+.kolofon-tabs .nav-tab:hover {
+	color: var(--kolofon-accent-deep);
+	background: color-mix( in srgb, var(--kolofon-accent) 7%, transparent );
+}
+.kolofon-tabs .nav-tab:focus {
+	box-shadow: none;
+	outline: 2px solid var(--kolofon-accent);
+	outline-offset: -2px;
+}
+.kolofon-tabs .nav-tab-active,
+.kolofon-tabs .nav-tab-active:focus,
+.kolofon-tabs .nav-tab-active:hover {
+	border-bottom-color: var(--kolofon-accent);
+	color: var(--kolofon-accent-deep);
+	box-shadow: none;
+	background: none;
+}
+
+/* Each panel's form table becomes a card. The form-table itself keeps its
+   semantics; the card is the visual wrapper the panel provides. The intro card
+   carries a soft accent-tinted gradient; the form-table card stays near-white
+   so field labels and inputs keep full contrast. */
+/* The content card carries a gold edge down its left side, one vertical accent
+   that brands the whole panel at the cost of a single declaration. */
+.kolofon-panel > .form-table,
+.kolofon-panel > .kolofon-intro {
+	background: var(--kolofon-card-bg);
+	border: 1px solid var(--kolofon-card-border);
+	box-shadow: var(--kolofon-card-shadow);
+	margin-top: 0;
+	border-left: 3px solid var(--kolofon-accent);
+	border-radius: 0 8px 8px 0;
+}
+/* A collapsed table ignores its own padding (CSS 2.1 17.6.1), so the card's
+   inset is carried by the cells. Without this the labels sit hard against the
+   gold edge. */
+.kolofon-panel > .kolofon-intro {
+	padding: 1.25rem 1.75rem;
+	margin-bottom: 1rem;
+	color: var(--kolofon-ink);
+	background: var(--kolofon-grad-card);
+	border-left: 3px solid var(--kolofon-accent);
+}
+.kolofon-panel > .kolofon-intro p { margin: 0 0 0.75rem; }
+.kolofon-panel > .kolofon-intro p:last-child { margin-bottom: 0; }
+.kolofon-panel > .kolofon-intro a { color: var(--kolofon-accent); }
+
 .kolofon-preset {
 	display: inline-block;
 	margin-right: 1.25rem;
 	margin-bottom: 0.35rem;
 }
 
-.kolofon-form .form-table th { width: 220px; }
+/* ------- Form fields -------
+   The chrome was themed before the form was, which left the part you actually
+   read set in stock wp-admin. Labels now take the theme's signature eyebrow
+   treatment (small letterspaced capitals in the deep accent, the same device as
+   the hero eyebrow on the front end), fields sit on a warm off-white with a
+   generous target, and help text is set as considered secondary copy rather
+   than default grey. */
+.kolofon-form .form-table {
+	border-collapse: collapse;
+}
+.kolofon-form .form-table th {
+	width: 300px;
+	padding: 1.35rem 1.5rem 1.35rem 1.75rem;
+	vertical-align: top;
+	font-size: 0.75rem;
+	font-weight: 700;
+	line-height: 1.5;
+	letter-spacing: 0;
+	text-transform: none;
+	color: var(--kolofon-ink);
+}
+.kolofon-field-name {
+	display: block;
+	font-size: 0.95rem;
+	font-weight: 700;
+	line-height: 1.35;
+	color: var(--kolofon-ink);
+}
+.kolofon-field-help {
+	display: block;
+	margin-top: 0.35rem;
+	font-size: 0.8rem;
+	font-weight: 400;
+	line-height: 1.55;
+	letter-spacing: 0;
+	text-transform: none;
+	color: var(--kolofon-muted);
+}
+.kolofon-form .form-table td {
+	padding: 1.2rem 1.75rem 1.35rem 0;
+	vertical-align: top;
+}
+/* A hairline between rows gives the form the same rhythm as the rules the
+   front end uses to separate entries. */
+.kolofon-form .form-table tr + tr th,
+.kolofon-form .form-table tr + tr td {
+	border-top: 1px solid var(--kolofon-hairline);
+}
+
+/* Text inputs, selects and textareas share one resting treatment so the column
+   reads as a single system. */
+.kolofon-form input[type="text"],
+.kolofon-form input[type="url"],
+.kolofon-form input[type="email"],
+.kolofon-form input[type="number"],
+.kolofon-form textarea,
+.kolofon-form select {
+	background: var(--kolofon-field-bg);
+	border: 1px solid var(--kolofon-field-border);
+	border-radius: 6px;
+	padding: 0.55rem 0.7rem;
+	color: var(--kolofon-ink);
+	box-shadow: none;
+	transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+.kolofon-form input[type="text"],
+.kolofon-form input[type="url"],
+.kolofon-form input[type="email"] {
+	max-width: 30rem;
+	width: 100%;
+}
+.kolofon-form textarea {
+	max-width: 46rem;
+	width: 100%;
+	line-height: 1.55;
+}
+.kolofon-form input[type="number"] {
+	width: 7rem;
+}
+.kolofon-form input::placeholder,
+.kolofon-form textarea::placeholder {
+	color: color-mix( in srgb, var(--kolofon-muted) 70%, #fff );
+}
+.kolofon-form input[type="text"]:hover,
+.kolofon-form input[type="url"]:hover,
+.kolofon-form input[type="email"]:hover,
+.kolofon-form input[type="number"]:hover,
+.kolofon-form textarea:hover,
+.kolofon-form select:hover {
+	border-color: color-mix( in srgb, var(--kolofon-accent) 55%, var(--kolofon-field-border) );
+}
+
+/* Help text: secondary copy, not an afterthought. The left hairline ties it to
+   the field it belongs to. */
+.kolofon-form .form-table td .description {
+	margin: 0.6rem 0 0;
+	padding-left: 0.75rem;
+	border-left: 2px solid var(--kolofon-hairline);
+	max-width: 46rem;
+	font-size: 0.82rem;
+	line-height: 1.6;
+	color: var(--kolofon-muted);
+	font-style: normal;
+}
+.kolofon-form .form-table td .description code {
+	background: color-mix( in srgb, var(--kolofon-accent) 9%, #fff );
+	border-radius: 3px;
+	padding: 0.05rem 0.3rem;
+	color: var(--kolofon-accent-deep);
+}
+.kolofon-form .form-table td .description a {
+	color: var(--kolofon-accent-deep);
+}
+
+/* Focus rings and the colour picker adopt the accent so the whole surface
+   reads as one system rather than theme-plus-WordPress-blue. */
+.kolofon-form input[type="text"]:focus,
+.kolofon-form input[type="url"]:focus,
+.kolofon-form input[type="number"]:focus,
+.kolofon-form textarea:focus,
+.kolofon-form select:focus {
+	border-color: var(--kolofon-accent);
+	box-shadow: 0 0 0 1px var(--kolofon-accent);
+	outline: 2px solid transparent;
+}
+
+/* ------- Toggle switch -------
+   Replaces the default checkbox for boolean fields. The real checkbox stays in
+   the DOM for form submission and keyboard focus; it is visually hidden and the
+   track/thumb are painted in its place. Focus-visible on the input lights the
+   track, so keyboard users see the same affordance. */
+.kolofon-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.6rem;
+	cursor: pointer;
+	user-select: none;
+}
+.kolofon-toggle-input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	border: 0;
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	overflow: hidden;
+	white-space: nowrap;
+}
+.kolofon-toggle-track {
+	position: relative;
+	display: inline-block;
+	width: 44px;
+	height: 24px;
+	background: #c3c4c7;
+	border-radius: 999px;
+	transition: background 0.15s ease;
+	flex: 0 0 auto;
+}
+.kolofon-toggle-thumb {
+	position: absolute;
+	top: 3px;
+	left: 3px;
+	width: 18px;
+	height: 18px;
+	background: #fff;
+	border-radius: 50%;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+	transition: transform 0.15s ease;
+}
+.kolofon-toggle-input:checked + .kolofon-toggle-track {
+	background: var(--kolofon-grad-accent);
+}
+.kolofon-toggle-input:checked + .kolofon-toggle-track .kolofon-toggle-thumb {
+	transform: translateX(20px);
+}
+.kolofon-toggle-input:focus-visible + .kolofon-toggle-track {
+	box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--kolofon-accent);
+}
+.kolofon-toggle-text { color: var(--kolofon-ink); }
+
+/* Buttons this page owns take the accent gradient, replacing WordPress blue on
+   Save and the theme's own secondary actions. Core buttons elsewhere in
+   wp-admin are untouched. */
+.kolofon-wrap .kolofon-form .submit .button-primary {
+	height: auto;
+	padding: 0.85rem 1.9rem;
+	font-size: 0.82rem;
+	font-weight: 700;
+	letter-spacing: 0.11em;
+	text-transform: uppercase;
+	border-radius: 8px;
+}
+.kolofon-wrap .kolofon-form .submit .button-primary,
+.kolofon-wrap .button-primary {
+	background: var(--kolofon-grad-accent);
+	border-color: var(--kolofon-accent-deep);
+	color: #fff;
+	text-shadow: none;
+	box-shadow: 0 1px 2px rgba( 0, 0, 0, 0.15 );
+}
+.kolofon-wrap .kolofon-form .submit .button-primary:hover,
+.kolofon-wrap .button-primary:hover,
+.kolofon-wrap .button-primary:focus {
+	background: linear-gradient( 135deg, var(--kolofon-accent-deep) 0%, var(--kolofon-accent-deep) 100% );
+	border-color: var(--kolofon-accent-deep);
+	color: #fff;
+}
+.kolofon-wrap .button-secondary {
+	border-color: var(--kolofon-accent);
+	color: var(--kolofon-accent-deep);
+	background: var(--kolofon-grad-card);
+}
+
+/* Accessibility floor: under forced-colors the whole gradient system stands
+   down to flat system colours, since gradients are dropped and can leave text
+   on an unpredictable field. */
+@media ( forced-colors: active ) {
+	.kolofon-options-title,
+	.kolofon-panel > .kolofon-intro,
+	.kolofon-tabs .nav-tab-active,
+	.kolofon-toggle-input:checked + .kolofon-toggle-track,
+	.kolofon-wrap .button-primary,
+	.kolofon-wrap .button-secondary,
+	.kolofon-version-pill {
+		background: Canvas;
+		color: CanvasText;
+	}
+}
+
+/* ------- Slider -------
+   Range input paired with a precise-entry number box. The thumb takes the
+   theme accent so the control reads as part of the same system as the toggles
+   and tabs. Cross-browser thumb styling needs the vendor pseudo-elements
+   written out separately; they cannot be combined into one selector list
+   without breaking in every engine. */
+.kolofon-slider {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.9rem;
+}
+.kolofon-slider-range {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 220px;
+	height: 4px;
+	background: #dcdcde;
+	border-radius: 999px;
+	outline: none;
+	cursor: pointer;
+}
+.kolofon-slider-range::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: var(--kolofon-accent);
+	border: 2px solid #fff;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+	cursor: pointer;
+}
+.kolofon-slider-range::-moz-range-thumb {
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	background: var(--kolofon-accent);
+	border: 2px solid #fff;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+	cursor: pointer;
+}
+.kolofon-slider-range::-moz-range-track {
+	height: 4px;
+	background: #dcdcde;
+	border-radius: 999px;
+}
+.kolofon-slider-range:focus-visible {
+	box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--kolofon-accent);
+}
+.kolofon-slider-readout {
+	display: inline-flex;
+	align-items: baseline;
+	gap: 0.25rem;
+}
+.kolofon-slider-number {
+	width: 4.5rem;
+	text-align: right;
+}
+.kolofon-slider-number:focus {
+	border-color: var(--kolofon-accent);
+	box-shadow: 0 0 0 1px var(--kolofon-accent);
+	outline: 2px solid transparent;
+}
+.kolofon-slider-unit {
+	color: var(--kolofon-muted);
+	font-size: 0.85rem;
+}
+
+/* ------- Live typography preview -------
+   A specimen card at the top of the Appearance tab. The stage inside mimics a
+   real post: eyebrow, heading, lede, body. Its background, colours, fonts, and
+   sizes are driven by admin-options.js from the live form controls. */
+.kolofon-preview {
+	background: var(--kolofon-card-bg);
+	border: 1px solid var(--kolofon-card-border);
+	border-radius: 8px;
+	box-shadow: var(--kolofon-card-shadow);
+	padding: 1.25rem 1.5rem 1.5rem;
+	margin: 1rem 0;
+}
+.kolofon-preview-label {
+	margin: 0 0 0.85rem;
+	font-size: 0.72rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--kolofon-muted);
+	font-weight: 600;
+}
+.kolofon-preview-stage {
+	border: 1px solid #2f2f2f;
+	border-radius: 6px;
+	padding: 2rem 2.25rem;
+	/* Initial values mirror the Charcoal default so the specimen is correct
+	   before the script runs; JS overrides these live. */
+	background: #1a1a1a;
+	color: #e8e6df;
+	transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+	overflow: hidden;
+}
+.kolofon-preview-eyebrow {
+	margin: 0 0 0.75rem;
+	font-size: 0.72rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: #d4a574;
+}
+.kolofon-preview-heading {
+	margin: 0 0 0.6rem;
+	font-size: 44px;
+	line-height: 1.1;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+.kolofon-preview-lede {
+	margin: 0 0 1rem;
+	font-size: 20px;
+	line-height: 1.5;
+}
+.kolofon-preview-body {
+	margin: 0;
+	font-size: 17px;
+	line-height: 1.6;
+	max-width: 42em;
+}
+.kolofon-preview-note {
+	margin: 0.85rem 0 0;
+}
 
 
 .kolofon-image-field .kolofon-image-url { display: block; margin-bottom: 0.5rem; }
@@ -110,6 +642,22 @@
    theme's additions from being the thing that breaks below that. */
 @media (max-width: 782px) {
 	.kolofon-wrap { max-width: 100%; }
+
+	/* Cards keep their shape but tighten their padding on narrow screens. */
+	.kolofon-panel > .form-table,
+	.kolofon-panel > .kolofon-intro {
+		padding-left: 1rem;
+		padding-right: 1rem;
+	}
+
+	/* The slider stacks its readout under the track and fills the column. */
+	.kolofon-slider {
+		flex-wrap: wrap;
+		width: 100%;
+	}
+	.kolofon-slider-range {
+		width: 100%;
+	}
 
 	/* Tabs scroll horizontally rather than stacking into a tall block. */
 	.kolofon-tabs {

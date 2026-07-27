@@ -26,6 +26,7 @@ add_action( 'save_post_page', __NAMESPACE__ . '\\save_page_state' );
 add_filter( 'nav_menu_item_title', __NAMESPACE__ . '\\badge_nav_item', 10, 2 );
 add_filter( 'the_content', __NAMESPACE__ . '\\replace_planned_content', 5 );
 add_filter( 'body_class', __NAMESPACE__ . '\\planned_body_class' );
+add_filter( 'wp_robots', __NAMESPACE__ . '\\planned_robots' );
 
 /**
  * Register the meta so it is visible to REST and survives exports.
@@ -158,8 +159,8 @@ function save_page_state( $post_id ) {
 /**
  * Append the badge to navigation items that point at a planned page.
  *
- * @param string    $title Item title.
- * @param \WP_Post  $item  Menu item.
+ * @param string   $title Item title.
+ * @param \WP_Post $item  Menu item.
  * @return string
  */
 function badge_nav_item( $title, $item ) {
@@ -224,4 +225,33 @@ function planned_body_class( $classes ) {
 	}
 
 	return $classes;
+}
+
+/**
+ * Keep planned pages out of search results.
+ *
+ * Indexing an empty page is worse than not indexing it — the reader arrives
+ * from search expecting content and finds a stub notice, which erodes trust
+ * in the site's search results. Planned pages stay in the site's own
+ * navigation (that is the point of the feature) but are hidden from external
+ * search engines through `noindex, follow`. Follow is preserved because the
+ * pages carry navigation links that outbound reputation should still flow
+ * through.
+ *
+ * Uses core's `wp_robots` filter rather than emitting a `<meta name="robots">`
+ * tag directly. If an SEO plugin also emits a robots tag, two tags on one
+ * page is an unpredictable conflict; filtering the shared array means exactly
+ * one tag is emitted, and a plugin filtering the same array can still
+ * override this.
+ *
+ * @param array $robots Robots directives, keyed by directive name.
+ * @return array
+ */
+function planned_robots( $robots ) {
+	if ( is_page() && page_is_planned() ) {
+		$robots['noindex'] = true;
+		$robots['follow']  = true;
+	}
+
+	return $robots;
 }

@@ -21,37 +21,43 @@ defined( 'ABSPATH' ) || exit;
 function get_raw_defaults() {
 	return array(
 		// Identity tab.
-		'hero_heading'    => 'Mohd Elfie Nieshaem Juferi',
-		'hero_eyebrow'    => '',
-		'hero_body'       => 'I am a writer, apologist, and developer working on scholarly resources for Islamic apologetics and building tools that keep the web open and honest. Over two decades I have built WordPress themes and plugins, custom link directories, and pixel-art games in equal measure.',
-		'hero_portrait'   => '',
-		'footer_text'     => sprintf( '&copy; %s Mohd Elfie Nieshaem Juferi. All rights reserved.', gmdate( 'Y' ) ),
+		'hero_heading'           => 'Mohd Elfie Nieshaem Juferi',
+		'citation_author'        => 'Juferi, Mohd Elfie Nieshaem',
+		'hero_eyebrow'           => '',
+		'hero_body'              => 'I am a writer, apologist, and developer working on scholarly resources for Islamic apologetics and building tools that keep the web open and honest. Over two decades I have built WordPress themes and plugins, custom link directories, and pixel-art games in equal measure.',
+		'hero_portrait'          => '',
+		'footer_text'            => sprintf( '&copy; %s Mohd Elfie Nieshaem Juferi. All rights reserved.', gmdate( 'Y' ) ),
 
 		// Social tab (one URL per platform, empty means "hide").
-		'social_mastodon'  => '',
-		'social_x'         => '',
-		'social_linkedin'  => '',
-		'social_github'    => 'https://github.com/menj',
-		'social_youtube'   => '',
-		'social_instagram' => '',
-		'social_facebook'  => '',
-		'social_threads'   => '',
-		'social_pinterest' => '',
-		'social_email'     => '',
-		'social_rss'       => '',
+		'social_mastodon'        => '',
+		'social_x'               => '',
+		'social_linkedin'        => '',
+		'social_academia'        => '',
+		'social_orcid'           => '',
+		'social_github'          => 'https://github.com/menj',
+		'social_youtube'         => '',
+		'social_instagram'       => '',
+		'social_facebook'        => '',
+		'social_threads'         => '',
+		'social_pinterest'       => '',
+		'social_email'           => '',
+		'social_rss'             => '',
+
+		// Now tab (RSS feed URLs for the aggregator page).
 
 		// Privacy and hardening.
-		'email_obfuscation' => 'js',
-		'disable_file_edit' => 1,
-		'emit_meta_tags'    => 1,
-		'planned_badge_label'  => 'Soon',
-		'planned_notice_text'  => 'This page is planned and not yet written.',
+		'email_obfuscation'      => 'js',
+		'disable_file_edit'      => 1,
+		'csp_mode'               => 'off',
+		'emit_meta_tags'         => 1,
+		'planned_badge_label'    => 'Soon',
+		'planned_notice_text'    => 'This page is planned and not yet written.',
 
 		// Appearance tab.
-		'colour_scheme'   => 'charcoal',
-		'font_stack'      => 'editorial',
-		'hero_heading_size' => 56,
-		'hero_body_size'    => 18,
+		'colour_scheme'          => 'charcoal',
+		'font_stack'             => 'editorial',
+		'hero_heading_size'      => 56,
+		'hero_body_size'         => 18,
 
 		// Sections tab.
 		'section_slugs'          => '',
@@ -59,21 +65,20 @@ function get_raw_defaults() {
 		'enforce_single_section' => 1,
 		'scope_adjacent_posts'   => 1,
 		'show_section_chooser'   => 1,
-		'show_list_tags'         => 1,
-		'list_tag_limit'         => 3,
 
 		// Layout tab.
-		'container_width' => 1120,
-		'portrait_size'   => 220,
-		'portrait_style'  => 'floating',
-		'chrome_layout'   => 'topbar',
-		'keyboard_nav'    => 1,
+		'container_width'        => 1120,
+		'portrait_size'          => 220,
+		'portrait_style'         => 'floating',
+		'chrome_layout'          => 'topbar',
+		'keyboard_nav'           => 1,
 		'sidebar_social_heading' => 'Stay in touch',
-		'list_style'      => 'stacked',
-		'hover_preview'   => 1,
-		'preview_size'    => 140,
-		'show_recent'     => 1,
-		'recent_count'    => 5,
+		'list_style'             => 'stacked',
+		'list_title_size'        => 20,
+		'hover_preview'          => 1,
+		'preview_size'           => 140,
+		'show_recent'            => 1,
+		'recent_count'           => 5,
 	);
 }
 
@@ -172,10 +177,26 @@ function get_font_stacks() {
 				'family'  => 'XCharter',
 				'preload' => 'xcharter/XCharter-Roman.otf',
 				'files'   => array(
-					array( 'src' => 'xcharter/XCharter-Roman.otf',      'weight' => '400', 'style' => 'normal' ),
-					array( 'src' => 'xcharter/XCharter-Italic.otf',     'weight' => '400', 'style' => 'italic' ),
-					array( 'src' => 'xcharter/XCharter-Bold.otf',       'weight' => '700', 'style' => 'normal' ),
-					array( 'src' => 'xcharter/XCharter-BoldItalic.otf', 'weight' => '700', 'style' => 'italic' ),
+					array(
+						'src'    => 'xcharter/XCharter-Roman.otf',
+						'weight' => '400',
+						'style'  => 'normal',
+					),
+					array(
+						'src'    => 'xcharter/XCharter-Italic.otf',
+						'weight' => '400',
+						'style'  => 'italic',
+					),
+					array(
+						'src'    => 'xcharter/XCharter-Bold.otf',
+						'weight' => '700',
+						'style'  => 'normal',
+					),
+					array(
+						'src'    => 'xcharter/XCharter-BoldItalic.otf',
+						'weight' => '700',
+						'style'  => 'italic',
+					),
 				),
 			),
 		),
@@ -187,7 +208,11 @@ function get_font_stacks() {
 				'family'  => 'Special Elite',
 				'preload' => 'special-elite/SpecialElite-Regular.ttf',
 				'files'   => array(
-					array( 'src' => 'special-elite/SpecialElite-Regular.ttf', 'weight' => '400', 'style' => 'normal' ),
+					array(
+						'src'    => 'special-elite/SpecialElite-Regular.ttf',
+						'weight' => '400',
+						'style'  => 'normal',
+					),
 				),
 			),
 		),
@@ -201,7 +226,11 @@ function get_font_stacks() {
 				'family'  => 'Special Elite',
 				'preload' => 'special-elite/SpecialElite-Regular.ttf',
 				'files'   => array(
-					array( 'src' => 'special-elite/SpecialElite-Regular.ttf', 'weight' => '400', 'style' => 'normal' ),
+					array(
+						'src'    => 'special-elite/SpecialElite-Regular.ttf',
+						'weight' => '400',
+						'style'  => 'normal',
+					),
 				),
 			),
 		),

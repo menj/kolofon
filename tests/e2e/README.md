@@ -24,6 +24,7 @@ PLAYWRIGHT_BASE_URL=https://menj.bio npx playwright test
 - Hero heading is visible.
 - Recent Posts section is present.
 - `/blog` resolves to a page carrying the Blog Index template.
+- An unknown URL returns 404 and renders the custom template.
 - No PHP fatal errors or warnings visible in output.
 
 ## What's not covered
@@ -35,4 +36,4 @@ but not on a small theme.
 
 The smoke tests exist to catch "the site is broken." Everything else lives in
 the parity audit that runs before every zip build (see the developer notes in
-`docs/upgrading.md`).
+`docs/guides/upgrading.md`).

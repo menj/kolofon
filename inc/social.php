@@ -34,6 +34,24 @@ function get_social_platforms() {
 			'rel'   => 'me',
 			'svg'   => '<path fill="currentColor" d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.063 2.063 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>',
 		),
+		'academia'  => array(
+			'label' => __( 'Academia.edu', 'kolofon' ),
+			'rel'   => 'me',
+			// Stylised sans-serif A in a rounded square, echoing Academia.edu's
+			// visual mark without copying it. currentColor drives fill so the
+			// palette applies; the negative space in the A is achieved by an
+			// even-odd fill rule combined path.
+			'svg'   => '<path fill="currentColor" fill-rule="evenodd" d="M3 2h18a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm9 4.5L6 18h2.4l1.15-2.4h4.9L15.6 18H18L12 6.5zm-1.6 7.2L12 10.3l1.6 3.4h-3.2z" clip-rule="evenodd"/>',
+		),
+		'orcid'     => array(
+			'label' => __( 'ORCID', 'kolofon' ),
+			'rel'   => 'me',
+			// ORCID's canonical mark: a filled circle with a stylised "iD" carved
+			// in negative space. Two dots for the "i" and a stroked "D" shape.
+			// Rendered here as a single path with even-odd fill so the counter
+			// forms the letters. 24x24 viewBox to match the set.
+			'svg'   => '<path fill="currentColor" fill-rule="evenodd" d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zM7.369 4.378a1.104 1.104 0 1 1 0 2.208 1.104 1.104 0 0 1 0-2.208zm-1.006 3.11h2.017v10.44H6.363zm3.807 0h4.062c3.867 0 5.567 2.766 5.567 5.223 0 2.673-2.09 5.223-5.548 5.223h-4.08zm2.017 1.816v6.822h1.809c2.577 0 3.66-1.867 3.66-3.415 0-1.683-1.071-3.407-3.66-3.407z" clip-rule="evenodd"/>',
+		),
 		'github'    => array(
 			'label' => __( 'GitHub', 'kolofon' ),
 			'rel'   => 'me',

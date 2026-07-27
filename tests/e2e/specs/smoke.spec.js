@@ -38,6 +38,18 @@ test.describe('blog index', () => {
 	});
 });
 
+test.describe('micro-posts', () => {
+});
+
+test.describe('404', () => {
+	test('unknown URL renders the custom 404 template', async ({ page }) => {
+		const response = await page.goto('/this-url-should-not-exist-kolofon-smoke/');
+		expect(response?.status()).toBe(404);
+		await expect(page.locator('.not-found')).toBeVisible();
+		await expect(page.locator('.not-found-home')).toBeVisible();
+	});
+});
+
 test.describe('theme boot', () => {
 	test('no PHP errors visible in output', async ({ page }) => {
 		const errors = [];
@@ -51,4 +63,5 @@ test.describe('theme boot', () => {
 		// this catches a dev-mode boot failure loudly.
 		expect(html).not.toMatch(/Fatal error|Parse error|Warning:.*on line/i);
 	});
+
 });

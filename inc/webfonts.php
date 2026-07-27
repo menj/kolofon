@@ -125,3 +125,60 @@ function enqueue_active_webfont() {
 		wp_add_inline_style( 'kolofon-main', $rules );
 	}
 }
+
+/**
+ * Build @font-face rules for every stack that ships a webfont.
+ *
+ * The front end loads only the active font. The Theme Options live preview
+ * needs all of them, so switching stacks in the picker shows each in its true
+ * face rather than falling back to a system serif or monospace. Returns the
+ * CSS as a string for the caller to enqueue where it wants.
+ *
+ * @return string
+ */
+function all_webfont_faces() {
+	$rules = '';
+	$seen  = array();
+
+	foreach ( get_font_stacks() as $stack ) {
+		if ( empty( $stack['webfont']['files'] ) ) {
+			continue;
+		}
+
+		$family = $stack['webfont']['family'];
+
+		foreach ( $stack['webfont']['files'] as $file ) {
+			if ( empty( $file['src'] ) ) {
+				continue;
+			}
+
+			// De-duplicate: several stacks share Special Elite.
+			$id = $family . '|' . $file['src'];
+			if ( isset( $seen[ $id ] ) ) {
+				continue;
+			}
+			$seen[ $id ] = true;
+
+			$path = KOLOFON_DIR . 'assets/fonts/' . ltrim( $file['src'], '/' );
+			if ( ! is_readable( $path ) ) {
+				continue;
+			}
+
+			$ext    = strtolower( pathinfo( $file['src'], PATHINFO_EXTENSION ) );
+			$format = ( 'otf' === $ext ) ? 'opentype' : ( 'ttf' === $ext ? 'truetype' : $ext );
+			$weight = isset( $file['weight'] ) ? $file['weight'] : 'normal';
+			$style  = isset( $file['style'] ) ? $file['style'] : 'normal';
+
+			$rules .= sprintf(
+				"@font-face{font-family:'%s';src:url('%s') format('%s');font-weight:%s;font-style:%s;font-display:swap;}\n",
+				esc_html( $family ),
+				esc_url( KOLOFON_URI . 'assets/fonts/' . ltrim( $file['src'], '/' ) ),
+				esc_html( $format ),
+				esc_html( $weight ),
+				esc_html( $style )
+			);
+		}
+	}
+
+	return $rules;
+}

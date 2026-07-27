@@ -4,7 +4,10 @@
  * Slug: kolofon/bio-hero
  * Categories: kolofon
  * Description: Two-column hero with intro copy, native social icons, and a circular portrait.
+ *
+ * @package Kolofon
  */
+
 ?>
 <!-- wp:columns {"verticalAlignment":"top","align":"wide"} -->
 <div class="wp-block-columns alignwide are-vertically-aligned-top">

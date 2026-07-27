@@ -8,10 +8,10 @@
 ?>
 </div><!-- .site-content -->
 
-<footer class="site-footer" role="contentinfo">
+<footer class="site-footer" role="contentinfo" itemscope="itemscope" itemtype="https://schema.org/WPFooter">
 	<div class="container">
 		<?php if ( has_nav_menu( 'footer' ) ) : ?>
-			<nav class="footer-nav" aria-label="<?php esc_attr_e( 'Footer', 'kolofon' ); ?>">
+			<nav class="footer-nav" aria-label="<?php esc_attr_e( 'Footer', 'kolofon' ); ?>" itemscope="itemscope" itemtype="https://schema.org/SiteNavigationElement">
 				<?php
 				wp_nav_menu(
 					array(
@@ -25,7 +25,7 @@
 			</nav>
 		<?php endif; ?>
 
-		<div class="footer-text">
+		<div class="footer-text" itemprop="copyrightNotice">
 			<?php echo wp_kses_post( \Kolofon\opt( 'footer_text' ) ); ?>
 		</div>
 	</div>

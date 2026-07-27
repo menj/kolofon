@@ -25,7 +25,7 @@ function register_pattern_category() {
 
 	register_block_pattern_category(
 		'kolofon',
-		array( 'label' => __( 'menj.bio', 'kolofon' ) )
+		array( 'label' => __( 'Kolofon', 'kolofon' ) )
 	);
 }
 

@@ -2,12 +2,12 @@
 /**
  * Syndication.
  *
- * Two small things a bio microsite genuinely benefits from and WordPress does
+ * Two small things a writer's microsite genuinely benefits from and WordPress does
  * not do by default: featured images inside the RSS feed body, so posts read
  * correctly in Feedly/NetNewsWire/Inoreader without a click through, and a
  * fediverse:creator meta tag so a linked Mastodon profile can verify authorship.
  *
- * Both derive from patterns in Chris Wiegman's cwplugin. Menj-bio takes them
+ * Both derive from patterns in Chris Wiegman's cwplugin. Kolofon takes them
  * as theme features rather than a companion plugin because they are structural
  * outputs of the theme's identity, same as the SEO stand-down and the icon set.
  *
@@ -87,6 +87,8 @@ function prepend_feed_thumbnail( $content ) {
 			'style'         => 'margin-bottom:1em;height:auto;max-width:100%;',
 		)
 	);
+
+	remove_filter( 'wp_calculate_image_srcset_meta', '__return_null' );
 
 	remove_filter( 'wp_calculate_image_srcset_meta', '__return_null' );
 

@@ -1,0 +1,1980 @@
+# Changelog
+
+## 5.7.0
+
+### Added: automated design and standards audit
+Spacing and layout defects had been found by eye, one screenshot at a time.
+These checks find them mechanically instead, and live in `tests/audit/`.
+
+- **`css-audit.js`** finds declarations that never take effect: the same
+  property set twice on one selector in the same at-rule context, and padding
+  discarded by `border-collapse: collapse`. It is media aware, so responsive
+  overrides are not reported, and it recognises the plain-value-then-`clamp()`
+  fallback idiom. A first, naive version flagged 45 responsive overrides as
+  conflicts; the context-aware version reports 1.
+- **`layout-audit.py`** measures rendered geometry in a real browser at desktop
+  and mobile widths: text crowded within 8px of a container edge, siblings
+  misaligned by 1 to 6px, targets under 24 by 24 CSS pixels, and horizontal
+  overflow.
+- **`css-validate.js`**, the spec validator used in 5.5.0, moved into the same
+  place.
+- `tests/audit/README.md` documents setup and, importantly, the known
+  exemptions: the visually hidden toggle input, the off-screen skip link, form
+  controls filling their cells, and nav links that clear WCAG 2.2 SC 2.5.8 via
+  the spacing exception rather than by size. Anything outside that table is a
+  regression.
+
+### Fixed
+- **Toggle controls were 2px under the WCAG 2.2 minimum target size.** The
+  clickable label measured 101 by 22; SC 2.5.8 (AA) requires 24 by 24. The
+  track is now 44 by 24 with the thumb repositioned, bringing the label to
+  105 by 24. Found by the new geometry audit, not by inspection.
+- Removed a dead `border-radius` on the panel card, immediately overridden by
+  the following declaration in the same rule. Found by the new CSS audit.
+
+### Verified
+- CSS: 0 errors, 0 invalid values, 0 same-context conflicts, 0 discarded
+  declarations. WCAG 2.2 AA: 0 violations on the admin screen and on both
+  front-end schemes. XHTML: all fragments well formed. Boot and PHPCS pass.
+
+## 5.6.1
+
+### Fixed
+- **Field labels sat hard against the panel's gold left edge**, with only the
+  3px border between them. The card's horizontal inset had been set as padding
+  on the `.form-table` element, but `border-collapse: collapse` was added in
+  5.3.0 for the row hairlines, and a collapsed table ignores its own padding
+  entirely (CSS 2.1 17.6.1). The declaration was doing nothing. The inset now
+  lives on the cells: `1.75rem` on the label cell's left and the control cell's
+  right, which the collapsed model does honour.
+- Measured before and after: the gap from the gold edge to the label text goes
+  from 3px to 31px.
+- **Consolidated two duplicate `.kolofon-intro` rules.** The later one set a
+  narrower `1.5rem` inset that won the cascade, so the intro card's text sat
+  4px off from the field labels below it. Both now share the same 31px inset.
+
+### Note
+- Admin CSS only. CSS validates clean, WCAG holds at 0 violations, boot passes.
+
+## 5.6.0
+
+### Changed: Theme Options redesign
+Measured against a better-designed options screen and rebuilt to close the gap.
+Five specific things were missing.
+
+- **The masthead is now a brand lockup** rather than a heading with a badge: a
+  dark card with a gold hairline across the top, a tracked "Theme Options"
+  eyebrow, the theme name, and one line stating what the screen is for. The
+  version pill becomes an outlined gold badge suited to the dark ground.
+- **Help text moved into the label column.** This is the structural change.
+  `add_field()` now composes the label and its explanation into the title cell,
+  so the right-hand column holds nothing but the control. Help text stacked
+  under an input pushed rows apart and left the control column ragged; beside
+  it, the form reads as two clean columns. The label column widens to 300px to
+  carry it, and `render_field()` suppresses the duplicate.
+- **The content card carries a gold left edge**, one vertical accent that brands
+  the whole panel.
+- **Field labels return to sentence case** at a readable 0.95rem. The
+  letterspaced capitals introduced in 5.3.0 suited short labels and fought
+  longer ones once the explanation joined them.
+- **Save is styled as a primary action**: larger, tracked uppercase, rounded.
+
+### Verified
+- WCAG 2.2 AA: 0 violations, 20 rules passing. Masthead contrast computed by
+  hand since axe cannot resolve the gradient: eyebrow 5.35:1, title 17.85:1,
+  description 8.48:1, pill 10.14:1.
+- CSS validates with 0 errors. Boot test passes, including the nested-form
+  guard, after a defensive fix to the theme-name lookup that had fataled the
+  render.
+
+### Note
+- Admin only. No option, no front-end change.
+
+## 5.5.0
+
+### Fixed: standards audit
+Audited with real tooling rather than by inspection: css-tree 3.2.1 for CSS,
+strict XML parsing for XHTML, and axe-core 4.12.1 for WCAG 2.0/2.1/2.2 A and AA.
+Two classes of genuine defect were found and corrected.
+
+- **25 XHTML attribute violations.** `itemscope` was written as a bare HTML5
+  boolean attribute in 24 places across `header.php`, `home.php`, `index.php`,
+  `singular.php`, `page-blog.php`, `footer.php`, `404.php`, `searchform.php` and
+  `inc/post-list.php`, and `required` once in `inc/options.php`. XHTML mandates
+  a value, so these are now `itemscope="itemscope"` and `required="required"`.
+  The search form previously failed to parse as XML at all.
+- **One WCAG AA contrast failure.** White text on the admin accent gradient
+  measured 3.34:1 at its light stop, under the 4.5:1 minimum for normal text,
+  affecting the version pill and the primary buttons. A dedicated
+  `--kolofon-accent-safe` token (#95662d) is now the gradient's light stop, so
+  the full range clears AA at 4.98:1 to 5.66:1. The brighter `--kolofon-accent`
+  is documented as unsafe as a background for white text.
+
+### Verified
+- **CSS**: 0 syntax errors and 0 invalid property values across all three
+  stylesheets, with custom properties and `var()` values correctly excluded from
+  the check rather than counted as false positives.
+- **XHTML**: every rendered fragment parses as well-formed XML.
+- **WCAG 2.2 AA**: 0 violations on the front end in both Charcoal and Ivory
+  (26 rules passing each) and 0 on the Theme Options screen (20 rules passing).
+  Every node axe could not resolve automatically, because of gradient or
+  translucent backgrounds, was computed by hand: the front-end minimum is
+  5.19:1 against a 4.5 requirement.
+
+### Note
+- Markup attributes and one admin colour token. No option, no layout change.
+
+## 5.4.0
+
+### Changed
+- **Post tags restyled.** They had been plain square-cornered boxes in muted
+  grey with no theme character, sitting flush under the article with nothing to
+  separate them from it. They are now set off by a hairline, framed by a small
+  letterspaced "Tagged" label, and given the same rounded-pill language as the
+  section chooser so the two read as one family.
+- Tags stay deliberately lighter than sections, which are primary navigation: a
+  soft accent tint and accent-mixed border rather than the solid accent fill a
+  current section takes, with the tint deepening on hover. Every colour is mixed
+  from the active scheme, so Charcoal renders warm gold and Ivory navy.
+- Tag text now uses the full text colour instead of muted grey, and the target
+  is roomier at 4.8px by 12.8px.
+- The renderer emits a `.post-tags` wrapper with a `.post-tags-label`; `rel="tag"`
+  and the tag links themselves are unchanged. The tag index shortcode uses its
+  own class and is unaffected.
+
+### Note
+- One renderer change in `inc/tags.php` plus the CSS. No option, no new
+  dependency. All gates pass.
+
+## 5.3.0
+
+### Changed: the Theme Options form now looks like Kolofon
+- Earlier work themed the admin chrome, the masthead, version pill, toggles and
+  buttons, but stopped at the form. Labels, field resting states, help text and
+  the tab bar were all still stock wp-admin, which is the part of the screen you
+  actually read. They now carry the theme's identity.
+- **Labels** take the signature eyebrow treatment: small letterspaced capitals
+  in the deep accent, the same device the hero eyebrow uses on the front end.
+- **Fields** sit on a warm off-white with a warm border, 6px radius and a
+  generous target, and share one resting treatment across text inputs, numbers,
+  selects and textareas, so the column reads as a single system.
+- **Help text** is set as considered secondary copy with a hairline rule tying
+  it to its field, replacing the default grey italic.
+- **Tabs** are letterspaced capitals on a hairline rail with the active one
+  carried by an accent underline, replacing wp-admin's grey boxes, matching the
+  front end's habit of using rules rather than boxes.
+- **Rows** are separated by hairlines, giving the form the rhythm the front-end
+  post list uses.
+
+### Accessibility
+- Every new colour pairing was contrast-checked and passes WCAG AA: labels
+  5.66:1, help text 5.53:1, field text 15.49:1, tab labels 5.53:1.
+
+### Note
+- Admin CSS only. No option, no markup, no front-end change. All gates pass.
+
+## 5.2.0
+
+### Added
+- **"Post list title size" setting on the Layout tab.** Post titles in list
+  views, including the main page, were a hard-coded 1.05rem with no way to
+  change them short of editing CSS. The size is now an option
+  (`list_title_size`), stored in px across a 14 to 30 range and emitted as the
+  `--k-list-title` custom property in rem, so it still honours the reader's
+  browser font size. The index list style derives from the same variable at a
+  10 percent step up, so the two styles keep their relationship at any setting.
+- **The default is now 20px, up from the previous fixed 16.8px**, about 19
+  percent larger. The old value is still reachable by setting 17.
+
+### Context
+- Tracing six session transcripts from 23 to 26 July confirmed the list title
+  had been 1.05rem since the first build and the list style had always been
+  "stacked", so nothing had regressed. The size had simply never been
+  adjustable, and the fixed value read small.
+
+### Note
+- 45 option keys to 46, with default, sanitiser, and schema entries all in
+  place. Verified the variable emits correctly across the full 14 to 30 range.
+
+## 5.1.2
+
+### Fixed
+- **The preview card title now scales with the card.** It had been a fixed size
+  at every width, so it looked right at the 140px default "Hover preview width"
+  and progressively smaller as that setting was raised toward its 240px
+  maximum. The title now sizes from the card via container query units,
+  `clamp( 0.95rem, 8cqw, 1.25rem )`, with the padding following in `cqw` too.
+  The floor is the previous fixed size, so anyone on the default sees no
+  change, while a 240px card gets 19.2px instead of 15.2px.
+- A plain `font-size` declaration precedes the clamp as a fallback where
+  container units are unsupported. `container-type: inline-size` is set on the
+  card, consistent with the color-mix and :has() baseline the theme already
+  relies on.
+
+### Context
+- Tracing eight sessions of history confirmed neither title had ever been
+  resized: the post list row title has been 1.05rem since the first build, and
+  the preview card title 0.95rem since it was introduced. The card width was
+  the variable, having been deliberately reduced from 240 to 140 so it would
+  read "as a peek rather than a card", with the option range left at 100 to 240.
+
+## 5.1.1
+
+### Changed
+- **Preview card titles set larger and bolder**, from 0.95rem/600 to
+  1.08rem/700 with line-height 1.3. The type had not been resized in 5.1.0, and
+  measurement confirmed it rendered at an identical 15.2px before and after.
+  What changed was its role: the title moved from being the only thing on the
+  card, vertically centred, to a caption strip at the foot with a generated
+  mark behind it, so it read as smaller even though it was not. The bump gives
+  it back the prominence that context took away.
+- Verified a three-line title still fits: 103px of a 202px card, comfortably
+  inside the clamp.
+
+## 5.1.0
+
+### Added: generated printer's marks for image-less previews
+- **A post with no featured image now gets a generated device in its hover
+  preview** instead of a near-empty card with small text. The theme is named for
+  the colophon, the printer's device that closes a manuscript, so an image-less
+  post draws a device of its own.
+- Five compositions: a concentric roundel with one broken ring, nested squares
+  each turned further, a radiating compass rose, a stack of rules suggesting a
+  set page, and a quiet dot grid. The variant and its parameters are seeded from
+  the post slug, so a given post always draws the same mark, and the marks are
+  drawn with `currentColor` set to the scheme accent, so they recolour with
+  Charcoal, Ivory, or any custom scheme.
+- Inline SVG: no HTTP request, no image file, no external dependency, about
+  2.6 KB per device. The title now sits at the foot of the card over a scrim so
+  it stays legible whatever the mark does behind it, and the card carries a
+  scheme-derived accent wash. The device is `aria-hidden` and stands down under
+  forced-colors.
+- Verified: deterministic on repeat, all five variants reachable across a
+  200-slug sample, output is well-formed XML at a 3:2 viewBox matching the
+  preview slot.
+
+### Note
+- One new function in `inc/post-list.php` plus the preview CSS. No option, no
+  new dependency. Featured-image previews are unchanged.
+
+## 5.0.0
+
+### Removed: tags in post lists
+- **The tag row under each post-list entry is gone**, along with the machinery
+  that served only it. 4.10.0 defaulted it off; this removes it. The display
+  crowded the list, pulled the eye off the titles, and rendered a stray marker
+  before the first tag.
+- Removed: the render block in `inc/post-list.php`, `list_tags_enabled()` in
+  `inc/tags.php`, the truncation and "+N more" tail in `render_post_tags()`
+  (only the list ever passed a limit), the `.tags-inline` and `.tags-more` CSS,
+  and the `show_list_tags` and `list_tag_limit` option keys across defaults,
+  sanitisers, and schema. 47 option keys down to 45, zero parity gaps.
+- **Major bump** because option keys were removed, per the versioning contract
+  in `docs/guides/upgrading.md`.
+
+### What was deliberately kept
+- **Tags on single posts.** `singular.php` still calls `render_post_tags()`, now
+  with no arguments, and the shared `.tags` styling is untouched.
+- **Tag archives**, which are WordPress taxonomy pages; their URLs are unchanged.
+- **The tag index shortcode** (`[kolofon_tags]`, alias `[menj_tags]`) and the
+  section breakdown on tag archives.
+- **The tags themselves**, which are WordPress terms and remain on their posts.
+  Nothing in a database was deleted beyond the two dead settings keys.
+
+### Migration
+- A one-shot cleanup strips `show_list_tags` and `list_tag_limit` from the
+  stored settings row on the next load, gated on
+  `kolofon_list_tags_cleanup_done` so it runs once. Verified: both keys removed,
+  other settings preserved, idempotent on a second run.
+
+### Note
+- Verified single-post tags still render with the `.tags` class and no leaked
+  inline or "+N more" markup. All gates pass.
+
+## 4.10.0
+
+### Changed
+- **Tags no longer appear in post lists by default.** The `show_list_tags`
+  default flips from 1 to 0, so the post list renders as date, section, and
+  title alone, which is the clean look the list was designed around. The tag
+  row crowded the entries and pulled the eye away from the titles.
+- Nothing was removed. The "Show tags in post lists" toggle on the Sections tab
+  still turns them back on, and the per-row limit still applies when it does.
+  Existing installs that already have the option saved keep their stored value,
+  so the toggle is the way to change an install that is already configured.
+
+### Note
+- One default value; no markup, sanitiser, or schema change. Option count
+  unchanged at 47 with zero parity gaps. All gates pass.
+
+## 4.9.5
+
+### Changed
+- **Hyperlinks in the lede are now a documented, styled part of the design.**
+  They were already permitted: the hero body is sanitised and output through
+  `wp_kses_post`, whose ruleset includes anchors, so links pasted into the
+  field survived end to end. What was missing was any signal that this is
+  supported, and any styling. The Identity tab help text now says links are
+  allowed, and `.hero-body a` gets a dedicated treatment: bold, in the text
+  colour, with a persistent soft accent underline that firms to full accent on
+  hover. Scheme-derived via color-mix, so Charcoal underlines in gold and Ivory
+  in navy. Verified by computed style on both schemes.
+- The hero heading stays restricted to mark, em, strong, and br by design: a
+  link inside the page's h1 is poor semantics, and the lede's links belong in
+  the body copy.
+
+### Note
+- CSS and one help string; no sanitiser change, no option change. All gates
+  pass.
+
+## 4.9.4
+
+### Documentation
+- **Corrected the Parsedown standing-risk note in `docs/guides/upgrading.md`.**
+  It said "unmaintained since 2019", which was true when written and is now
+  false: upstream shipped 1.8.0 final on 16 February 2026, the first stable in
+  over six years. The bundled copy was verified to be that exact build by
+  feature fingerprint (`setStrictMode`, `allowRawHtmlInSafeMode`,
+  possessive-quantifier ReDoS hardening, recursive safe-mode sanitisation, and
+  the PHP 8.4 nullable fixes are all present), and it runs clean under PHP 8.3
+  with full error reporting against the theme's own docs. The note now records
+  the revived status, that the 2.0.0 beta is declined (beta status, reworked
+  extension internals, no gain for rendering trusted bundled files), and to
+  re-evaluate at 2.0 stable.
+
+### Note
+- Documentation only; no code or vendored-library change. The library itself
+  required no update: what ships is already the latest stable.
+
+## 4.9.3
+
+### Fixed
+- **The root LICENSE file corrected on three counts.** It still opened with the
+  pre-rebrand name "menj.bio theme" (a leftover the 4.0.1 name sweep missed);
+  it pointed at `docs/changelog.md`, which moved in 4.9.2; and its grant said
+  GPL "version 2" only while `style.css` and `readme.txt` declare "v2 or
+  later". The notice now names Kolofon, points at
+  `docs/reference/changelog.md`, uses the standard version-2-or-later grant so
+  all three declarations agree, and credits the bundled font licenses.
+- **The full GPLv2 text is now included** after the notice (the canonical FSF
+  text), rather than only a URL. A distributed theme should carry its license
+  text, not a pointer to one.
+
+### Note
+- LICENSE and two doc lines only; no code change. readme.txt verified
+  structurally complete (all eight header fields, five sections). All gates
+  pass.
+
+## 4.9.2
+
+### Changed
+- **Documentation reorganised into subfolders.** The flat `docs/` directory is
+  now split by role: `docs/guides/` (readme, upgrading), `docs/reference/`
+  (ssot, changelog), and `docs/specs/` (now-feature-spec). This removes the
+  earlier confusion of several document kinds sitting together, including three
+  files named some variant of "readme".
+- The in-admin Documentation tab loader (`inc/docs.php`) was updated to find
+  docs in the subfolders and to surface the yaml spec (rendered as preformatted
+  source rather than through the markdown parser). Without this the tab would
+  have gone empty, since it globbed the flat directory.
+- CI (`.github/workflows/lint.yml`) now checks for each document at its new path
+  and runs the lowercase-filename check recursively.
+- All active cross-references (root README, readme.txt, code comments, test
+  READMEs, and intra-doc links) were repointed to the new paths. Historical
+  changelog entries keep their original paths, since they record where a file
+  was at the time and rewriting them would falsify the record.
+
+### Note
+- Docs and one loader function only; no runtime theme behaviour changes.
+  Verified the loader finds all five documents in their new locations and all
+  gates pass.
+
+## 4.9.1
+
+### Documentation
+- **The Now feature spec (`docs/now-feature-spec.yml`) now carries Kolofon's
+  design details.** A new `design` section documents how a rebuilt Now feature
+  should look so it reads as native Kolofon: the token-first principle (style
+  through the theme's `--k-*` custom properties, never hardcoded colours), the
+  colour and type tokens the feature consumes, both built-in scheme palettes
+  (Charcoal and Ivory) for reference, the font approach, per-class styling
+  guidance for all fifteen Now CSS classes, and a note that the feature stays
+  flat rather than taking a gradient, since gradients are reserved for the home
+  hero. The documented colours were cross-checked against the theme's own
+  defaults so they cannot drift.
+
+### Note
+- Documentation only; no code change. YAML validated. All gates pass.
+
+## 4.9.0
+
+### Removed
+- **The listing-header gradient wash is gone.** Category, tag, date, and author
+  archives, the blog index, and search results now use a clean flat header, the
+  same calm treatment as reading pages. The accent-coloured heading and the
+  white search query remain, so listing pages keep a consistent, on-brand top
+  through typography rather than a background.
+- The wash was introduced in 4.5.0 for cross-page consistency but proved a poor
+  fit for a mid-page header: bounded by content above and below, it either drew
+  a visible edge (a boxed panel, then a hard seam) or, once eased to avoid those
+  edges, became too faint to read. A background wash suits the home hero, which
+  anchors to the top of the page; it does not suit a mid-page band. Removing it
+  leaves the theme's minimalism intact and the identity carried by type, which
+  is where it reads best.
+- The home hero gradient is unaffected and remains the theme's signature.
+
+### Note
+- CSS only: removed the `.content-header:not(:has(.p-name))` rule, its
+  full-bleed pseudo-element, and the associated z-index and forced-colors rules.
+  The accent-heading and white-query rules are untouched. All gates pass.
+
+## 4.8.2
+
+### Fixed
+- **The listing-header gradient no longer renders as a boxed panel inset from
+  the page edge.** The gradient was painted on `.content-header`, which sits
+  inside the centred `.container`, so on wide screens it filled only the centred
+  column and read as a stray box floating in from the left with a hard vertical
+  edge. The wash is now painted on a full-bleed pseudo-element (a viewport-wide
+  band behind the header) so it spans edge to edge like the home hero, while the
+  heading text stays aligned to the container. The `100vw` technique is safe
+  because the theme sets `overflow-x: hidden` on the root.
+- Also corrected a `z-index` pitfall found while fixing this: the pseudo-element
+  was briefly set to `z-index: -1`, which painted it behind the page background
+  and hid it entirely. It now sits at `z-index: 0` with the header content
+  lifted to `z-index: 1`.
+
+### Note
+- CSS only. Verified the full-bleed geometry with a rendering test confirming
+  the band reaches both screen edges. All gates pass.
+
+## 4.8.1
+
+### Changed
+- **The search query in the results heading now uses the text colour** instead
+  of the accent. On "Search results for: keling", the label is the theme's
+  accent-coloured heading, but the query is the visitor's own input, so it reads
+  better set apart in the plain text colour. Archive terms ("Category: Foo",
+  "Tag: Bar") keep the accent, since those are site taxonomy and read as one
+  unit with their label. Implemented with a `term-query` class on the search
+  term alone, so archive terms are untouched. Verified with a computed-style
+  test on both schemes.
+
+## 4.8.0
+
+### Changed
+- **The print citation now follows MLA 9th edition.** The colophon printed at
+  the foot of a post previously used an ad-hoc citation shape. It now produces a
+  proper MLA reference for a work on a website: an inverted author name (Last,
+  First), the title in quotation marks, the site name italicised as the MLA
+  container, an MLA-form date (day, abbreviated month, year, for example
+  "15 Jan. 2026"), and the URL without its scheme, closing with an access date.
+  Month abbreviations use the MLA set rather than a locale, so the citation is
+  stable regardless of site language.
+
+### Added
+- **Citation name option (Identity tab).** MLA requires the author inverted to
+  "Last, First", which cannot be derived reliably from a free-form display name.
+  A dedicated `citation_author` option holds the inverted form; if left empty,
+  the hero heading is used as written. This is the 47th option, with default,
+  sanitiser, and schema entries in place and zero parity gaps.
+
+### Note
+- Verified with a print-media render: the letterhead shows the display name
+  while the citation below shows the inverted form, confirming the two fields
+  serve their distinct purposes. All gates pass.
+
+## 4.7.0
+
+### Added
+- **`readme.txt` in WordPress.org format.** The theme had only a GitHub-style
+  `README.md`; WordPress.org requires a `readme.txt` in the plugin-directory
+  markdown format, and has since October 2018. Added with the standard header
+  block (Contributors, Requires at least, Tested up to, Requires PHP, Stable
+  tag, License, Tags) and Description, Installation, FAQ, Copyright, and
+  Changelog sections. A privacy line states the theme collects no user data.
+  The version requirement headers match `style.css`, which is the authoritative
+  source since WordPress 5.8.
+
+### Fixed
+- **Theme tags corrected to the approved, verified set.** The previous tags
+  included `minimal` and `block-patterns`, which are not on the WordPress.org
+  approved tag list and would fail review. Each remaining tag was checked
+  against what the theme actually implements: dropped `threaded-comments` and
+  `rtl-language-support` (no comment template, no `rtl.css`), and added
+  `featured-images`, which the theme does support. Final set: blog, one-column,
+  custom-colors, custom-menu, editor-style, featured-images, translation-ready,
+  matched in both `style.css` and `readme.txt`.
+
+### Note
+- The `Stable tag` in `readme.txt` is a fourth version location that must stay
+  in sync with `style.css`, `KOLOFON_VERSION`, and the changelog on every
+  release.
+
+## 4.6.0
+
+### Added: branded print documents
+- **Printing a post now produces a branded document.** The theme already had a
+  functional print stylesheet (chrome removed, link URLs revealed, page breaks
+  controlled). This adds the branding: a letterhead masthead carrying the site
+  identity at the top of the first page, and a colophon at the foot with an
+  auto-generated citation (author, title, site, publication date) and the source
+  URL with an access date. A printed page is now self-describing and citable,
+  which suits scholarly and apologetics writing readers keep.
+- Implemented as a small module, `inc/print-branding.php`, that adds the two
+  elements around the article via `the_content`, so no template was edited. They
+  are hidden on screen and `aria-hidden`, so they touch neither the on-screen
+  layout nor the accessibility tree, and they are real styleable elements rather
+  than fragile CSS-generated print content. The `@page` rule sets generous
+  document margins.
+- Posts get the full colophon; static pages get the letterhead alone, since a
+  publication-date citation suits an article rather than a page like About.
+- Verified with an actual print-media render (letterhead and colophon appear on
+  paper, hidden on screen). Module count 27, hook callbacks 62, all gates pass.
+
+### Note
+- New module plus additions to the existing print block in main.css. No option,
+  no screen-layout change.
+
+## 4.5.0
+
+### Changed
+- **Consistent header treatment across every page type.** The home hero carried
+  a gradient wash while every other page opened with a flat header, so landing
+  and listing pages did not feel related. Listing-page headers (category, tag,
+  date, and author archives, the blog index, and search results) now take a
+  gradient wash in the same scheme-derived language as the hero, lighter since
+  they sit above content rather than filling the first screen. Single posts and
+  single pages are deliberately excluded and keep a clean flat header, since
+  they are for reading; the exclusion keys off the `.p-name` title class via
+  `:not(:has(.p-name))`, which degrades safely to no gradient on browsers
+  without `:has()`.
+- The result is one coherent system: home, archives, blog, and search share the
+  gradient language and accent headings, while reading pages stay calm. Every
+  gradient across the theme (hero, listing headers, search overlay, admin page)
+  now derives from the active scheme's `--k-accent`, so all of it recolours
+  together with Charcoal, Ivory, or any custom scheme.
+
+### Note
+- CSS only. No option, no markup change. All gates pass, verified with a
+  computed-style test confirming listing headers receive the gradient and
+  post headers do not.
+
+## 4.4.3
+
+### Changed
+- **The search overlay form now carries the theme's character on both colour
+  schemes.** It had inherited a plain field and a washed-out submit button that
+  read as generic WordPress rather than Kolofon. The overlay now has: a
+  display-font heading, a larger field with a faint accent tint, an accent
+  border and an accent focus ring, and an accent-gradient submit button in the
+  theme's gradient language. Every colour is mixed from the active scheme's own
+  `--k-accent`, `--k-bg`, and `--k-text`, so Charcoal renders in warm gold and
+  Ivory in navy, and any custom scheme themes itself. Falls back to flat system
+  colours under forced-colors.
+
+### Note
+- CSS only, scoped to the overlay form. The 4.4.1 fix that stops the closed
+  overlay catching clicks is untouched and still in place. All gates pass.
+
+## 4.4.2
+
+### Added
+- **Gradient wash restored on the home hero lede, for both colour schemes.**
+  The scheme-derived gradient reverted in 4.4.0 is back on the public hero: a
+  faint accent tint gathering at the top of the lede and dissolving into the
+  page background. Built with `color-mix` from the active scheme's own
+  `--k-accent` and `--k-bg`, so it recolours automatically with Charcoal
+  (a warm gold wash) and Ivory (a subtle navy one), and any custom scheme
+  gradients itself. It stays within the hero, so the reading area below remains
+  flat, and it falls back to the flat token background under forced-colors.
+
+### Note
+- CSS only. Complements the admin gradient treatment from 4.4.0, using the same
+  token-derived approach. All gates pass.
+
+## 4.4.1
+
+### Fixed (critical)
+- **Links across the site were unclickable: the closed search overlay was
+  swallowing every click.** The full-screen overlay added in 4.2.0 was hidden
+  only with `opacity: 0`, and an element at `opacity: 0` is invisible but still
+  receives pointer events. Because the overlay is `position: fixed; inset: 0;
+  z-index: 1000`, it sat as an invisible sheet over the whole viewport,
+  intercepting clicks before they reached links beneath it. The HTML `hidden`
+  attribute the script set could not save it, because the stylesheet's
+  `display: flex` overrides `hidden`.
+- The closed state now sets `visibility: hidden` and `pointer-events: none`
+  alongside `opacity: 0`, so the overlay is fully removed from hit-testing
+  between openings, and the open state restores all three. The script now drives
+  the overlay purely from the `is-open` class rather than the overridden
+  `hidden` attribute. Verified with a click test: with the overlay closed, links
+  receive their clicks and `elementFromPoint` returns the link rather than the
+  overlay; the pre-fix markup fails the same test, confirming the cause.
+
+### Note
+- CSS and JS only. No option, no markup change. All gates pass.
+
+## 4.4.0
+
+### Changed
+- **Full gradient treatment on the Theme Options page.** The settings page now
+  carries a coherent gradient design language across its structural surfaces: a
+  masthead band behind the title, the active tab, the intro cards (with an
+  accent left-border), the toggle-on state, and the Save and secondary buttons,
+  which now take the accent gradient in place of WordPress blue. Form inputs and
+  the form-table cards stay near-white so field labels and values keep full
+  contrast; gradient sits on chrome, never behind text being read or typed.
+- Every gradient is one of three tokens (`--kolofon-grad-accent`,
+  `--kolofon-grad-masthead`, `--kolofon-grad-card`), all built from the admin
+  accent, so retinting the accent retints the whole page. Under forced-colors
+  the entire system stands down to flat system colours.
+
+### Fixed
+- **Reverted the front-end hero gradient added in 4.3.0.** It was applied to the
+  site hero on a misreading of which "page" was meant; the request was for the
+  Theme Options screen. The public-facing hero returns to its flat token
+  background, and gradient now lives only where it was asked for, in the admin.
+
+### Note
+- Admin CSS only, plus the 4.3.0 hero revert in main.css. No option key, no
+  markup change beyond the masthead padding. 46 keys, zero parity gaps. All
+  gates pass.
+
+## 4.3.0
+
+### Added
+- **Version pill on the Theme Options screen.** The current theme version shows
+  as a rounded badge beside the "Theme Options" heading, reading from
+  `KOLOFON_VERSION` so it is always accurate. The pill carries a small
+  accent-gradient, the one place in the admin UI where a gradient reads as a
+  finished detail rather than decoration.
+- **A gradient wash on the home hero, derived from the active colour scheme.**
+  A soft accent tint gathers at the top of the hero and dissolves into the page
+  background. It is built with `color-mix` from the scheme's own `--k-accent`
+  and `--k-bg` tokens, so it recolours automatically with Charcoal, Ivory, or
+  any custom scheme and never introduces a hue the palette did not define. It
+  stays within the hero, so the reading area below remains flat and the text
+  keeps its priority, and it falls back to the flat token background under
+  forced-colors mode.
+
+### Note
+- Both are presentational. No option key, no markup restructure beyond the pill
+  span. 46 keys, zero parity gaps. All gates pass.
+
+## 4.2.0
+
+### Added: search overlay
+- **A search icon in the header opens a full-screen search overlay.** Search
+  already worked (native WordPress search, a results view, and the forms on the
+  results and 404 pages), but had no always-available affordance in the chrome.
+  Now a quiet icon sits in the header, and clicking it, or pressing Ctrl/Cmd+K,
+  opens a full-viewport overlay focused on the search field.
+- Progressive enhancement throughout. The icon and overlay are built by
+  `assets/js/search-overlay.js` from a `<template>` the header prints, wrapping
+  the theme's own `get_search_form()` so no markup is duplicated. With
+  JavaScript off, neither appears and search still works through the page forms.
+- Accessible by construction: a labelled dialog with `aria-modal`, focus moved
+  to the field on open and trapped while open, Escape and backdrop-click to
+  close with focus restored to the trigger, and the Ctrl/Cmd+K shortcut guarded
+  so it never fires while the visitor is typing in a field. Styled from the
+  theme colour tokens and honouring reduced-motion.
+- Enqueued on every front-end page, since search is always available (unlike
+  the navigation toggle, which loads only when a menu exists). Verified: header
+  wiring, data-attribute to dataset mapping, and all gates including the boot
+  test and a rendered preview on both palettes.
+
+
+## 4.2.0
+
+### Added: schema.org microdata on every structural element
+- **Inline microdata now annotates every element that describes something**,
+  complementing the JSON-LD graph. This is full element-level coverage across
+  the theme: 23 `itemscope` declarations and 40 `itemprop` annotations spanning
+  every template.
+- The site header is a `WPHeader`, the footer a `WPFooter`, each navigation a
+  `SiteNavigationElement`, content areas are `WebPageElement`, and branding is
+  an `Organization`. The home hero is the owner's `Person` (eyebrow `jobTitle`,
+  heading `name`, body `description`, portrait `image`). Every post list is an
+  `ItemList` of positioned `ListItem`s, each wrapping a `BlogPosting`. Archives
+  and the blog page are `CollectionPage`s. Single posts carry `BlogPosting`
+  with `datePublished`, `dateModified`, `author`, `articleSection`,
+  `articleBody`, and `image`. The search form is a `SearchAction`.
+- A per-list position counter (`kolofon_list_position`) numbers `ListItem`
+  positions, reset at the start of each list including each year group on the
+  blog page.
+- Validated: every template's microdata parses as a well-formed item tree with
+  no orphaned `itemprop`, and all gates pass.
+
+
+## 4.1.0
+
+### Added: comprehensive schema.org coverage
+- **The JSON-LD graph now describes every page type**, so search engines and AI
+  tools can understand each view rather than only posts. Previously the graph
+  carried `Person` and `WebSite` everywhere plus `BlogPosting` on single posts.
+  Now, on the same `@id`-linked base, each view adds the node for its own type:
+  `ProfilePage` on the front page (the site owner's profile), `WebPage` on
+  single pages with `AboutPage` when the slug or title is "about",
+  `CollectionPage` with an `ItemList` of the listed posts on category, tag,
+  date, and author archives and on the Blog Index page, and
+  `SearchResultsPage` on search.
+- **`BreadcrumbList` on every view except the front page.** Home, then the
+  category and post for a post, the page for a page, or the archive label for
+  an archive. Google renders these directly in results.
+- **`SearchAction` on the `WebSite` node**, which enables the sitelinks search
+  box in Google results.
+- Always emitted, with no toggle, and still standing down entirely when an SEO
+  plugin owns the output. The scope is page types and content entities, not
+  every element: chrome like the footer and navigation is left unmarked because
+  search engines discount decorative structured data.
+- Validated across all nine page types (front, post, page, about, category,
+  tag, blog, search, 404): each emits well-formed JSON-LD carrying the correct
+  node for its kind, with breadcrumb trails and item lists positioned
+  correctly. The `docs/readme.md` Metadata section documents the full coverage.
+
+### Changed
+- The boot test's WordPress conditional stubs (`is_page`, `is_singular`, and
+  the rest) are now guarded with `function_exists`, so a test can pre-declare
+  context-aware versions to exercise page-type-dependent output. No shipped
+  behaviour change.
+
+
+## 4.0.5
+
+### Fixed (root cause of the dead Save button, corrected record)
+- **The 3.11.5 Save-button diagnosis was wrong, and the record now says so.**
+  The real cause of the dead Save button was the Now tab's "Create Now page"
+  button printing an inline form inside the settings form. Nested forms are
+  invalid HTML: the browser drops the inner open tag and the inner close tag
+  ends the outer form early, leaving every later panel and the Save button
+  outside any form. Clicking Save did nothing, and no settings could ever be
+  submitted, which is also why social profile URLs appeared not to save. The
+  bug left with the Now feature in 4.0.0; the site owner observing that Save
+  began working the moment Now was disabled is what exposed the earlier
+  diagnosis. The 3.11.5 fix addressed a real but unrelated latent defect (the
+  submit row hidden by the Documentation tab hash) and stays. The correction
+  is recorded in `upgrading.md` under "A second correction worth keeping".
+
+### Added
+- **Nested-form regression guard in the boot test.** The harness now grants
+  itself the capability, renders the complete Theme Options page, and fails if
+  form open/close counts differ or nesting depth ever exceeds one. Verified in
+  both directions: the current page passes (two forms, side by side), and
+  reinjecting the 3.x inline create-form markup makes the check fail. The
+  capability stub became controllable (`$GLOBALS['_boot_can']`) to make
+  admin-page rendering testable.
+
+### Note
+- No front-end change. 46 keys, zero parity gaps, all gates pass including the
+  new check.
+
+## 4.0.4
+
+### Documentation
+- **Portable Now feature specification at `docs/now-feature-spec.yml`.** The
+  Roadmap entry says why and in what order; the spec carries the exact
+  contract so the feature can be reimplemented in a Kolofon rebuild, a
+  companion plugin, or an unrelated theme. Fifteen sections: concept,
+  architecture with the four-module separation, the full data model (four
+  options, the entry schema with per-field sanitisers, taxonomy, post format,
+  transient and fallback patterns with their prune contract), template
+  resolution including the meta-or-slug resolver, the aggregation caching
+  strategy with the v2 requirement that fetching moves to a schedule, the
+  compose form and both destinations, the REST surface with its permission
+  model and error codes, query rules, the stale noindex, admin surfaces, the
+  24-class CSS inventory, lifecycle and uninstall contract, the five inherited
+  lessons, and porting notes (prefix rename, theme coupling, version floors).
+  Field names and route shapes were recovered from the 3.x source rather than
+  reconstructed from memory, and the document is validated as parseable YAML.
+- The Roadmap entry in `upgrading.md` references the spec.
+
+
+## 4.0.3
+
+### Documentation
+- **The Now feature is now a Roadmap item.** `upgrading.md` gains a Roadmap
+  section recording the feature and its variants as a planned future upgrade
+  rather than an abandonment. It documents what the 3.4 to 3.11 implementation
+  was, three rebuild variants in order of preference (a `kolofon-now` companion
+  plugin first, a manual-entries-only slice second, a full in-theme rebuild
+  with the four-module split last), the five lessons the next attempt inherits
+  (single-concern modules, live verification from the first week, template
+  resolution by behaviour rather than meta alone, asynchronous feed fetching,
+  cleanup written alongside the feature), and what already exists to build on:
+  preserved user content, the one-shot cleanup flag a rebuild must account for,
+  and the changelog record of the original design decisions.
+- The 4.0.0 removal entry cross-references the Roadmap so the removal and the
+  planned return read as one story.
+
+
+## 4.0.2
+
+### Documentation
+- Documentation audit completing the 4.0.x cleanup. Two test READMEs still
+  described the removed Now feature: `tests/e2e/README.md` listed the Now
+  smoke tests deleted in 4.0.0 and their skip behaviour, and
+  `tests/boot/README.md` used the Now feed and micro-posts as its examples of
+  what a boot test cannot prove. The e2e coverage list now matches the six
+  remaining tests, and the boot README's examples use current features (blog
+  index year grouping, section chooser, tag list).
+- Verified in the same pass: `docs/readme.md` (eight tabs, 26-module tree, no
+  Now references) and `docs/ssot.md` (all file references exist) were already
+  accurate; every doc's markdown is balanced; no document claims stale counts;
+  and no document calls the theme by its pre-3.0.0 name outside the changelog's
+  own historical record of the rename.
+
+
+## 4.0.1
+
+### Fixed
+- **Legacy Now data reverse.** The options migration now cleans, once, the
+  database residue old Now versions left behind: the four Now keys inside the
+  settings row, orphaned `kolofon_now_fallback_*` cache options whose prune
+  routine left with the feature, and `kolofon_now_feed_*` transients with their
+  timeout rows. Gated on a one-shot flag; verified against a simulated legacy
+  database including idempotence. User content (the Now page, its entries meta,
+  the `now` category, micro-posts) is deliberately untouched; manual steps are
+  documented in `upgrading.md`.
+- **Theme identity is Kolofon everywhere it speaks for itself.** The block
+  pattern category in the editor read "menj.bio"; it now reads "Kolofon". The
+  HTML comment the meta module prints on every page said `menj.bio meta`; now
+  `Kolofon meta`. Headers in `functions.php`, both stylesheets, and four JS
+  files, plus both readme titles and the composer description, updated. The old
+  name legitimately survives only in the 3.0.0 migration code, the migration
+  notice wording, changelog history, and references to menj.bio as the site the
+  theme runs on.
+- **Shortcodes renamed with back-compat.** `[kolofon_email]` and
+  `[kolofon_tags]` are the canonical names; `[menj_email]` and `[menj_tags]`
+  stay registered as aliases because existing post content may carry them. The
+  contact-block pattern and the options help text use the new names.
+- **Callout pattern class renamed with back-compat.** New insertions of the
+  callout pattern carry `kolofon-callout`; the stylesheet keeps `.menj-callout`
+  alongside it so content saved under the old class stays styled.
+- **Translation template regenerated.** `languages/kolofon.pot` still carried
+  the 1.1.0-era catalogue with a menj.bio project header and long-gone strings.
+  Rebuilt from source: 244 strings, zero stale entries, Kolofon headers.
+
+### Note
+- No option key changes. 46 keys, zero parity gaps. All gates pass, and the
+  cleanup migration is covered by a simulated-database test.
+
+## 4.0.0
+
+### Removed
+- **The Now page feature, in full.** It was the theme's largest module at 1,308
+  lines carrying five separate concerns, and the only part that had never worked
+  against a real database. Removing it retires the biggest piece of structural
+  debt and the biggest untested surface in one step, so the theme can focus on
+  its core: the home page, the blog, posts, pages, archives, and search.
+- Deleted `inc/now.php`, `page-now.php`, and `assets/js/now-compose.js`.
+- Removed 204 lines of Now CSS from `main.css`, plus the reduced-motion and
+  560px media blocks that held only Now rules, and the Now selectors from the
+  two print rules that shared a list with other elements.
+- Removed four option keys: `now_goodreads_rss`, `now_threads_rss`,
+  `now_other_rss`, and `hide_now_from_blog`. Option count is 46, down from 50,
+  with zero parity gaps.
+- Removed the Now tab from Theme Options, the "Create Now page" button and its
+  `admin_post` handler, the `ensure_now_page()` provisioning function, and the
+  two Now admin notices.
+- Removed the `status` post-format declaration. It existed solely so Now
+  micro-posts could carry a format; nothing in the theme renders formats
+  differently, so declaring it would now add editor UI that changes no output.
+- Removed the Now e2e tests. The smoke suite is 6 tests, down from 12.
+
+### Notes on upgrading
+- **Existing data is left alone deliberately.** A Now page on the site becomes
+  an ordinary page: WordPress falls back through the template hierarchy and
+  renders it with `singular.php`, so it stays published and readable rather than
+  breaking. Any `_kolofon_now_entries` post meta and the four stored options are
+  simply ignored, and the options are discarded the next time settings are
+  saved. Nothing is deleted from the database by this upgrade.
+- **One behaviour change worth knowing.** If micro-posts were ever published as
+  real posts in a `now` category, `hide_now_from_blog` was keeping them out of
+  the main blog archive. With that option gone, those posts appear in the blog,
+  archives, and search like any other post. If they should stay hidden, either
+  move them out of the `now` category or delete them.
+- Hook callbacks fell from 70 to 61. PHP, PHPCS, the boot test, and the option
+  parity audit all pass.
+
+## 3.11.5
+
+### Fixed
+- **The Save button on Theme Options could be left hidden, so settings such as
+  new social links appeared not to save.** The button lives in a `.submit` row
+  that the tab script hid on the read-only Documentation tab by setting an
+  inline `display: none`. If the page loaded with the Documentation tab active
+  (for example when the URL carried a `#tab-docs` hash from a previous visit),
+  or if any script on the page threw before the row was restored, the Save
+  button stayed hidden. Clicking where it should have been did nothing, which
+  read as a dead Save button.
+- Save visibility is now driven by CSS keyed on a `data-active-tab` attribute,
+  defaulting to visible. The button is hidden only while the Documentation tab
+  is genuinely active. If the JavaScript never runs at all, the attribute is
+  never set and the button shows, so no script error anywhere on the options
+  page can leave Save hidden. Verified across three states: Social tab (visible),
+  Documentation tab (hidden), and no-JavaScript (visible).
+
+### Note
+- Admin CSS and JS only. No option key, no front-end change, no data touched.
+  Existing saved settings are unaffected. 50 keys, zero parity gaps. PHP, PHPCS,
+  JS, and the boot test all pass.
+
+
+## 3.11.4
+
+### Changed
+- **Single post and single page titles stay the default text colour**, refining
+  the 3.11.3 heading change. The accent colour now applies only to archive
+  (category and tag), blog, and Now page headings, which are the ones that
+  parallel the "Recent Posts" section label. Single posts and single pages,
+  rendered by `singular.php` with a `p-name` title class, are excluded via
+  `:not(.p-name)` so their titles read in the body text colour. This keeps the
+  accent for section-style headings while leaving the title of a piece the same
+  weight of colour as the writing beneath it.
+
+### Note
+- CSS only, one selector refined. No option key, no markup, no behaviour change.
+  50 keys, zero parity gaps. PHP, PHPCS, and the boot test all pass.
+
+
+## 3.11.3
+
+### Changed
+- **Page, archive, and single-post headings now use the accent colour**, matching
+  the "Recent Posts" section heading on the home page. The category and tag
+  archive titles, the blog and Now page titles, and individual post titles all
+  render their `.content-header` h1 in `var(--k-accent)`, the same variable the
+  section heading uses. Previously these inherited the plain body text colour,
+  so a heading and the Recent Posts label sat in different colours on the same
+  site. One scoped rule on `.content-header .post-title` and its term span; the
+  post titles inside list items are a separate selector and are unchanged.
+
+### Note
+- CSS only. No option key, no markup, no behaviour change. 50 keys, zero parity
+  gaps. PHP, PHPCS, and the boot test all pass.
+
+
+## 3.11.2
+
+### Added
+- **Boot test committed under `tests/boot/`.** A PHP script that loads the theme
+  in a stubbed WordPress environment, fires the activation and request
+  lifecycle, and asserts that nothing fatals, every hook callback is callable,
+  every field type renders, the 50-key sanitiser round-trips, and the typography
+  builders run. Runnable as `php tests/boot/boot-test.php`, exit 0 on pass and 1
+  on failure, so it drops into a build or pre-commit hook. It needs no database,
+  web server, or WordPress install.
+- This catches the fatal-on-activation class of bug that PHP lint and PHPCS
+  cannot see: a hook pointing at a function that does not exist, a fatal in the
+  setup or activation path, a call to an undefined function. It fills the gap
+  between PHPCS (which only reads the code) and the Playwright smoke suite (which
+  needs a running site). The failure path was verified by injecting a hook that
+  names a missing function and confirming a non-zero exit.
+- `tests/boot/wordpress-stubs.php` provides the fake WordPress environment;
+  `tests/boot/README.md` documents what the test proves and, importantly, what
+  it does not: the stubs fake WordPress, so a green boot test proves the theme
+  runs, not that any feature behaves correctly against a real database.
+
+### Changed
+- `phpcs.xml` now excludes `tests/boot/wordpress-stubs.php`, which deliberately
+  mirrors WordPress core function names and signatures and so cannot follow the
+  same standard. The test runner itself is held to the standard and passes clean.
+
+### Note
+- No theme code, template, or asset changed; this is test scaffolding and one
+  ruleset exclusion. 50 keys, zero parity gaps. The theme and the boot test both
+  pass.
+
+
+## 3.11.1
+
+### Documentation
+- Rewrote the Open items list in `upgrading.md`, ordered by priority, to record
+  the outcome of the 3.11.0 boot-harness review and the follow-on work it
+  surfaced. The activation question is now recorded as answered: a stub harness
+  confirmed the theme loads, activates, and boots through the full lifecycle
+  without a fatal, with all 70 hook callbacks callable, every field type
+  rendering, and the 50-key sanitiser round-tripping. Remaining items are a
+  live-install walk-through (Priority 1), the `inc/now.php` split (Priority 2),
+  committing the boot harness as a repeatable gate (Priority 3), and the
+  standing Parsedown and version-number notes.
+- Docs-only release. No code, template, or asset changed. 50 keys, zero parity
+  gaps.
+
+
+## 3.11.0
+
+### Added
+- **Font sizes are now sliders.** The lede heading and lede body size fields on
+  the Appearance tab were number boxes; they are now range sliders paired with a
+  precise-entry number readout. Drag to feel the size against the live preview,
+  or type an exact value when you know it. Dragging and typing stay in sync, and
+  either one drives the specimen preview in real time.
+- A new `slider` field type in the options renderer, carrying min, max, step,
+  and an optional unit label (px here). The range input is the submitting
+  control; the number box mirrors it with no name of its own. With JavaScript
+  off, the range still submits a valid value and the readout shows it, so the
+  control degrades cleanly.
+
+### How it works
+- The slider's thumb and focus ring take the admin accent gold, matching the
+  toggles and tabs. On narrow screens the track fills the column and the readout
+  wraps beneath it.
+- No sanitiser change was needed. The size values are still validated by the
+  same `$int_between` range check, since the widget that produces a value is
+  irrelevant to how it is sanitised. The two font-size keys kept their bounds
+  (heading 28 to 96, body 14 to 28).
+- The `number` field type is unchanged and still used by container width,
+  portrait size, and preview size. Those can adopt the slider trivially later if
+  wanted; this change was kept to the two fields the preview responds to.
+
+### Note
+- Admin-only. No option key added, no front-end output changed. 50 keys, zero
+  parity gaps. PHPCS clean across the tree.
+
+
+## 3.10.0
+
+### Added
+- **Live typography preview on the Appearance tab.** A specimen block, styled
+  like a real post with eyebrow, heading, lede, and body, now sits at the top
+  of the Appearance tab and answers the controls below it in real time. Change
+  the font stack, the lede heading size, the lede body size, or the colour
+  scheme, and the specimen re-renders instantly. Nothing is saved until Save
+  Changes, so it is a true try-before-commit surface. This stays inside Theme
+  Options rather than moving to the Customizer, keeping the single-control-
+  surface principle intact.
+- Every stack's webfont now loads on the options page, not just the active one,
+  so switching between The reader, Charter but loud, Typed, Office memo, and
+  Plaintext shows each in its real face rather than a system fallback. Added
+  `all_webfont_faces()` in `inc/webfonts.php`, which de-duplicates the shared
+  Special Elite files across the stacks that use them.
+
+### How it works
+- The preview is pure client-side. `enqueue_options_assets()` localises each
+  stack's body and heading families and each colour preset's five values, and
+  `admin-options.js` reads the live form controls, looks up the families and
+  colours, and writes inline styles onto the specimen. No server round-trip, no
+  save, no Customizer. With JavaScript off, the specimen still renders a static
+  readable block in the default face.
+- Body copy in the specimen tracks the lede size a step down, so the size
+  relationship between lede and body reads as it will on the page.
+
+### Note
+- Admin-only. No option key added, no front-end output changed. 50 keys, zero
+  parity gaps. PHPCS clean across the tree.
+
+
+## 3.9.0
+
+### Changed
+- **Theme Options page restyled to the house modernist-minimalist direction.**
+  The page was functional but leaned entirely on default WordPress admin
+  chrome. It now matches the treatment used across the other themes: fields
+  grouped into cards with a subtle shadow, checkboxes rendered as toggle
+  switches rather than default checkboxes, and the theme's own accent standing
+  in for WordPress blue on the controls this theme owns (active tab underline,
+  focus rings, colour picker). Restrained enough to still read as part of
+  wp-admin rather than fighting it.
+- Checkboxes now render as accessible toggle switches. The real checkbox stays
+  in the DOM for submission and keyboard focus and is visually hidden; the
+  track and thumb are painted in its place, and `focus-visible` lights the
+  track so keyboard users get the same affordance. Per-field inline labels
+  (such as the Now blog-exclusion toggle) are honoured; the rest read
+  "Enabled".
+- The accent is a darkened Charcoal-palette gold (`#b8823c`) chosen for
+  legibility on the white admin background rather than the front-end
+  `#d4a574`, which is tuned for the dark palette.
+
+### Note
+- Admin-only change. No option key added, no front-end output altered. 50 keys,
+  zero parity gaps. PHPCS clean across the tree.
+
+
+## 3.8.0
+
+### Added
+- **Appearance tab now explains the favicon.** The theme has always shipped a
+  default favicon and emitted it as a fallback, but nothing told the site owner
+  it existed or how to change it. The Appearance tab of Kolofon Options now
+  carries a short note: the default is described, and a link opens the
+  Customizer focused on Site Identity, where the Site Icon control overrides it.
+  The note adapts to whether a custom Site Icon is already set. Changing the
+  favicon stays core's job rather than a theme option, since the Site Icon
+  control handles cropping and generates every required size; duplicating that
+  in a theme field would reproduce it badly.
+
+### Changed
+- **Default favicon redesigned to match the theme identity.** The bundled icon
+  was a bespoke geometric K unrelated to the theme's typography or palette. It
+  is now a serif K set in XCharter Bold, ivory on the Charcoal background, the
+  same face and colours as the wordmark in the screenshot. Regenerated at all
+  three shipped sizes (32, 180, 192) from the theme's own font, supersampled
+  for clean edges, and checked for legibility down to 16px. A browser tab now
+  reads as part of the same designed object as the site.
+- Corrected the favicon fallback doc comment, which pointed at Settings ->
+  General; the Site Icon control lives under Appearance -> Customize -> Site
+  Identity.
+
+### Note
+- No option key added. The favicon default is a bundled asset and its override
+  is core's Site Icon, so this is a template-and-asset change, not a schema one.
+  50 keys, zero parity gaps. PHPCS clean across the tree.
+
+
+## 3.7.1
+
+Closes the PHPCS task that had been open since 1.0.0. The theme passes the full
+WordPress Coding Standard with zero errors and zero warnings.
+
+### Fixed
+- **Static analysis (Phase 1.3), open for two years.** PHP_CodeSniffer with the
+  WordPress standard now runs clean across the entire tree. The task was
+  recorded as blocked on Composer, which was a false assumption: PHPCS ships as
+  a standalone PHAR, and WPCS with PHPCSUtils and PHPCSExtra installs by
+  unzipping tagged releases and registering an `installed_paths` value. Neither
+  Composer nor a WordPress install is required.
+- The one finding was a false-positive `NonceVerification` flag on the
+  settings-import `$_FILES` access at `inc/settings-io.php`. The nonce is
+  verified inside the `assert_can_manage()` helper, which PHPCS cannot trace
+  into. Annotated with a scoped `phpcs:ignore` carrying that rationale, the
+  documented WPCS pattern for a verified-safe access the linter cannot follow.
+  Not a real vulnerability, and the annotation says so.
+
+### Investigation, not yet a fix
+- **Tags not rendering on single posts** was worked from the code side across
+  this session rather than left waiting. Every path is sound: the renderer, the
+  unconditional call site in `singular.php`, the template hierarchy (no
+  `single.php` shadows `singular.php`), and both `the_content` filters, none of
+  which suppress output or fire on posts. Nothing in the code explains the
+  absence, which points at runtime state, most likely a caching layer serving
+  pre-tag HTML. The distinguishing view-source check is unchanged; the code
+  review narrows the likely cause to cache rather than logic.
+
+### Note
+- PHPCS is now part of the local gate suite alongside PHP lint, the CSS brace
+  balance, JS parse checks, and the option-parity audit. 50 keys, zero gaps.
+
+
+## 3.7.0
+
+Closes every audit finding that could be reached without a running WordPress
+instance.
+
+### Added
+- **Content Security Policy**, behind a new `csp_mode` option with three
+  settings: off (the default), report only, and enforce. Off is deliberate: a
+  policy strict enough to be worth having blocks inline scripts, and WordPress
+  core, most plugins, and the block editor all emit them, so enforcing one on
+  an unprepared site produces a blank page rather than a secure one. Report
+  only sends `Content-Security-Policy-Report-Only`, which changes nothing about
+  browser behaviour while logging violations to the console. Never applied to
+  admin screens. Directives are filterable through `kolofon_csp_directives`.
+  `style-src` carries `'unsafe-inline'` in every mode because the palette is
+  applied via `wp_add_inline_style()` and WordPress offers no nonce mechanism
+  for inline styles; naming that limit is more useful than implying the policy
+  is tighter than it is.
+- **Print styles.** The screen design is palette-driven and often dark, which
+  prints as a block of toner. Print resets to black on white, drops navigation
+  and interactive chrome, left-aligns body copy for the same reason mobile
+  does, reveals external link targets after the anchor text, and prevents
+  headings and media from breaking across pages.
+- **`post-formats` theme support** for the `status` format. Now micro-posts
+  have carried this format since 3.6.0, and `get_post_format()` reports false
+  for any format a theme has not declared. A 3.6.0 regression: the feature
+  shipped without its supporting declaration.
+
+### Fixed
+- **Now feed row markup existed twice**, once in `page-now.php` and once as DOM
+  construction in `now-compose.js`, kept in step by hand. Both now call
+  `render_now_feed_row()`, and the REST endpoints return rendered HTML rather
+  than loose fields. An optimistically inserted row is byte-identical to one
+  rendered on load. `now-compose.js` drops from 161 lines to 128.
+- **`NOW_FALLBACK_TTL` and `NOW_FETCH_TIMEOUT` were declared and ignored.** The
+  fallback cache now stores its own timestamp and expires at 30 days, so a
+  permanently dead feed stops presenting year-old activity as current. The
+  fetch timeout is applied to SimplePie through `wp_feed_options`. The
+  pre-3.7.0 storage shape is read once and replaced on the next fetch.
+- **Orphaned fallback caches accumulated.** Each fallback is keyed by a hash of
+  its feed URL, so changing a URL left the old entry with nothing to clean it
+  up. `prune_now_fallbacks()` runs on option save and deletes any fallback not
+  matching a currently configured feed.
+
+### Removed
+- `default_favicon_url()` in `inc/branding.php`. Defined, never called.
+  `emit_favicon_fallback()` builds its own file list and calls
+  `brand_asset_url()` directly. Leftover from an earlier refactor.
+
+### Tests
+- Smoke suite extended from five tests to twelve. New coverage: the Now page
+  renders and shows its last-updated line, the compose form and its script are
+  both absent for logged-out visitors (the capability gate is the security
+  boundary worth asserting), the Now category archive resolves, the custom 404
+  template renders, and the Now page is checked for PHP warnings separately
+  since it performs remote fetches and merges three sources. Now-page tests
+  skip rather than fail when no Now page exists, since the page is opt-in.
+
+### Note
+- 50 option keys, zero parity gaps. Caught while wiring `csp_mode`: the shared
+  `$enum_from` sanitiser validates with `array_key_exists()`, so its source must
+  return an array keyed by allowed value. A plain list would have failed every
+  check and silently fallen back to the default.
+
+
+## 3.6.1
+
+### Fixed (hygiene — no behaviour change)
+- Merged duplicate `.search-form {}` declarations. Two definitions existed: one with `margin`, `align-items`, `flex-wrap`; one with `max-width` and slightly different `gap`. The second was winning on `max-width` via cascade. Merged all properties into one canonical rule.
+- Removed duplicate `.search-form .search-submit {}` rule. Two definitions with conflicting properties (`border: 1px solid` vs `border: 0`, `border-radius: 4px` vs `border-radius: 2px`, `font-family` specified vs `font: inherit`). The second was silently winning. Merged into one canonical rule: `border: 0`, `border-radius: 4px`, `font: inherit`.
+- Removed stray `}` left by the merge (was dangling after the `.search-form .search-submit:hover` block, causing a silent brace-count discrepancy that the balance check would have caught at next build).
+- Fixed `rel="external"` incorrectly applied to "Here" entries (internal micro-posts) on the Now page. Only external entries should carry `rel="noopener external"`. Internal links (platform="here") now have no rel attribute.
+- CSS brace audit: 313/313. No unmatched braces. No remaining problematic duplicate selectors.
+
+
+## 3.6.0
+
+### Added
+- **Both compose destinations, together.** The Now page's compose form now offers a "Post here" mode alongside the 3.5.0 "Log external" mode. "Post here" creates a real WordPress post in a dedicated "Now" category, with the `status` post format — the P2 pattern. Each post gets a permalink, appears in RSS at `/category/now/feed/`, and is searchable through WordPress's native search. "Log external" continues to append a lightweight entry to the page's meta list.
+- Both modes render in the same unified timeline on the Now page. Local posts get the "Here" platform label; externals get their existing labels. Sorted by date. A reader sees one stream of "what MENJ is doing," regardless of origin.
+- **Now category auto-created** on first use via `ensure_now_category()`. Idempotent — repeat calls are free.
+- **New option**: "Hide Now posts from blog" (Kolofon Options → Now tab). Defaults to on. When on, Now-category posts are excluded from the main blog archive, category, tag, and search results via `pre_get_posts`. The Now category archive itself (`/category/now/`) still shows them — a reader who navigates there explicitly asked to see them.
+- **Destination-aware REST endpoint.** The append route now accepts `destination` (`external` | `publish`). External mode uses the 3.5.0 meta-append path. Publish mode calls `create_now_post()` and returns the entry payload in the same shape as the append, so the JS client renders both identically.
+
+### Design decisions
+- Explicit toggle rather than inferred from URL presence. The two paths have different semantics — one creates a WP post, one appends meta — and letting the user pick beats being clever about it.
+- Post format `status` — the WordPress convention for title-less short-form content. Fits P2's origin lineage.
+- `publish_posts` capability gates the "Post here" option specifically. Anyone who can edit the Now page (`edit_page`) can still log externals; only users who can also `publish_posts` see the "Here" mode. Handled gracefully: if `publish_posts` is missing, the destination toggle hides and only external mode shows.
+- Default-hidden from blog because a writer's microsite blog archive shouldn't fill with three-word status updates. Micro-posts belong on the Now page; long-form posts belong on the blog. Configurable if you disagree.
+
+### Security
+- `create_now_post()` runs body through `wp_kses_post`. Standard WP HTML allowed.
+- REST publish path additionally checks `publish_posts` in addition to the existing `edit_page` gate on the Now page.
+- Front-end template renders each snippet through `esc_html`. Even if a Now post contains HTML, the Now page shows it as plain text; the reader clicks through to the permalink for the formatted version.
+- `pre_get_posts` filter runs only on the front-end main query. Admin queries, REST queries, and single-post queries are untouched.
+
+### Honest gaps
+- Not tested on a live install. Code paths walked by hand; no runtime confirmation.
+- The list `<li>` markup exists twice: server-rendered in page-now.php and client-built in now-compose.js. They have to be kept in step by hand. A shared template would be better; not worth it yet.
+- Local posts don't get a delete/edit UI on the front-end. Use standard WP editor for both.
+- Local posts default to visible in RSS `/feed/` if you turn `hide_now_from_blog` off. Nothing exposes a "hide from RSS but show on blog" split — that would need a third setting.
+
+
+## 3.5.0
+
+### Added
+- **Inline posting on the Now page**, borrowed from P2's central interaction. When the site owner views their own Now page, a compose form sits above the Recently list: textarea, platform select, optional link, Post button. Submitting appends an entry and prepends it to the list without a page reload. The friction of "log in, find Pages, open Now, scroll to the meta box, fill four fields, save" is why Now pages go stale; this removes it.
+- `assets/js/now-compose.js` — progressive enhancement over a real `<form>`. Builds list items with `textContent` and `setAttribute` only, never `innerHTML`.
+- REST route `kolofon/v1/now/{id}/entries` (POST). Deliberately append-only: editing, reordering, and deleting stay in the meta box where the whole list is visible.
+- `now_platform_label()` — single source of truth for front-end platform labels, shared by the template and the REST response so a newly-posted entry reads identically to one rendered on page load. Replaces a duplicate array that had been living in `page-now.php`.
+
+### Security
+- REST permission callback gates on two things: `edit_page` for the specific post, and the page actually using `page-now.php`. The second check stops the route being used as a generic write-arbitrary-meta-to-any-page endpoint.
+- Entries go through the same `sanitize_now_entries()` the meta box uses. One definition of what an entry's shape is, not two.
+- No-JS submissions carry their own nonce and run through the identical append path.
+- The script is only enqueued for a viewer who could actually post. Logged-out readers never download it.
+
+### What did not change
+- The meta box path is untouched: `render_now_meta_box()`, `render_now_entry_row()`, `save_now_meta()`, and `sanitize_now_entries()` are all as they were in 3.4.0.
+- For logged-out visitors the template's two conditionals reduce to exactly their 3.4.0 form (`$can_post` is false in both). The public page renders identically.
+- 48 option keys, zero parity gaps. No schema change.
+
+### Honest gaps
+- Not yet tested on a live install. Code paths walked by hand; no runtime confirmation.
+- The `<li>` markup exists twice — once in PHP for page load, once in JS for the optimistic insert. They have to be kept in step by hand. A shared template would be better and is not worth the machinery yet.
+- If a full-page cache serves the Now page to logged-in users, the REST nonce could be stale and the first post would fail until refresh. Most caches bypass for logged-in users, so this is unlikely rather than impossible.
+- No edit or delete from the front end. By design for this release.
+
+
+## 3.4.0
+
+### Added
+- **Now page**: an aggregator template that combines RSS-fetched activity from external accounts with manually-curated entries for platforms without RSS. Assign the "Now" template to any Page. The page's own content field holds a free-form "Working on" prose section. Auto-noindexes if not updated in 90 days, following the same `wp_robots` pattern as planned pages from 3.3.0.
+- **`inc/now.php`**: RSS fetcher using WordPress' bundled SimplePie, with dual caching (1-hour transient for the refresh rhythm, 30-day fallback option so a temporary bridge outage does not blank the page), post-meta storage for manual entries, and a meta box UI with add/remove rows.
+- **Three new option keys** on a new Now tab: `now_goodreads_rss`, `now_threads_rss`, `now_other_rss`. All sanitised via `esc_url_raw`. 48 keys total, zero parity gaps.
+- **Create Now page button** on the Now tab. Auto-provisions a page at `/now` with the correct template, following the blog-page pattern from 2.6.0. Idempotent: if a Now page already exists, the button becomes "Edit it / view it" links.
+
+### What ships and what does not
+- **RSS coverage is real**: Goodreads (native feed at `/user/updates_rss/[id]`), Threads (via a bridge such as RSS.app), any other feed URL.
+- **Manual coverage is real**: X, Instagram, Facebook via the page's meta box. Requires updating by hand; nothing scrapes them.
+- **What cannot work automatically**: X's API is paid ($100/month minimum for read access). Instagram's Basic Display API was deprecated in December 2024. Facebook personal profiles are inaccessible via API. Automation there is a companion-plugin-plus-OAuth project rather than a theme feature.
+
+### Architectural notes
+- **Fetching remote feeds from a theme is architecturally wrong.** If Kolofon is ever switched out, the Now page's automated feeds die. Content is stored in `post_meta` so it survives the switch as data even though the rendering does not. If this feature grows substantially, its honest home is a companion plugin `kolofon-now`. Recorded rather than swept under a comfortable name.
+- Every automated integration carries maintenance debt. When a bridge dies, when an API changes, when a token expires, the Now page silently stops updating. Fetch failures degrade gracefully to the 30-day fallback cache, though periodic checking is still on the site owner. The 90-day stale-noindex is a safety net rather than a cure.
+- No API keys are stored anywhere. Everything runs on public RSS.
+
+### Honest gaps at ship time
+- No unit tests. Manual QA only; code paths walked by hand without live-install confirmation.
+- The meta box row editor is rudimentary: textarea, dropdown, datetime input, add/remove rows.
+- No admin notice if a feed keeps failing.
+- The fallback cache stores as an `autoload=false` option per feed URL. Rotating feeds frequently accumulates orphaned options with no cleanup job.
+
+
+## 3.3.2
+
+### Fixed (small)
+- **Naming drift from the 3.0.0 rename**: `mb_status` query string parameter (used by settings import/export to pass status messages) was still named for menj-bio despite the theme being renamed to Kolofon. Both sides used the same wrong name so it worked functionally, but was semantically stale. Renamed to `kolofon_status`.
+- **RSS feed srcset filter leaked past its scope**: `add_filter( 'wp_calculate_image_srcset_meta', '__return_null' )` was applied before `get_the_post_thumbnail()` in the feed handler but never removed. Paired with a matching `remove_filter` after the call. Was hygiene rather than a real bug (RSS renders posts sequentially anyway) but the leak was there.
+
+
+## 3.3.1
+
+### Fixed
+- **Justification rivers on mobile.** Below 640px viewport width, post body copy now renders left-aligned. Justification with no hyphenation continues to work on wider screens (proportional or monospaced), but on a mobile column narrow enough to hold only 4-6 monospace words per line, distributing space at word boundaries produced visually broken rivers ("After  a  very  loooong  hiatus" spread across a full line). The purist decision in 2.8.3 named exactly this scenario as the signal to reconsider. Reconsidered.
+- **Excessive vertical gap between hero and Recent Posts on mobile.** Reduced `.recent` top-and-bottom padding at the 560px breakpoint from 2.5rem/3rem to 1.25rem/2rem, and tightened the section chooser's bottom margin to 1rem. The desktop rhythm reads as breathing room; on mobile it reads as broken layout.
+
+### Not touched
+- The site title / hero heading redundancy on mobile (both display the same name in sequence at the top of the home page) is a *configuration* pattern, not a theme bug. If you'd like the site title suppressed on the home page when it duplicates the hero heading, that's a real theme fix — flag it if you want it built. Otherwise it stays as configured.
+- Social icons row on the home page shows Mastodon, X, GitHub, Instagram, Threads, Pinterest, Email but not Academia.edu or ORCID. Those fields exist in the options page (added in 3.1.0 and 3.2.0) but are empty — populate them and the icons appear.
+
+
+## 3.3.0
+
+### Added
+- **Custom 404 page.** Replaces the minimal fallback with a proper editorial layout: large decorative "404" backdrop set in the heading font at display scale, followed by a heading, description, "Return home" pill button, and search form. All colours drawn from the palette, no decorative chrome to date the artwork. Adapted from Rodolfo 3.10.0's design idea, rewritten in Kolofon's typographic voice — no Tailwind, no external icons.
+- **Planned pages now noindex.** Added a `wp_robots` filter that returns `noindex, follow` for pages marked as planned/coming-soon. Prevents search engines from indexing empty stub notices, which was a real SEO gap: a reader arriving from search expected content and found "coming soon," which erodes trust in the site's search results. Follow is preserved so outbound reputation still flows through navigation. Uses `wp_robots` filter rather than emitting `<meta>` directly, so an SEO plugin can still override via the same shared array.
+
+### Changed
+- **Planned notice visual redesigned.** From dashed border box (utilitarian) to soft-tinted centered block with generous padding and the description set in the heading font. Reads as a legitimate editorial placeholder rather than a debug annotation. The badge pill still leads; description text sits in serif at 1.2rem for prominence; secondary notice text sits below in muted body font.
+
+### Note on the trail
+- The `wp_robots` gap has been there since 1.4.0 when planned pages first shipped. Two years and eight minor versions of oversight. This is exactly the class of thing that live-site testing catches and cold code review does not — the feature "worked" in every dev environment where SEO wasn't measured. Recorded rather than swept under a fix.
+
+
+## 3.2.5
+
+### Fixed
+- Empty right-side space on the blog page. The `.page-index .content` selector had `max-width: 42em` — a reading-column constraint that made sense when the container held prose (like a 404 message), but not when it held a full post list (blog page, archives, search results). All three of the theme's callers passing content through `.page-index .content` are either post lists or minimal prose, so the reading-column constraint was wrong for the majority case.
+- Constraint moved from `.page-index .content` (the container) to `.page-index .content > p` (bare paragraphs only). Now bare prose still gets reading-column treatment, but lists, year-groups, divs, and anything more structured flow the full container width.
+
+### Related
+- 2.7.1 shipped `.page-index` styling to fix "unstyled page-index templates" — the CSS I wrote then was a reconstruction of the parent theme's `page-index.scss`. In hindsight, the parent theme's constraint was probably calibrated for its own templates and I inherited the number (42em) without checking whether it fit menj-bio's use cases. It didn't. Recorded.
+
+
+## 3.2.4
+
+### Fixed
+- Post count on the blog page was showing "0 posts" regardless of how many posts existed. Cause: `WP_Query` was called with `no_found_rows => true` (a performance flag that skips the `SQL_CALC_FOUND_ROWS` calculation), then the template read `$blog_query->found_posts` expecting a real number — which was zero because the count had been skipped. Contradiction: the query said "don't count" and the template said "show the count." Removed the `no_found_rows` flag on this specific query; the count now populates correctly.
+- Audited the other four `no_found_rows` usages in the codebase (home.php, activation.php, system-report.php, sections.php). None of them read `found_posts`, so the optimisation is legitimate in those places.
+
+### Lesson recorded
+- When `no_found_rows` is set on a query, `found_posts` is not usable downstream. The two are contradictory by design. If a template needs the count, drop the flag.
+
+
+## 3.2.3
+
+### Removed
+- "View all" link beside the "Recent Posts" heading on the homepage. Duplicated what the section chooser's "All" pill already offered — same destination, same purpose, side-by-side. Section chooser stays as the single affordance for cross-section navigation.
+- Orphaned `.section-link` CSS at lines 307-313 of main.css. The rules styled the old inline heading link; when that markup went away, the CSS became noise, and worse, it shared a class name with the section chooser pills. Silent conflict removed.
+
+
+## 3.2.2
+
+### Fixed
+- Excerpts no longer appear on category or tag archive lists. `show_dek: true` was passed to `post_list_item()` from `index.php` for reasons that made sense in isolation but produced busy-looking archive lists in practice. Rows now show only the metadata columns and the title.
+- Section chooser removed from the blog page. 3.2.1 misread the earlier instruction and added the pill chooser there; the blog page should be title, count, chronological list — nothing else. Home page and category archives keep the chooser where it belongs.
+
+### Note on interpretation
+- I've now had to reverse a decision from the previous release. The instruction "should match the homepage style" was ambiguous between "match the section-navigation UI" and "match the streamlined layout without extra navigation." The correct read was the second one. Recorded as a lesson: when a user says "match X," clarify what specifically they want matched before assuming.
+
+
+## 3.2.1
+
+### Fixed
+- **Blog page section UI now matches the homepage and category archives.** Was showing an inline text-link row ("SECTIONS: All Eclectic"), while home and category archives showed the proper pill chooser via `render_section_chooser()`. Blog page now uses the same chooser, so all three surfaces read as one system. The old inline `.content-filter` markup and its CSS are removed since nothing else was using them.
+- **Hover previews suppressed on the blog page.** A full chronological archive is scanned, not previewed — the hover mechanic reads as noise when a reader is browsing a year-grouped list of every post. Blog page's `<ul>` now hardcodes `class="post-list"` rather than delegating to `post_list_classes()` so the `.has-previews` class never attaches. Home and category archives keep the mechanic where it belongs (short lists where a peek genuinely helps).
+- CSS scoping tightened as a follow-up: `.post-preview` display/positioning rules are now scoped to `.post-list.has-previews`, so opting a list out of previews cleanly turns off the whole mechanic. Previously the base `.post-preview { display: none }` gated it correctly, but the positioning rules were unscoped and would have caused layout confusion if any list ever had a preview element without the opt-in class.
+
+
+## 3.2.0
+
+### Added
+- **ORCID** in the social platform registry, positioned after Academia.edu. Same scholarly-identity neighbourhood, one step more specific — ORCID is the persistent researcher identifier that survives institutional moves. New option key `social_orcid`, auto-generated field, auto-sanitised through the shared URL normaliser.
+- Custom SVG icon for ORCID: filled circle with the canonical "iD" mark carved in negative space. Verified by pixel-scan render before shipping.
+
+### Fixed
+- **Single-post tags now render at the foot of the post**, after the content, rather than in the header between the title and the body. Editorial convention: topical connections follow the content rather than framing it. This is likely why the earlier "why aren't my tags showing?" question came up — the tags *were* rendering, but at an unusual placement in the header where they blended visually with the section eyebrow and title stack rather than reading as tags. Post owners should now find them clearly labelled at the end of a post.
+- Singular now uses `render_post_tags()` from `inc/tags.php` instead of an inline foreach. Consistent markup with the post-list tag renderer, and each tag gets the proper `rel="tag"` attribute for SEO and discoverability.
+
+### Notes on parity
+- 45 keys, zero gaps. Adding a platform to `get_social_platforms()` auto-generates its default, its field, and its sanitiser — same pattern that shipped for Academia in 3.1.0.
+
+
+## 3.1.0
+
+### Added
+- **Academia.edu** in the social platform registry. Positioned right after LinkedIn — professional-network neighbourhood, one step more specific than LinkedIn's general professional identity. New option key `social_academia`, auto-generated field on the Social tab, auto-sanitised through the shared URL normaliser. `get_social_platforms()` sits 44 keys wide now (was 43), zero parity gaps.
+- Custom SVG icon: a stylised sans-serif A rendered as negative space inside a rounded square, echoing Academia.edu's visual mark without copying its exact logo. Rendered in currentColor so palette drives colour, single-path with `fill-rule="evenodd"` for the counter.
+
+### Notes
+- The URL normaliser accepts Academia.edu's per-institution subdomain URLs (`https://university.academia.edu/UserName`) unchanged, since `esc_url_raw` doesn't care about subdomain shape.
+- Minor bump rather than patch: adds an option key. Under the theme's versioning contract (see `docs/upgrading.md`), adding an option is a feature addition; only *removing* or renaming keys triggers a major bump.
+
+
+## 3.0.6
+
+### Changed
+- Etymology restored to both the theme description and the screenshot body copy, in a form that names it once rather than forcing the reader to reconcile two spellings. `style.css` now reads "Kolofon (from the Malay spelling of \"colophon\") is the printer's mark..." with the etymology inline as a parenthetical. Screenshot body copy uses the same construction, with "colophon" italicised as a word-being-mentioned per prose convention.
+- 3.0.5 dropped the etymology entirely to fix the double-spelling problem. 3.0.6 keeps that fix (only one spelling collision in the prose, contained inside a parenthetical) while preserving the origin story for anyone reading the description.
+
+
+## 3.0.5
+
+### Fixed
+- Spelling inconsistency in the theme description. `style.css` called Kolofon "the Malay spelling of 'colophon'" and then used "colophon" in the definition prose, forcing the reader to reconcile two spellings of the same word in the same paragraph. Description now defines what a kolofon is without the etymological aside: "Kolofon is the printer's mark at the end of a manuscript..." Same fix applied to the screenshot body copy: "A kolofon is..." instead of "Colophon: a printer's mark..."
+- Etymology of the name still recorded in the 3.0.0 changelog entry for anyone curious about the Malay origin. It just no longer intrudes into the theme's day-to-day identity where consistency matters more than provenance.
+
+
+## 3.0.4
+
+### Changed
+- "Bio microsite" retired as the theme's self-description in favour of "writer's microsite." "Personal" and "bio" were doing overlapping work, and "bio" as a term of art reads ambiguously without context. "Writer's microsite" is specific to the actual use case, matches the theme's editorial identity, and drops the redundancy.
+- Screenshot regenerated with new tagline and matching body copy line.
+- `style.css` description, `composer.json` description, `README.md`, `docs/readme.md`, plus the rationale comments in `inc/syndication.php` and `inc/security.php` all updated to the new wording.
+- Historical entries in `docs/changelog.md` and `docs/upgrading.md` left as they were, since they record how the theme was described at the time and rewriting them would be dishonest.
+
+
+## 3.0.3
+
+### Changed
+- Screenshot regenerated without version-locked elements. The 3.0.2 version removed the inherited menj-bio design but included two elements that would date the artwork: a "3.0.1" version tag in the meta row and a "MENJ · 2026" attribution at the foot. Both would need regeneration on every bump. Replaced the version tag with "EDITORIAL" (the third theme qualifier, sits alongside "MODERNIST" and "MINIMALIST"). Removed the year attribution; author credit lives in `style.css` where it belongs. Colophon row now reads "SET IN XCHARTER · TYPEWRITER: SPECIAL ELITE" — type-family credits only, which don't change unless the theme swaps typefaces.
+
+
+## 3.0.2
+
+### Changed
+- Replaced inherited screenshot with a proper Kolofon specimen. Charcoal palette, wordmark set in XCharter Bold at display scale, meta row in Special Elite, colophon at the foot naming the type families the theme ships. Reads at both 1200×900 (WordPress spec) and ~387×290 (the actual thumbnail size in the Themes list). The design language mirrors the theme's own conventions: hairline section rule, accent-coloured monospace eyebrow, editorial serif body, structural columns.
+
+
+## 3.0.1
+
+### Added
+- Migration confirmation notice. When the 3.0.0 rename migration copies a legacy `menj_bio_options` row into `kolofon_options`, it now also records how many settings were migrated. On the next admin page load a dismissible success notice appears reporting the count and offering an "Open Kolofon Options" button. Gives the site owner positive confirmation the migration ran rather than trusting silence.
+- New module `inc/migration-notice.php`. Notice fires only when the migration flag exists, dismisses via `admin-post.php` with a nonce (permanent removal) or the standard is-dismissible X (session only). Capability-gated to `manage_options`.
+
+### Not covered by the notice
+- A child theme's `Template:` header. If any site running Kolofon has a child theme naming `menj-bio` as its Template, the child breaks on activation and no notice about it will appear — the notice only reports what the migration handled, not what a child theme's config might need updating. Recorded in `docs/upgrading.md`.
+
+
+## 3.0.0 — theme rename to Kolofon
+
+Major bump per invariant 5: the text domain and option row key both change, which is exactly the class of breaking schema change semver requires a major bump for. Full rename, applied consistently across every layer.
+
+### Renamed
+
+- Theme name: `menj.bio` → **Kolofon** (Malay spelling of "colophon" — the printer's mark at the end of a manuscript recording who set the type).
+- Directory: `menj-bio/` → `kolofon/`.
+- Text domain: `menj-bio` → `kolofon`. All 372 user-facing gettext strings retranslated in the .pot file.
+- PHP namespace: `MENJ\Bio` → `Kolofon`. All 26 namespace declarations and 87 fully-qualified references updated.
+- PHP constants: `MENJ_BIO_VERSION`, `MENJ_BIO_URI`, `MENJ_BIO_DIR`, `MENJ_BIO_OPTION_KEY` → `KOLOFON_*`.
+- Filter/action prefixes: `menj_bio_*` → `kolofon_*`. Breaks any child-theme code that hooked the theme's filters.
+- Option row key: `menj_bio_options` → `kolofon_options`. Migrated (see below).
+- CSS variables: `--mb-*` → `--k-*`. 152 references.
+- CSS classes: `.menj-bio-*` → `.kolofon-*`, `.mb-email` → `.k-email`, `.mb-font-*` → `.k-font-*`. 132 rules touched.
+- Translation file: `languages/menj-bio.pot` → `languages/kolofon.pot`.
+- Test suite comments and Composer package name.
+
+### Migrated
+
+A one-shot migration runs on `after_setup_theme` at priority 20 (the same hook that handles other stored-option migrations):
+
+1. Reads the legacy `menj_bio_options` row.
+2. If it exists AND `kolofon_options` does not, copies the payload verbatim.
+3. Deletes the legacy row.
+4. Same rule applies to `menj_bio_typewriter_reset` (the migration flag from 2.5.0).
+
+Idempotent: on subsequent loads the legacy rows are gone, so the migration is a no-op. No user-facing action required — a site upgrading from 2.10.x to 3.0.0 keeps every setting intact.
+
+### Not renamed
+
+- Author: `Mohd Elfie Nieshaem Juferi` (still MENJ, still your name).
+- GitHub username: `menj` in URLs. The *repo* moves from `menj/menj-bio` to `menj/kolofon`.
+- Domain: `menj.bio` stays the site URL. Kolofon is the theme running on it.
+
+### Why the name
+
+A colophon is the printer's mark at the end of a manuscript — historically containing the scribe's identity, the tools used, sometimes the date and location of setting. A bio microsite is exactly the same idea in web form: a small object recording who you are, what tools you used, when you set the type. The Malay spelling ties the name to your linguistic identity without foregrounding it.
+
+### Sceptical note
+
+Renaming a theme in-place is unusual and creates one durable trap: search engines and RSS readers may have cached "menj.bio Theme" as the name. If Kolofon shows up anywhere with a mixed identity, it's a caching artefact, not a bug in the theme itself.
+
+
+## 2.10.2
+
+### Docs
+- **Root-level `README.md`** added. GitHub renders it on the repository landing page at [github.com/menj/kolofon](https://github.com/menj/kolofon), where the four docs inside `docs/` are not visible as a landing. Points inward to `docs/` for full documentation. Follows GitHub capitalisation convention rather than the theme's `docs/` lowercase convention, since invariant #7 in `ssot.md` specifically scopes lowercase to the four canonical files inside `docs/`.
+- **Repository named in `docs/readme.md`.** Opening line now cites [github.com/menj/kolofon](https://github.com/menj/kolofon) alongside the site, and the Development section explicitly points at the source repo.
+- **Repository and release archive locations recorded in `docs/ssot.md`** file-of-record map. Names the release workflow's version-tag constraint alongside.
+
+
+## 2.10.1
+
+### Docs
+- Hover previews description in `readme.md` rewritten to cover the 2.10.0 typographic peek: both photographic and typographic tiles now share the same anchor.
+- `ssot.md` corrected: `preview_size` default is 140 (not 240), clamp range is 100–240 (not 140–400), `list_style` accepts `index` alongside `stacked` and `columns`. Hover preview content now named in the authority map.
+- `upgrading.md` — the 1.0.0 "hover-revealed illustration cards" reasoning extended with a 2.10.0 footnote: the "no preview for image-less posts" rule was itself a subtle failure and got corrected.
+
+
+## 2.10.0
+
+### Added
+- **Typographic hover previews for posts without a featured image.** Same 3:2 anchor and same slot in the list layout as the photographic version, but the peek renders the post title (up to 10 words, three-line clamp) in the theme's heading font over a subtle palette-derived background. Image-less posts now get a peek of their own rather than being second-class rows.
+
+### Changed
+- `post_list_classes()` simplified: the `has-previews` class now attaches whenever previews are enabled, since every row emits a preview (photographic or typographic). Previously it inspected the query for at-least-one-thumbnail. The `$query` parameter stays in the signature for backward compatibility but is no longer consulted.
+
+### Notes
+- The design intent, in one line: a bio microsite that publishes intermittently will often have image-less posts, and treating them as "the hover feature doesn't apply to you" reads as second-class. Turning the placeholder into an editorial affordance is closer to the spirit of the theme than either always-empty gutters or per-row jitter.
+
+
+## 2.9.9
+
+### Roadmap
+- Phase 7.4 (GitHub release updater) declined. Manual zip upload from the GitHub release page is the chosen workflow. Neither vendoring `plugin-update-checker` (~200 KB) nor requiring Composer earns its cost for a single-user microsite updated by hand. `docs/upgrading.md` updated to record the decision and its reasoning; nothing about the theme needs to change to add it later, since an update checker is a standalone concern.
+- Construction is complete. Two items remain, both environmental verification rather than code: PHPCS findings (1.3) and the core-block dequeue check (7.2). Both need a running WordPress instance to run against.
+
+### Docs
+- `ssot.md` gained two hard invariants from this session's mistakes: containing-block audits (the 2.9.4–2.9.6 hover-preview saga) and activation-hook idempotency (the 2.6.0 blog-page auto-provisioning).
+- Directory listing in `readme.md` updated with `activation.php`, `webfonts.php`, `syndication.php`, `assets/fonts/`, and `tests/`.
+- Hover preview description in `readme.md` rewritten to match the 2.9.6 behaviour.
+
+
+## 2.9.8
+
+### Changed
+- Columns list style now shows the full day-month-year on every row as `j M Y` — "24 JUL 2026". Uniform format across every row regardless of year. Retires the 2.9.7 conditional-year behaviour in favour of always-visible dates. Column width stays at 6.5rem, still fits the format cleanly. Uppercase transform on the column handles JUL/DEC.
+
+
+## 2.9.7
+
+### Fixed
+- Columns list style hid the year on every date, which was defensible when the whole list was from the current year but silently ambiguous when it spanned years — a 2024 post and a 2026 post rendered identically. Now the year is shown only when the post's year differs from the current year: current-year posts stay compact as "Jul 24", older posts render as "Dec 4, 2024". Self-heals across the year boundary — a post from 2026 will automatically start showing as "Jul 24, 2026" once 2027 arrives.
+- Date column widened from 3.6rem to 6.5rem to accommodate the longer format when it appears. `white-space: nowrap` added as a safeguard against the year wrapping if font metrics vary.
+
+
+## 2.9.6
+
+### Fixed
+- Hover preview landing in the wrong place, overlapping row text instead of the reserved gutter. Root cause: `.post-item a` had `position: relative` set for an older design, which made the anchor the preview's containing block. `right: 0` on the preview then measured against the row's right edge (the content area) rather than the list's right edge (which includes the gutter). The whole gutter mechanic was defeated because the preview never learned about the padding-right expansion at all.
+- Removed `position: relative` from `.post-item a`. Nothing else depended on it — checked every rule in the stylesheet before removing. The preview now positions against `.post-list.has-previews`, which has `position: relative`, and lands in the gutter as designed.
+
+### On 2.9.4 through 2.9.6
+- Three versions in a row on the same hover preview. The visualiser turn showed me correct behaviour in an abstraction, and I shipped code assuming the abstraction matched the real DOM. It did not, because a legacy `position: relative` on the row anchor was breaking the containing-block chain in ways only the actual browser could reveal. The lesson recorded for the trail: when the visualiser and the shipped result diverge, the DOM is the source of truth. Look at what the real element positions against, not what you meant it to position against.
+
+
+## 2.9.5
+
+### Fixed
+- Login screen notice boxes ("You are now logged out," authentication errors, password reset confirmations) inherited WordPress default styling: white background, pale grey text, thin left border. On the Charcoal palette this rendered as a bright block sitting incongruously on the dark surface. Now the notice adopts the site palette: `$bg` background, `$text` colour, `$rule` border, accent-coloured left stripe. `#login_error` covered alongside `.message` and `.notice`, since WordPress uses that separate ID for authentication failures.
+
+### Note on the trade
+- Error notices and success notices now share the accent-coloured stripe rather than red-vs-green. Menj-bio uses one accent per palette and doesn't have a distinct danger colour; introducing one would break the palette discipline. The wording of the notice carries the semantic — "logged out" versus "password incorrect" — which is enough for a login screen used by the site owner.
+
+
+## 2.9.4
+
+### Changed
+- Hover preview anchored to the top of the list rather than to the row being hovered. Moving between rows now swaps the preview image but the peek stays put at a fixed position — the reader always knows where to look. 2.9.3 placed the preview beside whichever row was hovered, which meant the peek jumped vertically as the cursor moved down. 2.9.4's anchor is `top: 0, right: 0` on the list itself, so the peek's spot in space is a property of the list, not of any row.
+- Row's own `position: relative` removed. Previews now position against the list container, resolving through the ancestor chain automatically since only the list has `position: relative` in the new setup.
+
+
+## 2.9.3
+
+### Changed
+- Hover preview gutter is now on-demand rather than absent. 2.9.1 stripped the always-reserved gutter and let the preview overlay content; 2.9.3 brings the gutter back but only while the list is hovered. Zero reserved space by default, `padding-right` transitions to `preview_size + 1.5rem` when any row in a previewed list is hovered, and back to zero when the mouse leaves. Preview fades in as usual, still at 3:2 aspect from 2.9.2.
+- Preview repositioned back to vertically-centred beside the row, since the list is now making room horizontally. The 2.9.1 "below-right" placement is retired; it was the right answer for "no reserved space, preview overlaps content," but now that the list makes room, floating beside the row reads more naturally.
+
+### Notes on the design
+- The gutter opens at the list level (`.post-list.has-previews:hover`), not the row level. This is the load-bearing choice that prevents the "cursor chases layout" failure mode I flagged in the discussion of 2.9.2: if each row controlled its own gutter, moving between rows would open and close it repeatedly, and the row your mouse is about to enter would shift out from under you. At the list level the gutter is either open (mouse is anywhere in the list) or closed (mouse isn't), and moving between rows changes nothing.
+- `prefers-reduced-motion: reduce` is honoured. The gutter still opens and the preview still appears, just without the transition. The interaction is preserved; the animation is removed.
+
+
+## 2.9.2
+
+### Fixed
+- Hover preview enforced to a consistent 3:2 landscape aspect ratio. Previously the preview inherited its source image's aspect, so portrait sources (typewriter, phone screenshots) rendered as tall columns while landscape sources (cat, editorial photos) rendered as compact cards. Result: same width, wildly different heights, list read as untidy. Now: `aspect-ratio: 3 / 2` on the preview container plus `object-fit: cover` on the image, so every preview renders at 140 × 93 px regardless of source. Cropping is centred, which is where most editorial thumbnails place their subject.
+
+
+## 2.9.1
+
+### Changed
+- Hover preview redesigned as a small floating peek anchored below-right of the hovered row. The previous design reserved a gutter equal to the preview width plus 2.5rem to prevent shift, then floated a 240px preview centred on the row, which on a bio microsite with sparse content pushed the preview above adjacent section headings and off the right edge of the container. New behaviour: no reserved gutter, no card lift on the row, preview appears below-right of the row, small enough to read as a peek rather than a card.
+- Default `preview_size` narrowed from 240 to 140 to suit the floating peek scale.
+- `preview_size` clamp range narrowed from 140–400 to 100–240. Values above 240 are clamped down on read rather than reset; a stored 350 becomes 240 rather than falling back to the default. Not a full reset but worth naming, since invariant 5 (removing or renaming keys requires a migration) is adjacent to this — narrowing a range is a softer form of the same class of change.
+
+### Removed
+- Row card-lift on hover. It suited the reference layout it came from, less so a compact bio site.
+- `.post-list.has-previews { padding-right: … }` gutter reservation. No longer needed.
+
+
+## 2.9.0
+
+Three patterns brought forward from Chris Wiegman's cwplugin (2.4.0), after auditing what applies to a bio microsite versus what is specific to his hosting.
+
+### Added
+- **Featured images in RSS feeds.** New module `inc/syndication.php` emits an `<enclosure>` tag on each RSS item and prepends the featured image inline to the feed content. Feed readers that render item bodies (most of them) now show the image without a click through, and spec-compliant readers see the enclosure too.
+- **fediverse:creator meta tag** on singular views when a Mastodon URL is configured. Derives the handle from the URL rather than asking for a separate setting: `https://mastodon.social/@user` becomes `@user@mastodon.social`. Emits on singulars only, since home and archives have no single creator to attribute. Uses the existing `social_mastodon` option key, so no schema change.
+- `Permissions-Policy` security header, closing the browser API surface a bio microsite has no legitimate reason to touch (geolocation, camera, microphone, payment, and so on). Fullscreen remains permitted from same-origin for image lightboxes and video posts.
+
+### Not adopted from cwplugin
+- Jetpack AI disable and WordPress.com RUM script removal. Both are hosting-specific for chriswiegman.com and irrelevant on self-hosted WordPress. Some sites might genuinely want Jetpack AI.
+- `X-XSS-Protection: 1; mode=block`. Modern browsers ignore it and OWASP recommends not setting it, since the legacy XSS auditor it targeted introduced its own vulnerabilities and was removed from Chrome in 2019. Menj-bio's omission is deliberate and stays.
+
+### Notes on version handling
+- Fediverse handle derivation verified against seven URL shapes including edge cases (Twitter profiles, deep paths, malformed input) before shipping.
+
+
+## 2.8.3
+
+### Changed
+- Post body copy is now fully justified. Scoped to `.e-content` paragraphs and list items only — headings, figures, blockquotes, hero copy, and dek excerpts keep their own alignment.
+- No CSS hyphenation. Rivers of word-spacing will appear on narrow lines, particularly on monospaced stacks, and are the deliberate honest cost of full justification. A print manuscript wears the same ragged word-spacing rather than mangling words at the syllable; the theme follows the same convention.
+- Applied at every breakpoint. Phone-width columns will show wider rivers than desktop; kept consistent because the alternative would be a mixed alignment across screen sizes.
+
+
+## 2.8.2
+
+### Changed
+- Body copy line-height raised to **1.9** on stacks using monospace or typewriter faces (Typed, Office memo, Plaintext). Matches how real typewritten documents sat on the platen: 1.5x to 2x character height per line-feed, plus compensation for monospace's taller x-height relative to em. Proportional stacks (Editorial serif, XCharter) keep the default 1.65 — that rhythm is calibrated for serif and works there.
+- Paragraph bottom margin tightened to 1rem on those same stacks, since at 1.9 leading the previous 1.2rem started reading as a section break rather than a paragraph break.
+- Post-list excerpt (index style) rhythm also raised to 1.85, so a row on the index list reads as one document rather than a title with mismatched dek underneath.
+
+Headings deliberately unchanged. A typed chapter heading was always one tight line even in double-spaced manuscripts; the rhythm rule is about running text, not display.
+
+Applied through the `font-<slug>` body class established in 1.5.0, so future stacks that opt in by declaring themselves monospace-family get the rhythm automatically.
+
+
+## 2.8.1
+
+### Fixed
+- Thin vertical line down the right edge of the bundled profile portrait. Diagnosed as a fully-opaque last column baked into the PNG at export time (column 359 had 360 opaque pixels while columns 340-358 tapered naturally from 74 down to 62). Trimmed to 359×360. Invisible on masked variants (circle, rounded, square) because `object-fit: cover` crops to square regardless; imperceptible on the floating variant at rendered size.
+
+
+## 2.8.0
+
+Four things brought forward from the parent theme (Chris Wiegman's chriswiegman-theme 12.10.2), after actually reading it for the first time in a long time.
+
+### Added
+- **Playwright smoke tests** at `tests/e2e/`. Config adapted from the parent theme (12.9.7). Four tests: home page renders, hero heading is visible, Recent Posts section is present, `/blog` resolves without a 4xx, no PHP errors appear in output. Reporter set to list plus HTML plus GitHub. Closes phase 7.3 on the roadmap — properly scoped to "smoke tests for a small theme," not the PHPUnit setup I had been overthinking.
+- **Section filter on the blog index page.** Adapted from the parent theme's category-filter row shipped in 12.10.0. Menj-bio's blog index now shows a post count line and a row of section pills above the year-grouped list, so a reader landing at `/blog` can jump into a section instead of scrolling the full chronology. Uses `get_sections()` (already established in Phase 2) rather than raw `get_categories()`.
+- One missing dequeue: `rest_output_rsd` on `xmlrpc_rsd_apis`. Small, defensible, in the parent theme.
+
+### Changed
+- **Search form label hidden with `.screen-reader-text` positioning** rather than the visible label with dedicated styling that 2.7.1 added. Rethink prompted by seeing the parent theme use `display: none` on the label — that's the a11y-wrong version of the same instinct, but the instinct itself is correct. Menj-bio's approach positions the label off-screen so it stays in the accessibility tree. The 2.7.1 layout for `.search-form` is preserved.
+
+### On not adopting
+- Post-column customisation for CPTs (parent theme's `includes/post_columns/`): the parent has speaking-engagement post types kolofon doesn't have. Not applicable.
+- SCSS build pipeline: kolofon hand-writes CSS by policy.
+- The parent theme's SCSS `page-index.scss` component. Menj-bio has the equivalent styling now (shipped in 2.7.1), though I only realised on this reading that 2.7.1 was reconstructing something that already existed in the parent — the fix was correct, the framing "the class had no rules" was wrong. Recorded for the next reviewer.
+
+
+## 2.7.2
+
+### Changed
+- Font stack labels renamed for register. Editorial serif → The reader, XCharter → Charter, but loud, Special Elite → Typed, Monospace body Special Elite headings → Office memo, Monospace → Plaintext. Slugs unchanged (`editorial`, `xcharter`, `special-elite`, `typewriter`, `mono`), so nothing else needed touching. Labels-only; no migration; no code paths altered.
+
+
+## 2.7.1
+
+### Fixed
+- **404 page and blog index template rendered unstyled.** Both templates use `.page-index` as their root article class and expected the same rhythm as a singular post, but `.page-index` and `.description` were selectors with no rules. On any font stack other than the site defaults the divergence was obvious; the visible failure was Special Elite headings sitting at browser-default line-height while the rest of the site sat at the theme's rhythm. Added proper styling for `.page-index .content`, `.description`, `.year-heading`, and the native WordPress search form so its submit button no longer falls out of the site's font.
+- **Blog index diagnostic on the System tab.** Reports the resolved URL, the fallback source used, and whether a Posts page or Blog-Index-template page exists. Turns "why is /blog a 404" from a mystery into a visible answer.
+
+### Notes on what wasn't a bug
+- The wordmark alone with no navigation is expected on a site with no menu assigned to the Primary location. WordPress hides the nav when `has_nav_menu( 'primary' )` returns false; assigning a menu at Appearance > Menus fixes it.
+
+
+## 2.7.0
+
+Two layout patterns adopted from the Book WP reference theme, after reviewing
+that codebase for what would translate to a bio microsite rather than what
+would look striking in a screenshot.
+
+### Added
+- **Index post list style.** A third option under Layout, joining Stacked and Columns. A hairline-ruled row list where the title carries the eye, the year sits right-aligned as a small annotation, and the excerpt wraps onto its own line. Hover shifts the whole row rightward by a rem. Suits sites organised by title rather than by date. Adapted from Book WP's TOC pattern.
+- **Section eyebrow on single posts.** Small uppercase section name above the post title, with the section description underneath if one is set. Reinforces which section the reader is in on a post arrived at from search or a share, where the section chooser is nowhere in sight.
+- `get_primary_section()` in `inc/sections.php` — the read-time counterpart to `enforce_single_section()`. Same deterministic rule (configured order wins, otherwise first assigned) so posts predating enforcement resolve to a stable answer without needing a migration.
+
+### Changed
+- `post_list_item()` refactored: the two-way boolean on Columns is now a proper three-way switch. The style-specific date format (site format, `M j`, or year alone) sits with the branch that needs it, rather than in a coupled ternary.
+
+### Not adopted from Book WP
+- Time-of-day tinting, per-form typography, reading analytics, bilingual switching. Recorded as decisions in the last review turn: none of them serve the bio-microsite brief, and taking them would be cargo-culting.
+
+
+## 2.6.0
+
+### Added
+- **Blog index page auto-provisioning.** A page at `/blog` carrying the Blog Index template is created on `after_switch_theme` if none exists. Fresh installs no longer require the site owner to know they need to create the page and assign the template manually.
+- New module `inc/activation.php`, the theme's first activation hook.
+
+### Behaviour details
+- **Idempotent**: existence is checked by template rather than slug, so a page renamed by the site owner is still recognised and no duplicate is created.
+- **Non-intrusive**: does not touch Settings > Reading. The theme reads `page_for_posts` as its first `get_blog_index_url()` fallback and defers to it if the site owner has made a choice there, but does not set it, since that interacts with the Front page setting.
+- **Respects an existing Posts page**: if `page_for_posts` is already set, the activation hook exits early without creating anything. Prevents the theme from leaving an orphaned page on a site whose owner had already made their own arrangement.
+- **Recovers from deletion**: if the page is deleted, it comes back on the next activation. Site owners who deliberately want no blog page can simply not switch themes.
+- **Handles slug clashes**: if `/blog` is taken by an unrelated page, WordPress appends `-2` on insert and the collision is written to `error_log` so it surfaces rather than confuses.
+
+
+## 2.5.1
+
+### Fixed
+- "View all" on the home page pointed at `/blog` through a coincidental fallback. `get_post_type_archive_link( 'post' )` returns false, since WordPress does not register an archive for the built-in `post` type, so `home_url( '/blog' )` always fired. That worked on menj.bio because a page exists at that slug, but silently 404s anywhere else.
+- New helper `get_blog_index_url()` in `inc/sections.php` resolves the blog listing through three fallbacks: the "Posts page" set under Settings > Reading, then a page carrying the Blog Index template, then `/blog` as convention. The section chooser now shares this helper, so the site-wide "all sections" link and the "View all" link on the home page agree on where the blog lives.
+
+
+## 2.5.0
+
+### Added
+- **Editorial serif restored as the default.** Charter body and headings, with a Georgia fallback. Loads no webfont.
+- **Monospace body, Special Elite headings** stack under the `typewriter` slug. The typewritten face carries the section headings; the body reads in clean system monospace. Loads Special Elite only, not XCharter.
+
+### Changed
+- Font stack list is now five: Editorial serif (default), XCharter, Special Elite, the new typewriter hybrid, and Monospace.
+- `migrate_stored_options()` extended with a one-shot flag for the revived `typewriter` slug. Anyone on the 2.2 or 2.3 meaning of typewriter (Charter over Courier) is reset once to Editorial serif on upgrade. Anyone on 2.5 selecting the new typewriter keeps it, since the reset only fires when the flag has not yet been set. Verified across upgrade, opt-in, and unrelated-stack scenarios.
+
+### Note on my mistakes
+- 2.4.0 removed Editorial serif in error. I misread "use these" as a replacement instruction. Editorial had been explicitly set as the default a version earlier, and I should have kept it. Restored here and the migration flow above accounts for anyone caught in the middle.
+
+
+## 2.4.0
+
+### Added
+- **Webfont loading**, self-hosted, opt-in per stack. `inc/webfonts.php` preloads the primary weight, attaches `@font-face` inline on the main stylesheet with `font-display: swap`, and does both only when the active stack asks for it. A stack declares its files under a `webfont` key; nothing loads for stacks that do not.
+- **XCharter** as its own stack (default). Roman, italic, bold, bold italic. Ships under `assets/fonts/xcharter/` under the extended Bitstream Charter licence.
+- **Special Elite** as its own stack. A digital revival of a mid-century typewriter face. Ships under `assets/fonts/special-elite/` under the Apache 2.0 licence.
+
+### Changed
+- Removed the built-in Modern grotesque, Editorial serif, and the Charter-plus-Courier pairing. `migrate_stored_options()` maps any retired value to `xcharter`; `mono` still passes through untouched.
+- `docs/upgrading.md` webfont deferral is now partially closed. Fonts ship self-hosted, optional, preloaded. Subsetting remains a followup.
+
+### Note on trade-offs
+- Bundled font weight is 928 KB, of which XCharter is four weights at ~130 KB each. The theme only ever loads the active stack, so a reader on Monospace incurs no font request. A subsetted rebuild would cut roughly two-thirds off each file; that needs fonttools which was not available when 2.4 shipped, and is recorded as a followup rather than papered over.
+
+
+## 2.3.0
+
+### Changed
+- Default font stack changed to **Editorial serif**. Existing installs keep whatever they had, since `grotesque` remains a valid value that `migrate_stored_options()` does not touch. Fresh installs, and reads that fall back to the default because the stored value is unrecognised, resolve to editorial.
+
+
+## 2.2.0
+
+### Added
+- **Charter body, typewriter headings** font stack. Charter for the argument, Courier Prime falling back to Courier for the headings — a mid-century monospaced typewriter face, contemporary with a Royal Quiet De Luxe. Chosen for graceful degradation: Courier ships on every major platform since 1955, so the visual promise holds even when Courier Prime is not installed.
+- **Editorial serif** promoted to a first-class named stack under the slug `editorial`, previously `serif`.
+- Body class now surfaces the active font stack as `font-<slug>`, so pairings that need to tune heading rhythm distinctly from single-family stacks can do so without a JavaScript check.
+- Scoped adjustments for the typewriter pairing: slightly tighter tracking, reduced line-height, and a 10 percent size reduction on the hero heading, because Courier's proportions make headings that match the serif's optical size read oversized.
+
+### Changed
+- `migrate_stored_options()` extended: a stored `font_stack` of `serif` maps to `editorial` on next load. Anyone already on Editorial serif stays on it, transparently.
+
+
+## 2.1.0
+
+### Changed
+- Reduced font stacks to three: **Modern grotesque** (default), **Editorial serif**, and **Monospace**. System UI, Humanist sans, and Serif body sans headings are removed.
+- `migrate_stored_options()` extended: a stored `font_stack` of `system`, `humanist`, or `hybrid` maps to `grotesque` on next load. Verified across upgrade cases.
+
+### Notes on the versioning call
+- Kept as a minor: no option keys were removed and no user-facing default changed. Only the set of enum values `font_stack` may hold has shrunk. A stored row would degrade gracefully through the sanitiser fallback even without the migration, but migrating in the same commit follows the policy for schema changes.
+
+
+## 2.0.1
+
+### Fixed
+- The hero email icon lost its circular chip and hover state. `protected_mailto()` in JavaScript mode hardcoded `class="mb-email"` into its template and then appended the caller's attributes, producing a second `class` attribute on the same anchor. HTML keeps only the first occurrence, so the caller's `hero-social-link` class was silently discarded and the email icon rendered unstyled while the other icons carried the chip. The builder now merges the caller's class, and `rel`, into single attributes emitted exactly once, verified across all three protection modes.
+
+
+## 2.0.0
+
+The first major, taken because option keys were removed, which the versioning
+policy reserves for a major with a migration routine.
+
+### Changed, breaking
+- The colour system is reduced to exactly three choices: **Charcoal**, now the default, **Ivory**, and **Auto**, which renders Ivory when the device prefers light and Charcoal when it prefers dark. The Ink and Custom schemes are removed.
+- Removed option keys: `auto_light`, `auto_dark`, `custom_bg`, `custom_text`, `custom_accent`, `custom_muted`, `custom_rule`.
+- `migrate_stored_options()` rewrites existing rows on load: removed keys are dropped, and a stored `ink` or `custom` scheme maps to `charcoal`, the default, so unknowns resolve to one value everywhere. Rows already in shape are left untouched, verified across upgrade and clean cases.
+- The login screen palette now routes through `resolve_palette()`, taking the light half under Auto.
+- Both surviving palettes pass WCAG AA on every declared colour pair, verified computationally: the weakest pair is Ivory muted at 5.19:1 against a 4.5:1 requirement.
+
+### Added, from phase 7
+- The options page tab strip is now a real WAI-ARIA tab widget: `role="tablist"` with button tabs, `aria-selected`, `aria-controls`, labelled `role="tabpanel"` regions, a roving tabindex, and arrow, Home, and End key navigation.
+- Without JavaScript the options page now renders as one complete long form with the tab strip hidden, replacing the previous behaviour where every panel was invisible.
+- The hero portrait is preloaded on the front page with `fetchpriority="high"`, and the image carries explicit dimensions, priority, and async decoding, since it is the largest contentful paint there.
+
+
+## 1.5.0
+
+### Added
+- **Sidebar chrome layout.** A `chrome_layout` option offers a floating rounded card in a left rail holding the wordmark, the navigation, and a stay-in-touch block of text links, leaving the content column free. Topbar remains the default and the full-bleed header is unchanged. The card is sticky within the rail on wide screens, dissolves into an ordinary header below 1024px, and hands over to the existing navigation toggle below 768px.
+- **Numbered navigation with keyboard shortcuts.** In the sidebar layout each top-level item carries a boxed digit, 0 through 9, which doubles as its shortcut: pressing the digit follows the link. The digit advertises the shortcut rather than decorating the item. Shortcuts never fire while focus is in an input, textarea, select, or contenteditable region, never under a modifier key, and can be turned off with the `keyboard_nav` option. Items beyond the tenth go unnumbered rather than wrapping.
+- Stay-in-touch block renders each populated platform as a text row with an outward arrow, in registry order, with the email entry routed through the obfuscator like everywhere else.
+
+### Changed
+- Active social link derivation extracted to `get_active_social_links()`, shared by the hero icon row and the sidebar block.
+- The planned-page badge and the navigation digit compose: badge appends at priority 10, digit prepends at 20, so a planned item reads digit, title, badge.
+
+
+## 1.4.0
+
+### Added
+- **Page states.** A page can be marked as planned in its editor sidebar: it stays in the navigation carrying a badge, and its content is replaced by a short notice, with the excerpt serving as the description of what the page will contain. The deliberate inverse of unlisting: an empty site with intent reads as a roadmap. Badge and notice text are configurable on the Advanced tab. State lives in post meta, so it survives a theme switch and is visible to REST.
+- **Columns post list style.** Date and section in narrow uppercase monospace columns, then the title. Selected on the Layout tab; the default remains the stacked layout so existing installs are unchanged. Sections render one term per post by construction. Collapses back to stacked below 560px.
+- **Auto dark mode.** A fifth colour scheme that pairs a light palette with a dark one and lets the device decide, defaulting to Ivory with Charcoal. The light palette is emitted as the base so browsers without media query support get a complete theme; the dark palette rides `prefers-color-scheme: dark`; `color-scheme: light dark` is declared. The pairing is configurable across every scheme except Auto itself, including Custom.
+- **System tab.** Ten rows of theme-owned runtime facts, deliberately not restating Site Health: parser availability, favicon precedence, email protection mode, colour scheme with its Auto pairing, portrait source, metadata ownership including which SEO plugin forced a stand-down, file editor state and what locked it, section slug resolution, and the documentation set. Filterable through `kolofon_system_report`.
+
+### Changed
+- Palette resolution extracted to `resolve_palette()`, shared by both blocks of the Auto emission.
+- Field `choices` in the options schema may now be a callable, resolved at registration alongside callable help text.
+
+
+## 1.3.0
+
+### Added
+- `kolofon_option_fields` filter registers a field on any tab, through the same code path as the theme's own fields.
+- `inc/options-schema.php` declares tabs and fields as data rather than as a sequence of registration calls.
+
+### Changed
+- A settings section is now created for every tab automatically, so adding a tab through `kolofon_option_tabs` no longer requires knowing that tabs and sections are separate concepts in the Settings API.
+- `register_settings()` reduced from 36 inline registration calls to two loops over the schema.
+- The tab list has one source, `get_option_tabs()`, consumed by both the section registration and the rendered tab strip, so the two cannot drift.
+- Field help text may be a callable, resolved at registration. Used by the file editor and metadata toggles, which report what `wp-config.php` and the active SEO plugin are doing.
+
+All 45 fields, 42 options plus 3 action buttons, verified present after the refactor, with every default carrying a field and every field a default.
+
+
+## 1.2.0
+
+### Added
+- **Extension points.** Twelve hooks let a child theme or plugin add options, tabs, colour schemes, font stacks, portrait styles, and social platforms, amend the emitted `:root` block, override SEO plugin detection, and inject markup around the hero, all without editing a parent file.
+- `kolofon_option_sanitizers` registers a sanitiser callback per option key.
+
+### Fixed
+- **The coupling that made extension unsafe.** `opt()` memoised on first call and the sanitiser wrote only keys it named literally, so an option added by a filter would be read from a pre-filter cache and then discarded on the next save. Silent data loss. Two changes resolve it: neither `opt()` nor `get_defaults()` retains a memo until `after_setup_theme` has fired, and sanitising is now driven by a registry keyed on the filtered defaults rather than a hard-coded body.
+
+### Changed
+- `get_defaults()` is now a filtered wrapper; the literal values moved to `get_raw_defaults()`.
+- `sanitize()` replaced by `sanitize_options()`. Behaviour is unchanged for all 42 existing keys: clamps, enum fallbacks, and checkbox handling verified identical.
+- Settings import repointed at the new sanitiser, so imports and form saves continue to share one validation path.
+
+
+## 1.1.0
+
+### Added
+- Hero eyebrow: a short line above the heading in letterspaced monospace capitals, defaulting to empty so nothing changes on an existing install.
+- A phrase inside the hero heading can carry the accent colour by wrapping it in `<mark>`. The heading now permits `mark`, `em`, `strong`, and `br` through a dedicated allowlist. `mark` is the semantic element for highlighted text, so assistive technology announces the emphasis rather than the theme faking it with a span. Everywhere the heading is used as plain text it is stripped first.
+- Counted pagination replacing directional links: a range and total with chevron controls, so a reader can see they have reached the end of a section.
+- Branded login screen. The mark resolves through Custom Logo, then Site Icon, then the bundled portrait, and the colours come from the active scheme rather than a second hard-coded palette. Retires the `login-logo` plugin on the live site.
+- Three block patterns: link list, callout, and contact block. The callout is styled with the accent colour and the contact block embeds the protected email shortcode.
+- **Meta tags and structured data.** Open Graph, Twitter card, canonical, and description tags, plus a JSON-LD graph carrying `Person`, `WebSite`, and `BlogPosting` on single posts, with `sameAs` populated from the configured social profiles. The share image falls back through featured image, configured portrait, then the bundled portrait.
+- SEO plugin detection covering Yoast, Rank Math, All in One SEO, SEOPress, Slim SEO, and The SEO Framework. When one is active the theme stands down entirely and the Advanced tab says which plugin owns the output. Filterable through `kolofon_seo_plugin_active`, which is also the theme's first public filter.
+- Translation template at `languages/kolofon.pot`, covering 144 strings across 26 files.
+- **Sections.** A new Sections tab establishes mutually exclusive categories: a post belongs to exactly one, and tags carry topics that cut across them. Which categories count as sections, and in what order, is configured as a list of slugs, so nothing is hard-coded.
+- Single-category enforcement on `save_post`, which is authoritative and therefore also covers REST, WP-CLI, Quick Edit, and imports. When several categories are present the theme keeps the first configured section in configured order, falling back to the first assigned category. The rule is deterministic.
+- `assets/js/single-section.js` makes the block editor category panel behave as a single-choice list, keeping whichever term was added last. The server enforces the same rule regardless, so this is a courtesy rather than a control.
+- Section chooser rendered on the home page and on section archives: a row of links to real category archives with the current one marked, carrying post counts. Server-side navigation rather than client-side filtering, so it works without JavaScript and every section keeps a shareable, indexable URL. Scrolls horizontally on phones instead of wrapping into a tall block.
+- Previous and next post links now stay inside the current section by default, so a reader following one topic is not dropped into another.
+- Tag surfacing, `inc/tags.php`. Tags were always registered, since `post_tag` is core and the theme never removed it, but they only appeared on single posts. They now also appear under each row in post lists, capped at a configurable count with the remainder summarised.
+- Tag archives show which sections the tagged posts span, with each named and linked. The section chooser is deliberately suppressed there: a tag archive is the view that crosses sections, so offering a section filter would imply a constraint that does not apply.
+- `[menj_tags]` shortcode renders a browsable topic index, selected by popularity and displayed alphabetically. Accepts a `limit` attribute.
+- The Sections tab resolves each configured slug and reports whether a category exists for it, with its post count, so a typo surfaces immediately rather than as a section that quietly fails to appear.
+
+
+## 1.0.0 — 2026-07-24
+
+Initial release of the **menj.bio** theme, forked from the
+[Chris Wiegman Theme](https://github.com/ChrisWiegman/chriswiegman-theme) v12.7.0
+by Chris Wiegman (GPL v2).
+
+### Added
+- Tabbed Theme Options page under **Appearance → Theme Options** with five tabs (Identity, Social, Appearance, Layout, Advanced) built on the Settings API.
+- Structured **Social** tab with per-platform URL fields (Mastodon, X, LinkedIn, GitHub, YouTube, Instagram, Facebook, Threads, Pinterest, Email, RSS). Only platforms with a value render.
+- Hero renders social links as inline SVG icons in a circular chip layout, hover state driven by the active accent colour.
+- Bare-email input on the Email field is normalised to `mailto:` on save.
+- Email harvesting protection via `inc/email-guard.php`. Three modes selected on the Social tab: **JavaScript rebuild** (default), **HTML entities**, and **Off**. In JS mode the served HTML contains no address and no `mailto:` scheme; the anchor carries a base64-then-ROT13 payload that `assets/js/email-guard.js` decodes on load. Encoding order is deliberate, so a scraper doing a lone base64 decode recovers non-printable bytes rather than an address-shaped string. Entity mode encodes both the address and the scheme as numeric entities and needs no JavaScript.
+- Protection covers three surfaces: the Social tab email icon, any `mailto:` anchor typed into post content (via a `the_content` filter), and a new `[menj_email]` shortcode accepting `address`, `text`, and `class` attributes.
+- Decoder script is enqueued only in JS mode.
+- **Documentation** tab in Theme Options renders the theme's own `docs/*.md` files inline via a vendored copy of [Parsedown 1.8.0](https://github.com/erusev/parsedown) by Emanuil Rusev (MIT). Sub-nav switches between README and CHANGELOG. Vendored at `vendor/parsedown/`.
+- Bundled profile portrait at `assets/img/profile.png` used as:
+  - default hero portrait when the option is blank
+  - default favicon (respects Site Icon in Settings -> General when set)
+  - default apple-touch-icon
+- Bundled icon set generated from a face-centred crop of the portrait, flattened onto the accent navy so it stays legible at 16px and visible against dark browser chrome: `favicon.png` (32x32), `icon-192.png` (192x192), `apple-touch-icon.png` (180x180).
+- `brand_asset_url()` helper centralises paths to bundled brand assets.
+- Development tooling, adapted from the upstream repository's setup: `phpcs.xml` (WordPress standard, VariableAnalysis, PHPCompatibilityWP at 8.0-, prefix and text-domain enforcement), `composer.json` with dev-only dependencies, `Makefile` with `lint`, `fix`, `syntax`, `release`, and `clean` targets, `.gitignore`, and `.editorconfig`.
+- GitHub Actions: `lint.yml` runs a parallel syntax sweep then PHPCS on push and pull request, validates `theme.json`, and asserts the four documentation files exist with lowercase names. `release.yml` fires on tag push, refuses to build when the tag disagrees with the `Version:` header in `style.css`, and attaches a clean zip to a GitHub Release.
+- Release packaging excludes all development files while retaining `vendor/parsedown/`, which is a runtime dependency rather than a dev one.
+- Responsive pass. Three content breakpoints at 1024px, 768px, and 560px replace the previous ad-hoc 860px and 640px rules, and the hover-preview query moved from 900px to 1024px so the reserved gutter cannot squeeze the text column on a tablet.
+- Collapsing navigation below 768px, built as progressive enhancement: `assets/js/nav-toggle.js` injects the button and the class the collapsed styles depend on, so without JavaScript the menu stays visible as a wrapping list rather than becoming unopenable. Carries `aria-expanded` and `aria-controls`, closes on Escape with focus returned to the button, closes on link activation, and resets when the viewport leaves the small-screen range. Enqueued only when a primary menu is assigned.
+- Hit areas raised to 44px under `(pointer: coarse)`, matching WCAG 2.2 and Apple's guidance.
+- Overflow safety: `overflow-wrap` on text elements so long URLs cannot force a horizontal scrollbar, `overflow-x: auto` on content tables, and `max-width: 100%` extended to iframes, embeds, and objects.
+- `prefers-reduced-motion` now applies globally rather than to the hover preview alone.
+- Admin options page gained responsive rules at 782px, where WordPress collapses its own chrome: tabs and the documentation sub-nav scroll horizontally instead of stacking, inputs go full width, colour presets stack, and wide markdown tables scroll inside the panel.
+- `add_theme_support( 'custom-logo' )` for Site Identity uploader; header renders the custom logo when set, otherwise the text site title.
+- `Theme URI` and `Update URI` headers point to `https://github.com/menj/kolofon`, reserving the theme slug against wp.org collisions.
+- `Author URI` updated to `https://github.com/menj`.
+- Documentation tab footer shows repo URL and current theme version.
+- `social_github` default pre-filled with `https://github.com/menj`.
+- Documentation set standardised to four lowercase files in `docs/`: `readme.md`, `ssot.md`, `upgrading.md`, `changelog.md`. `LICENSE` at the theme root is optional.
+- `docs/ssot.md` added: authority map for every option key, colour variable, and platform list, with contributor rules.
+- `docs/upgrading.md` added: forward roadmap organised as eight sequenced phases rather than by category. Phase 0 records what shipped; phases 1 to 7 carry twenty-two outstanding items, each with effort, blast radius, prerequisites, and exit criteria. Four items carry an explicitly flagged decision that must be settled before work starts. Separate sections cover deferred items, deliberately-not-planned items, and the versioning policy tying the option schema to semver.
+- Documentation tab uses an explicit manifest for order and labels, so `ssot` renders as "SSOT" rather than "Ssot". Extra `.md` files still appear automatically after the manifest set.
+- Colour scheme system: Ivory (default), Ink, Charcoal, and Custom, injected as `:root` CSS custom properties on the front-end and in the block editor.
+- Font stack option: system sans-serif, editorial serif, or serif body with sans headings.
+- Configurable content width, hero heading, hero body, and footer text.
+- Lede type sizing on the Appearance tab: `hero_heading_size` (default 56px, range 28 to 96) and `hero_body_size` (default 18px, range 14 to 28). Stored in px, emitted in rem so they honour browser font-size settings. The heading keeps its fluid clamp, with the floor derived as 60% of the ceiling so the scaling stays proportional at any setting.
+- `theme.json` v2 with palette bound to CSS variables, fluid typography, and controlled spacing scale.
+- Hover previews on post lists. Hovering or keyboard-focusing a row reveals that post's featured image beside the list. Pure CSS, no JavaScript: driven by `:hover` and `:focus-within`, gated behind `(hover: hover) and (pointer: fine)` so touch devices are unaffected, and honouring `prefers-reduced-motion`. Posts without a featured image render no preview. Controlled by `hover_preview` (default on) and `preview_size` (default 240px, range 140 to 400).
+- The hovered row lifts into a soft card, tinted with `color-mix()` so it works against every colour preset.
+- `inc/post-list.php` added: `post_list_item()` and `post_list_classes()` render every post list in the theme, so the hover markup exists in one place. `home.php`, `index.php`, and `page-blog.php` now share it. Archive rows also gained an optional excerpt dek.
+- Two block patterns (`bio-hero`, `bio-card`) and a `kolofon` pattern category.
+- Two block styles: hairline separator and accent-bordered quote.
+- Modular structure: `inc/` split into `defaults.php`, `setup.php`, `enqueue.php`, `security.php`, `options.php`, `dynamic-css.php`, `blocks.php`.
+- Referrer-Policy security header added alongside the existing set.
+- Theme File Editor and Plugin File Editor are disabled by default. `DISALLOW_FILE_EDIT` is defined at theme load, both editor submenus are removed, and direct requests to `theme-editor.php` and `plugin-editor.php` are refused with a 403. Controlled by `disable_file_edit` on the Advanced tab, which defaults to on so a fresh install is protected before anyone visits the options page. A definition already present in `wp-config.php` takes precedence and the option cannot loosen it; when that is the case the field says so.
+- Single `page-blog.php` template listing posts grouped by year.
+- 404 template, custom search form, skip link.
+
+### Phase 1 (roadmap)
+- Settings export and import on the Advanced tab. Export streams every setting as pretty-printed JSON; import discards unrecognised keys, then runs the same `sanitize()` the options form uses, so clamps, enum fallbacks, and escaping apply identically to a file and a form post. Both handlers are nonce-checked and gated on `manage_options`. Upload is capped at 256 KB and rejected unless it declares `"theme": "kolofon"`.
+- Reset, import, and export now share one status-message system, replacing the single ad-hoc reset notice.
+- Documentation rendering hardened: `setMarkupEscaped( true )` alongside safe mode so raw HTML in a source file is escaped rather than emitted; `method_exists()` guards on every Parsedown setter so an older copy loaded by another plugin cannot fatal; and a transient keyed on `md5( slug + filemtime + version + engine )` so an edited file invalidates its own cache. When no parser is available the source is shown escaped inside a `pre` rather than rendering nothing.
+
+### Changed
+- Default content width widened from 720px to 1120px for a widescreen layout; clamp range now 600 to 1600.
+- Hero portrait size is now a Layout option (`portrait_size`, default 220px, range 120 to 400) exposed as `--mb-portrait`, replacing the hard-coded 260px.
+- Hero portrait is no longer forced into a circle. New `portrait_style` Layout option with four values; the default **Floating** applies no mask so a transparent cut-out PNG sits directly on the page background, with a soft `drop-shadow` for separation. Circle, rounded square, and square remain available and crop with `object-fit: cover`.
+- Header custom logo no longer forced to a circle.
+- Font stacks reworked into six options. Default is now **Modern grotesque** (Helvetica Neue leading a system fallback chain) rather than the plain system UI stack. Added Humanist sans and Monospace; the serif stacks now lead with Charter.
+- Hero heading is tighter and heavier: `clamp(2.25rem, 4.5vw, 3.5rem)`, weight 700, `letter-spacing: -0.02em`, `line-height: 1.08`, with `text-wrap: balance`.
+- Hero grid is vertically centred with a 4rem gutter; body copy capped at 60ch for readability at wide container sizes.
+- Header and footer containers go full-bleed with 2rem side padding, so branding sits hard left and navigation hard right regardless of content width.
+- Navigation links weighted 600.
+- Section headings ("Recent Posts") now use the accent colour at 1.75rem/700.
+- Hero stacking breakpoint raised from 720px to 860px to suit the wider default.
+- Namespace `CW\Theme` → `Kolofon`.
+- Text domain `chriswiegman-theme` → `kolofon`.
+- Hand-written CSS in `assets/css/main.css`; SCSS build removed.
+- Enqueue moved out of `functions.php` into `inc/enqueue.php`.
+- Front-end styles now consume CSS custom properties instead of hard-coded colours.
+- Home template rewritten to consume Theme Options values.
+
+### Removed
+- Bluesky from the social platform registry. Any stored `social_bluesky` value is dropped on the next save of the Social tab.
+- Chris-specific hard-coded index page IDs (`1226`, `463`) in `save_post` hook.
+- CPT column customisations for `talk`, `event`, `location` in `includes/post_columns/`.
+- `page-speaking.php` template.
+- Yoast-specific filters (`wpseo_next_rel_link`, `wpseo_prev_rel_link`, `wpseo_debug_markers`) — the target site uses Rank Math.
+- Compiled SCSS artefacts (`assets/scss/`, `.map` files, `.min.css`).
+
+### Attribution
+The following base behaviours are retained from the upstream theme:
+- Security headers (`Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, `X-Permitted-Cross-Domain-Policies`).
+- Comment removal across post types, admin, and admin bar.
+- `intermediate_image_sizes_advanced` trimming of `thumbnail` and `medium_large`.
+- `big_image_size_threshold` disabled.
+- `wp-embed`, `wp-block-library`, `global-styles`, `classic-theme-styles` dequeued on the front-end.
+- `wp_head` cleanup (RSD, WLW manifest, generator, shortlink, oEmbed discovery, REST link).

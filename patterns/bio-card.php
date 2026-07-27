@@ -4,7 +4,10 @@
  * Slug: kolofon/bio-card
  * Categories: kolofon
  * Description: Portrait, name, one-line description, and a short bio paragraph.
+ *
+ * @package Kolofon
  */
+
 ?>
 <!-- wp:columns {"verticalAlignment":"center"} -->
 <div class="wp-block-columns are-vertically-aligned-center">

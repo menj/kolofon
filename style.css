@@ -4,15 +4,15 @@ Theme URI: https://github.com/menj/kolofon
 Update URI: https://github.com/menj/kolofon
 Author: Mohd Elfie Nieshaem Juferi
 Author URI: https://github.com/menj
-Description: Modernist, minimalist WordPress theme for a personal bio microsite. Kolofon is the Malay spelling of "colophon" — the printer's mark at the end of a manuscript recording who set the type. A bio microsite is the same idea in web form. Classic PHP templates with hybrid block-editor and theme.json support, tabbed theme options, and variable colour schemes. Forked from the Chris Wiegman Theme v12.7.0 (GPL v2). See docs/changelog.md for fork history and attribution.
-Version: 3.0.1
+Description: Modernist, minimalist WordPress theme for a writer's microsite. Kolofon (from the Malay spelling of "colophon") is the printer's mark at the end of a manuscript, recording who set the type and on what tools. A writer's microsite is the same idea in web form. Classic PHP templates with hybrid block-editor and theme.json support, tabbed theme options, and variable colour schemes. Forked from the Chris Wiegman Theme v12.7.0 (GPL v2). See docs/changelog.md for fork history and attribution.
+Version: 5.7.0
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 8.0
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: kolofon
-Tags: minimal, one-column, blog, editor-style, block-patterns, custom-colors, custom-menu, threaded-comments, translation-ready
+Tags: blog, one-column, custom-colors, custom-menu, editor-style, featured-images, translation-ready
 */
 
 /* All runtime styling lives in assets/css/main.css. This file exists only for the WordPress theme header. */

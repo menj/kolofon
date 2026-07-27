@@ -4,7 +4,10 @@
  * Slug: kolofon/link-list
  * Categories: kolofon
  * Description: A titled list of outbound links with short descriptions.
+ *
+ * @package Kolofon
  */
+
 ?>
 <!-- wp:group {"tagName":"section"} -->
 <section class="wp-block-group">

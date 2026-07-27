@@ -46,8 +46,8 @@ function assert_can_manage( $action ) {
 function redirect_to_options( $status, $tab = 'advanced' ) {
 	$url = add_query_arg(
 		array(
-			'page'      => 'kolofon-options',
-			'mb_status' => rawurlencode( $status ),
+			'page'           => 'kolofon-options',
+			'kolofon_status' => rawurlencode( $status ),
 		),
 		admin_url( 'themes.php' )
 	);
@@ -66,12 +66,12 @@ function handle_export() {
 	$options = wp_parse_args( is_array( $stored ) ? $stored : array(), get_defaults() );
 
 	$payload = array(
-		'format'       => EXPORT_FORMAT,
-		'theme'        => 'kolofon',
-		'version'      => KOLOFON_VERSION,
-		'exported'     => gmdate( 'c' ),
-		'site'         => home_url( '/' ),
-		'options'      => $options,
+		'format'   => EXPORT_FORMAT,
+		'theme'    => 'kolofon',
+		'version'  => KOLOFON_VERSION,
+		'exported' => gmdate( 'c' ),
+		'site'     => home_url( '/' ),
+		'options'  => $options,
 	);
 
 	$filename = sprintf(
@@ -94,7 +94,10 @@ function handle_export() {
 function handle_import() {
 	assert_can_manage( 'kolofon_import' );
 
-	// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- file upload, validated below.
+	// Nonce and capability are both verified in assert_can_manage() above.
+	// PHPCS cannot follow check_admin_referer() into that helper, so it flags
+	// this $_FILES access; the check is real and runs first.
+	// phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- nonce checked in assert_can_manage(); file upload validated below.
 	$file = isset( $_FILES['kolofon_import_file'] ) ? $_FILES['kolofon_import_file'] : null;
 
 	if ( ! is_array( $file ) || ! isset( $file['error'] ) || UPLOAD_ERR_OK !== (int) $file['error'] ) {
@@ -148,19 +151,19 @@ function handle_import() {
  */
 function get_status_messages() {
 	return array(
-		'import-ok'        => array(
+		'import-ok'         => array(
 			'type' => 'success',
 			'text' => __( 'Settings imported.', 'kolofon' ),
 		),
-		'reset-ok'         => array(
+		'reset-ok'          => array(
 			'type' => 'success',
 			'text' => __( 'Defaults restored.', 'kolofon' ),
 		),
-		'import-nofile'    => array(
+		'import-nofile'     => array(
 			'type' => 'error',
 			'text' => __( 'No file was uploaded.', 'kolofon' ),
 		),
-		'import-size'      => array(
+		'import-size'       => array(
 			'type' => 'error',
 			'text' => __( 'That file is empty or larger than 256 KB, so it is not a settings export.', 'kolofon' ),
 		),
@@ -168,7 +171,7 @@ function get_status_messages() {
 			'type' => 'error',
 			'text' => __( 'The uploaded file could not be read.', 'kolofon' ),
 		),
-		'import-invalid'   => array(
+		'import-invalid'    => array(
 			'type' => 'error',
 			'text' => __( 'That file is not valid JSON, or has no options to import.', 'kolofon' ),
 		),

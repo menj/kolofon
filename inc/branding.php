@@ -50,20 +50,15 @@ function default_portrait_url() {
 }
 
 /**
- * URL to the bundled 32x32 favicon.
- *
- * @return string
- */
-function default_favicon_url() {
-	return brand_asset_url( 'favicon.png' );
-}
-
-/**
  * Emit fallback icon links only when the site owner has not set a Site Icon
- * under Settings -> General. WordPress's own icon output wins when configured.
+ * in the Customizer (Appearance -> Customize -> Site Identity). WordPress's
+ * own icon output wins when configured.
  *
- * Icons are flattened onto a solid background because a transparent favicon
- * disappears against matching browser chrome.
+ * The bundled default is a serif K in XCharter Bold, ivory on the Charcoal
+ * background, matching the wordmark. It is flattened onto a solid background
+ * because a transparent favicon disappears against matching browser chrome.
+ * The Appearance tab of Kolofon Options explains this and links to the Site
+ * Icon control.
  */
 function emit_favicon_fallback() {
 	if ( function_exists( 'has_site_icon' ) && has_site_icon() ) {
@@ -71,9 +66,21 @@ function emit_favicon_fallback() {
 	}
 
 	$icons = array(
-		array( 'rel' => 'icon', 'file' => 'favicon.png', 'sizes' => '32x32' ),
-		array( 'rel' => 'icon', 'file' => 'icon-192.png', 'sizes' => '192x192' ),
-		array( 'rel' => 'apple-touch-icon', 'file' => 'apple-touch-icon.png', 'sizes' => '180x180' ),
+		array(
+			'rel'   => 'icon',
+			'file'  => 'favicon.png',
+			'sizes' => '32x32',
+		),
+		array(
+			'rel'   => 'icon',
+			'file'  => 'icon-192.png',
+			'sizes' => '192x192',
+		),
+		array(
+			'rel'   => 'apple-touch-icon',
+			'file'  => 'apple-touch-icon.png',
+			'sizes' => '180x180',
+		),
 	);
 
 	foreach ( $icons as $icon ) {

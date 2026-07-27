@@ -1,5 +1,5 @@
 /*!
- * menj.bio main stylesheet
+ * Kolofon main stylesheet
  * All colours and fonts are driven by :root custom properties
  * injected inline from the Theme Options (see inc/dynamic-css.php).
  */
@@ -195,6 +195,28 @@ pre {
 .hero {
 	padding: 4rem 0 3rem;
 	border-bottom: 1px solid var(--k-rule);
+	/* Gradient wash on the lede, derived entirely from the active scheme's own
+	   tokens, so it recolours with Charcoal and Ivory (and any custom scheme)
+	   and never introduces a hue the palette did not define. A faint accent
+	   tint gathers at the top left and dissolves into the page background, so
+	   the hero lifts without boxing itself off or sitting behind the reading
+	   column below. color-mix keeps the accent low so it reads as atmosphere,
+	   not a coloured panel. Stands down to the flat token background under
+	   forced-colors. */
+	background:
+		radial-gradient(
+			120% 80% at 15% 0%,
+			color-mix( in srgb, var(--k-accent) 12%, transparent ) 0%,
+			transparent 60%
+		),
+		linear-gradient(
+			180deg,
+			color-mix( in srgb, var(--k-accent) 5%, var(--k-bg) ) 0%,
+			var(--k-bg) 100%
+		);
+}
+@media ( forced-colors: active ) {
+	.hero { background: var(--k-bg); }
 }
 .hero-inner {
 	display: grid;
@@ -217,6 +239,20 @@ pre {
 	max-width: 60ch;
 }
 .hero-body p:last-child { margin-bottom: 0; }
+/* Links inside the lede sit within the sentence rather than jumping out as
+   accent-coloured words: text colour, bold, and a persistent soft accent
+   underline that firms up on hover. Scheme-derived, so Charcoal underlines in
+   gold and Ivory in navy. */
+.hero-body a {
+	color: var(--k-text);
+	font-weight: 700;
+	border-bottom: 1px solid color-mix( in srgb, var(--k-accent) 55%, transparent );
+}
+.hero-body a:hover,
+.hero-body a:focus {
+	color: var(--k-accent);
+	border-bottom-color: var(--k-accent);
+}
 .hero-social {
 	margin-top: 1.75rem;
 	display: flex;
@@ -304,13 +340,6 @@ pre {
 	padding-bottom: 0.5rem;
 	margin: 2rem 0 1rem;
 }
-.section-link {
-	font-size: 0.95rem;
-	font-weight: 600;
-	color: var(--k-muted);
-	border-bottom: 1px solid var(--k-rule);
-}
-.section-link:hover { color: var(--k-accent); border-bottom-color: var(--k-accent); }
 
 /* ------- Post list ------- */
 .post-list {
@@ -336,7 +365,7 @@ pre {
 	min-width: 0;
 }
 .post-item a:hover .post-title { color: var(--k-accent); }
-.post-item .post-title { font-family: var(--k-font-heading); font-size: 1.05rem; font-weight: 600; }
+.post-item .post-title { font-family: var(--k-font-heading); font-size: var(--k-list-title, 1.05rem); font-weight: 600; }
 .post-item .post-dek { color: var(--k-muted); font-size: 0.95rem; line-height: 1.5; }
 .post-item .post-date { color: var(--k-muted); font-size: 0.9rem; white-space: nowrap; }
 
@@ -363,8 +392,11 @@ pre {
 	}
 
 	/* Preview is absolutely positioned within the list, not the row.
-	   Same top for every row — this is the "fixed anchor" behaviour. */
-	.post-preview {
+	   Same top for every row — this is the "fixed anchor" behaviour.
+	   All preview rules scoped to `.has-previews` so the mechanic only
+	   activates on lists that opt in — the blog page, for instance, opts
+	   out because a full chronological archive is scanned, not previewed. */
+	.post-list.has-previews .post-preview {
 		display: block;
 		position: absolute;
 		top: 0;
@@ -377,7 +409,7 @@ pre {
 		transition: opacity 0.18s ease 0.05s, transform 0.18s ease 0.05s;
 		z-index: 10;
 	}
-	.post-preview img {
+	.post-list.has-previews .post-preview img {
 		display: block;
 		width: 100%;
 		height: 100%;
@@ -392,27 +424,66 @@ pre {
 	   Same 3:2 anchor, same slot, but the peek is the post title over a
 	   subtle palette background. Gives image-less posts a peek of their own
 	   rather than showing nothing. */
-	.post-preview.is-typographic {
-		background: color-mix(in srgb, var(--k-text) 4%, var(--k-bg));
+	.post-list.has-previews .post-preview.is-typographic {
+		container-type: inline-size;
+		background:
+			radial-gradient(
+				120% 120% at 25% 15%,
+				color-mix( in srgb, var(--k-accent) 14%, transparent ) 0%,
+				transparent 65%
+			),
+			color-mix( in srgb, var(--k-text) 5%, var(--k-bg) );
 		border: 1px solid var(--k-rule);
 		border-radius: 8px;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-		padding: 0.85rem 1rem;
-		display: flex;
-		align-items: center;
-		justify-content: flex-start;
+		padding: 0;
+		display: block;
+		position: absolute;
+		overflow: hidden;
 	}
+	/* The generated mark fills the card behind the title. currentColor is set
+	   to the accent here, so the device recolours with the scheme. */
+	.post-preview-device {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		color: var(--k-accent);
+		opacity: 0.55;
+	}
+	/* Title anchored to the foot of the card, over a scrim so it stays legible
+	   whatever the mark does behind it. */
 	.post-preview-title {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 1;
+		padding: 12cqw 7cqw 6cqw;
 		font-family: var(--k-font-heading);
+		/* Scales with the card, so the title reads the same at any
+		   "Hover preview width" from 100px to 240px rather than looking
+		   oversized on a small peek and lost on a large one. Falls back to a
+		   sensible fixed size where container units are unsupported. */
 		font-size: 0.95rem;
-		font-weight: 600;
-		line-height: 1.25;
+		font-size: clamp( 0.95rem, 8cqw, 1.25rem );
+		font-weight: 700;
+		line-height: 1.3;
 		color: var(--k-text);
+		background: linear-gradient(
+			180deg,
+			transparent 0%,
+			color-mix( in srgb, var(--k-bg) 88%, transparent ) 55%,
+			color-mix( in srgb, var(--k-bg) 96%, transparent ) 100%
+		);
 		display: -webkit-box;
 		-webkit-line-clamp: 3;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 		text-overflow: ellipsis;
+	}
+	@media ( forced-colors: active ) {
+		.post-preview-device { display: none; }
 	}
 
 	.post-item.has-preview a:hover .post-preview,
@@ -449,7 +520,7 @@ pre {
 .post-item.is-index .post-item-main { flex: 1 1 auto; min-width: 0; }
 .post-item.is-index .post-title {
 	font-family: var(--k-font-heading);
-	font-size: 1.15rem;
+	font-size: calc( var(--k-list-title, 1.05rem) * 1.1 );
 	line-height: 1.3;
 	overflow-wrap: break-word;
 }
@@ -518,45 +589,37 @@ pre {
 	vertical-align: middle;
 }
 
-/* ------- Planned page notice ------- */
+/* ------- Planned page notice -------
+   The notice replaces the body of a page marked as planned. Editorial voice:
+   the page still counts as content, so the notice is set with the same
+   generous vertical rhythm as prose, centered, and framed as a soft
+   informational block rather than a heavy warning. */
 .planned-notice {
-	border: 1px dashed var(--k-rule);
+	background: color-mix(in srgb, var(--k-text) 3%, var(--k-bg));
+	border: 1px solid var(--k-rule);
 	border-radius: 10px;
-	padding: 1.5rem 1.75rem;
-	margin: 1rem 0 2rem;
+	padding: 2.5rem 2rem;
+	margin: 2rem 0;
+	text-align: center;
 }
-.planned-notice .planned-badge-line { margin: 0 0 0.75rem; }
+.planned-notice .planned-badge-line { margin: 0 0 1.25rem; }
 .planned-notice .planned-description {
-	font-size: 1.05rem;
-	margin: 0 0 0.5rem;
+	font-family: var(--k-font-heading);
+	font-size: 1.2rem;
+	color: var(--k-text);
+	line-height: 1.4;
+	margin: 0 auto 1rem;
+	max-width: 30em;
 }
 .planned-notice .planned-note {
 	color: var(--k-muted);
-	margin: 0;
-	font-size: 0.92rem;
+	margin: 0 auto;
+	font-size: 0.95rem;
+	line-height: 1.5;
+	max-width: 32em;
 }
 
 /* ------- Tags ------- */
-/* Inline tags sit under a title in a list row, so they read as metadata
-   rather than competing with the title. */
-.tags-inline {
-	list-style: none;
-	margin: 0.15rem 0 0;
-	padding: 0;
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.35rem;
-}
-.tags-inline li { margin: 0; }
-.tags-inline a {
-	font-size: 0.78rem;
-	color: var(--k-muted);
-	border-bottom: 0;
-	letter-spacing: 0.01em;
-}
-.tags-inline a::before { content: "#"; opacity: 0.55; }
-.tags-inline a:hover { color: var(--k-accent); }
-.tags-more { font-size: 0.78rem; color: var(--k-muted); opacity: 0.7; }
 
 /* Section breakdown on a tag archive. */
 .tag-sections {
@@ -644,16 +707,36 @@ pre {
 
 /* ------- Single ------- */
 .content-header { margin: 3rem 0 1.75rem; }
+/* Archive (category and tag), blog, and Now page h1 titles take the accent
+   colour so they match the "Recent Posts" section heading on the home page,
+   which also uses var(--k-accent). The term span in an archive title
+   ("Category: Foo") inherits it so the whole heading reads as one unit.
+   Single posts and single pages are excluded: their title carries `p-name`
+   (set in singular.php) and stays the default text colour. */
+.content-header .post-title:not(.p-name),
+.content-header .post-title:not(.p-name) .term {
+	color: var(--k-accent);
+}
+/* The search query is the visitor's own input, not a site taxonomy, so it
+   takes the plain text colour to stand apart from the accent-coloured
+   "Search results for:" label. Archive terms keep the accent above. */
+.content-header .post-title:not(.p-name) .term-query {
+	color: var(--k-text);
+}
 
 /* ------- Page-index templates (404, blog listing, other stubs) -------
    These templates use `.page-index` as their root article class and expect
    the same vertical rhythm and centred column as a singular post, without
    inheriting the singular-post schema markup or e-content typography. */
+/* `.page-index .content` was previously constrained to `max-width: 42em`
+   as a reading-column, but three of its callers (index.php, page-blog.php,
+   and 404.php) are post lists or minimal prose that want the full container
+   width. Reading-column constraint moved to `.page-index .description`
+   where prose actually lives. */
 .page-index .content {
-	max-width: 42em;
 	line-height: 1.65;
 }
-.page-index .content > p { margin: 0 0 1.2rem; }
+.page-index .content > p { margin: 0 0 1.2rem; max-width: 42em; }
 .page-index .content > p:last-child { margin-bottom: 0; }
 .page-index .description {
 	font-size: 1.05rem;
@@ -672,6 +755,82 @@ pre {
 }
 .page-index .year-group:first-child .year-heading { margin-top: 0; }
 
+/* ------- 404 page -------
+   Structured, not a fallback. Large numeric backdrop in the heading font sets
+   the scene; content stack overlays it. All colours from the palette so it
+   inherits scheme changes correctly. */
+.page-index.is-404 { padding: 3rem 0 4rem; }
+.not-found {
+	position: relative;
+	max-width: 42em;
+	margin: 0 auto;
+	text-align: center;
+	padding: 2rem 0;
+}
+.not-found-backdrop {
+	font-family: var(--k-font-heading);
+	font-size: clamp(8rem, 22vw, 14rem);
+	font-weight: 700;
+	line-height: 0.9;
+	letter-spacing: -0.03em;
+	color: var(--k-rule);
+	user-select: none;
+	margin-bottom: -0.4em;
+}
+.not-found-body {
+	position: relative;
+}
+.not-found-title {
+	font-family: var(--k-font-heading);
+	font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+	font-weight: 700;
+	color: var(--k-text);
+	margin: 0 0 0.75rem;
+	letter-spacing: -0.015em;
+}
+.not-found-description {
+	font-size: 1.05rem;
+	color: var(--k-muted);
+	line-height: 1.6;
+	max-width: 30em;
+	margin: 0 auto 2rem;
+}
+.not-found-actions {
+	margin-bottom: 3rem;
+}
+.not-found-home {
+	display: inline-block;
+	padding: 0.6rem 1.4rem;
+	border: 1px solid var(--k-accent);
+	border-radius: 999px;
+	color: var(--k-accent);
+	font-size: 0.9rem;
+	font-weight: 600;
+	transition: color 0.15s ease, background 0.15s ease;
+	border-bottom-width: 1px;
+}
+.not-found-home:hover,
+.not-found-home:focus-visible {
+	color: var(--k-bg);
+	background: var(--k-accent);
+}
+.not-found-search {
+	padding-top: 2rem;
+	border-top: 1px solid var(--k-rule);
+}
+.not-found-search-label {
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.72rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--k-muted);
+	margin: 0 0 1rem;
+}
+.not-found .search-form {
+	max-width: 24em;
+	margin: 0 auto;
+}
+
 /* Filter row on the blog index: post count on one line, section pills on
    the next. Adapted from Chris Wiegman's parent theme, category-filter
    pattern from 12.10.0. */
@@ -688,35 +847,11 @@ pre {
 	color: var(--k-muted);
 	letter-spacing: 0.06em;
 }
-.content-filter {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: baseline;
-	gap: 0.75rem 1rem;
-	font-size: 0.92rem;
-}
-.content-filter-label {
-	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-	font-size: 0.72rem;
-	letter-spacing: 0.12em;
-	text-transform: uppercase;
-	color: var(--k-muted);
-}
-.content-filter-link {
-	border-bottom: 0;
-	color: var(--k-text);
-}
-.content-filter-link:hover,
-.content-filter-link:focus-visible { color: var(--k-accent); }
-.content-filter-link.is-current {
-	color: var(--k-accent);
-	font-weight: 600;
-}
 
 /* Native search form: WordPress renders `.search-form` with a label wrapping
    the input, then a submit button. The button inherits system font by
    default, which reads as a foreign element on a page in the site's font. */
-.search-form { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: 1.25rem 0; }
+.search-form { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: 1.25rem 0; max-width: 420px; }
 /* Hide the "Search for:" label. Its purpose is fulfilled by the placeholder
    plus the aria-label WordPress applies to the input. Follows the parent
    theme's convention of visually stripping the label rather than restyling
@@ -733,19 +868,18 @@ pre {
 	color: var(--k-text);
 }
 .search-form .search-submit {
-	padding: 0.55rem 1.2rem;
-	border: 1px solid var(--k-text);
+	padding: 0.5rem 1.2rem;
+	border: 0;
 	border-radius: 4px;
 	background: var(--k-text);
 	color: var(--k-bg);
-	font-family: var(--k-font-body);
+	font: inherit;
 	font-size: 0.95rem;
 	cursor: pointer;
 }
 .search-form .search-submit:hover,
 .search-form .search-submit:focus-visible {
 	background: var(--k-accent);
-	border-color: var(--k-accent);
 }
 
 /* Section eyebrow above post titles. Reinforces which section the reader is
@@ -773,16 +907,50 @@ pre {
 .post-title { margin: 0.25rem 0; }
 .meta { color: var(--k-muted); font-size: 0.9rem; }
 .dt-published { text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.85rem; }
-.tags { list-style: none; padding: 0; margin: 1rem 0 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+/* Tags at the foot of a post. Set off from the body by a hairline and framed by
+   a small letterspaced label, then given the same rounded-pill language as the
+   section chooser so the two read as one family. Tags stay lighter than
+   sections, which are primary navigation: a soft accent tint rather than the
+   solid accent fill a current section takes. */
+.post-tags {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+	margin: 2.5rem 0 0;
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--k-rule);
+}
+.post-tags-label {
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--k-muted);
+	margin-right: 0.15rem;
+}
+.tags { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0.4rem 0.5rem; }
+.tags li { margin: 0; }
 .tags li a {
 	display: inline-block;
-	padding: 0.2rem 0.6rem;
-	border: 1px solid var(--k-rule);
-	border-radius: 2px;
-	font-size: 0.8rem;
-	color: var(--k-muted);
+	padding: 0.3rem 0.8rem;
+	border: 1px solid color-mix( in srgb, var(--k-accent) 30%, var(--k-rule) );
+	border-radius: 999px;
+	background: color-mix( in srgb, var(--k-accent) 7%, transparent );
+	font-size: 0.82rem;
+	letter-spacing: 0.015em;
+	color: var(--k-text);
+	transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
-.tags li a:hover { border-color: var(--k-accent); color: var(--k-accent); }
+.tags li a:hover,
+.tags li a:focus-visible {
+	border-color: var(--k-accent);
+	background: color-mix( in srgb, var(--k-accent) 18%, transparent );
+	color: var(--k-accent);
+}
+@media ( forced-colors: active ) {
+	.tags li a { background: none; }
+}
 .featured-image { margin: 1.5rem 0; }
 .e-content h2 { margin-top: 2.5rem; }
 
@@ -797,6 +965,18 @@ pre {
 .e-content > p,
 .e-content > ul li,
 .e-content > ol li { text-align: justify; }
+
+/* Exception at phone widths: below 640px, the column is too narrow for
+   justification to distribute space without producing broken rivers, and
+   the trade tips the wrong way. Fall back to left-aligned. This is the
+   only breakpoint-conditional typography rule in the theme, and the
+   justification changelog entry (2.8.3) specifically named this as the
+   signal to reconsider. */
+@media (max-width: 640px) {
+	.e-content > p,
+	.e-content > ul li,
+	.e-content > ol li { text-align: left; }
+}
 
 /* ------- Pagination ------- */
 .pagination {
@@ -837,12 +1017,14 @@ pre {
 .pagination-link.is-disabled { opacity: 0.35; }
 
 /* ------- Callout pattern ------- */
-.menj-callout {
+.menj-callout,
+.kolofon-callout {
 	border-left: 3px solid var(--k-accent);
 	background: color-mix(in srgb, var(--k-accent) 6%, var(--k-bg));
 	border-radius: 0 6px 6px 0;
 }
-.menj-callout > *:last-child { margin-bottom: 0; }
+.menj-callout > *:last-child,
+.kolofon-callout > *:last-child { margin-bottom: 0; }
 
 /* ------- Post navigation ------- */
 .post-nav {
@@ -866,11 +1048,6 @@ pre {
 }
 
 /* ------- Search form ------- */
-.search-form {
-	display: flex;
-	gap: 0.5rem;
-	max-width: 420px;
-}
 .search-form input[type="search"] {
 	flex: 1;
 	padding: 0.5rem 0.75rem;
@@ -881,15 +1058,6 @@ pre {
 	border-radius: 2px;
 }
 .search-form input[type="search"]:focus { outline: 2px solid var(--k-accent); outline-offset: 1px; }
-.search-form .search-submit {
-	padding: 0.5rem 1rem;
-	background: var(--k-text);
-	color: var(--k-bg);
-	border: 0;
-	cursor: pointer;
-	font: inherit;
-	border-radius: 2px;
-}
 
 /* ------- Footer ------- */
 .site-footer {
@@ -1106,6 +1274,186 @@ body.font-mono .post-item .post-dek { line-height: 1.85; }
    a hover state exists at all, not how wide the screen is.
    ================================================================== */
 
+/* ------- Search ------- */
+/* Search toggle: a quiet icon in the header that opens the full-screen
+   overlay. Matches the navigation toggle's 44px target and token colours.
+   Hidden until the script marks the header, so no-JS visitors see nothing
+   that cannot act. */
+.search-toggle {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	margin-left: 0.5rem;
+	background: transparent;
+	border: 1px solid var(--k-rule);
+	border-radius: 6px;
+	color: var(--k-text);
+	cursor: pointer;
+}
+.search-toggle:hover { border-color: var(--k-accent); color: var(--k-accent); }
+.search-toggle:focus-visible {
+	outline: 2px solid var(--k-accent);
+	outline-offset: 2px;
+}
+.site-header.has-search-toggle .search-toggle { display: inline-flex; }
+
+/* Full-screen search overlay. Covers the viewport, tinted from the background
+   token so it reads as the same site rather than a foreign layer. Fades and
+   lifts slightly on open; the transition is removed under reduced motion.
+
+   Closed state is load-bearing: the overlay is fixed and covers the viewport,
+   so at rest it MUST NOT catch clicks. opacity alone does not stop that (an
+   opacity:0 element still receives pointer events), and the HTML hidden
+   attribute is overridden by the display value below, so neither can be relied
+   on. visibility:hidden plus pointer-events:none is what actually removes it
+   from hit-testing between openings. */
+.search-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 1000;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	padding: 12vh 1.5rem 1.5rem;
+	background: color-mix(in srgb, var(--k-bg) 92%, transparent);
+	backdrop-filter: blur(6px);
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.18s ease, visibility 0s linear 0.18s;
+}
+.search-overlay.is-open {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+	transition: opacity 0.18s ease;
+}
+.search-overlay-inner {
+	position: relative;
+	width: 100%;
+	max-width: 640px;
+	transform: translateY(-8px);
+	transition: transform 0.18s ease;
+}
+.search-overlay.is-open .search-overlay-inner { transform: translateY(0); }
+.search-overlay-heading {
+	font-family: var(--k-font-heading);
+	font-size: 0.8rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--k-muted);
+	margin: 0 0 0.75rem;
+}
+.search-overlay-close {
+	position: absolute;
+	top: -3.25rem;
+	right: 0;
+	width: 44px;
+	height: 44px;
+	font-size: 1.75rem;
+	line-height: 1;
+	background: transparent;
+	border: 1px solid var(--k-rule);
+	border-radius: 6px;
+	color: var(--k-text);
+	cursor: pointer;
+}
+.search-overlay-close:hover { border-color: var(--k-accent); color: var(--k-accent); }
+.search-overlay-close:focus-visible {
+	outline: 2px solid var(--k-accent);
+	outline-offset: 2px;
+}
+/* Inside the overlay the form spans the panel and reads larger than the inline
+   version, since it is the sole focus of the screen. */
+/* The overlay form carries the theme's character rather than the plain inline
+   look: a display-font heading, a larger field with an accent focus ring, and
+   an accent-gradient submit button matching the gradient language used in the
+   hero and admin. Everything is mixed from the active scheme's own --k-accent,
+   --k-bg, and --k-text, so both Charcoal and Ivory (and any custom scheme) get
+   a coherent, palette-correct treatment. */
+.search-overlay-heading {
+	font-family: var(--k-font-heading);
+}
+.search-overlay .search-form {
+	max-width: none;
+	margin: 0;
+	width: 100%;
+	gap: 0.85rem;
+}
+.search-overlay .search-form input[type="search"],
+.search-overlay .search-form .search-field {
+	flex: 1 1 auto;
+	font-family: var(--k-font-body);
+	font-size: 1.2rem;
+	padding: 0.9rem 1.1rem;
+	border: 1px solid color-mix( in srgb, var(--k-accent) 45%, var(--k-rule) );
+	border-radius: 8px;
+	background: color-mix( in srgb, var(--k-accent) 4%, var(--k-bg) );
+	color: var(--k-text);
+	box-shadow: 0 1px 2px rgba( 0, 0, 0, 0.12 );
+	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.search-overlay .search-form input[type="search"]::placeholder,
+.search-overlay .search-form .search-field::placeholder {
+	color: var(--k-muted);
+}
+.search-overlay .search-form input[type="search"]:focus,
+.search-overlay .search-form .search-field:focus {
+	outline: none;
+	border-color: var(--k-accent);
+	box-shadow: 0 0 0 3px color-mix( in srgb, var(--k-accent) 30%, transparent );
+}
+/* Accent-gradient submit, matching the theme's gradient language. Text colour
+   is the background token so it stays legible on the accent in both schemes. */
+.search-overlay .search-form .search-submit {
+	padding: 0.9rem 1.6rem;
+	border: 0;
+	border-radius: 8px;
+	font-family: var(--k-font-heading);
+	font-size: 1rem;
+	font-weight: 700;
+	letter-spacing: 0.01em;
+	color: var(--k-bg);
+	cursor: pointer;
+	background: linear-gradient(
+		135deg,
+		var(--k-accent) 0%,
+		color-mix( in srgb, var(--k-accent) 70%, #000 ) 100%
+	);
+	box-shadow: 0 1px 3px rgba( 0, 0, 0, 0.2 );
+	transition: filter 0.15s ease;
+}
+.search-overlay .search-form .search-submit:hover,
+.search-overlay .search-form .search-submit:focus-visible {
+	filter: brightness( 1.08 );
+	outline: none;
+}
+.search-overlay .search-form .search-submit:focus-visible {
+	box-shadow: 0 0 0 3px color-mix( in srgb, var(--k-accent) 35%, transparent );
+}
+@media ( forced-colors: active ) {
+	.search-overlay .search-form input[type="search"],
+	.search-overlay .search-form .search-field,
+	.search-overlay .search-form .search-submit {
+		background: Canvas;
+		color: CanvasText;
+		border: 1px solid CanvasText;
+	}
+}
+/* Locks background scroll while the overlay is open. */
+body.search-overlay-open { overflow: hidden; }
+
+@media ( prefers-reduced-motion: reduce ) {
+	.search-overlay,
+	.search-overlay-inner {
+		transition: none;
+	}
+	.search-overlay-inner { transform: none; }
+}
+
 /* ------- Navigation toggle ------- */
 /* The button is injected by assets/js/nav-toggle.js. Without JavaScript the
    class is never added, the button never exists, and the menu stays visible
@@ -1237,6 +1585,13 @@ body.font-mono .post-item .post-dek { line-height: 1.85; }
 	.hero { padding: 1.75rem 0 1.5rem; }
 	.hero-portrait { width: min(var(--k-portrait), 150px); }
 
+	/* Tighter transition from hero into the Recent Posts section on phones:
+	   the default 2.5rem 0 3rem padding on `.recent` reads as excessive
+	   vertical breathing room when combined with the hero's own bottom
+	   padding on a narrow viewport. Halve it. */
+	.recent { padding: 1.25rem 0 2rem; }
+	.section-chooser { margin-bottom: 1rem; }
+
 	/* Columns collapse: the two meta columns move above the title. */
 	.post-item.is-columns a { flex-wrap: wrap; gap: 0.2rem 1rem; }
 	.post-item.is-columns .post-item-main { flex-basis: 100%; }
@@ -1307,3 +1662,169 @@ body.font-mono .post-item .post-dek { line-height: 1.85; }
 a.k-email[data-mbe] { cursor: pointer; }
 a.k-email.is-resolved { cursor: auto; }
 
+
+/* ------- Print -------
+   The screen design is palette-driven and often dark, which prints as a solid
+   block of toner. Print resets to black on white, drops navigation and
+   interactive chrome that cannot be used on paper, and reveals link targets
+   after the anchor text so a printed page stays useful as a reference.
+
+   Colours here are literal rather than custom properties: the point is to
+   escape the palette, not to follow it. */
+/* Print branding elements are inert on screen; only the print block below
+   reveals them. */
+.print-letterhead,
+.print-colophon {
+	display: none;
+}
+
+@media print {
+	/* A named page with generous margins and a running footer carrying the
+	   site name and page number, so every sheet is identifiably yours. */
+	@page {
+		margin: 20mm 18mm 22mm;
+	}
+
+	:root {
+		--k-bg: #ffffff;
+		--k-text: #000000;
+		--k-muted: #444444;
+		--k-accent: #000000;
+		--k-rule: #cccccc;
+	}
+
+	html,
+	body {
+		background: #fff;
+		color: #000;
+		font-size: 11pt;
+		line-height: 1.45;
+	}
+
+	/* Chrome that cannot be acted on from paper. */
+	.site-header,
+	.site-footer,
+	.nav-toggle,
+	.skip-link,
+	.section-chooser,
+	.content-meta,
+	.post-nav,
+	.pagination,
+	.search-form,
+	.hero-social,
+	.post-preview,
+	.not-found-search,
+	.planned-notice .planned-badge-line {
+		display: none;
+	}
+
+	/* Body copy prints left-aligned. Justification without hyphenation opens
+	   rivers at print measure for the same reason it does below 640px. */
+	.e-content > p,
+	.e-content > ul li,
+	.e-content > ol li {
+		text-align: left;
+	}
+
+	a {
+		color: #000;
+		border-bottom: 0;
+		text-decoration: underline;
+	}
+
+	/* Reveal destinations, since a printed link is otherwise a dead end.
+	   Internal fragment and same-page anchors are excluded: their targets add
+	   noise without adding information. */
+	.e-content a[href^="http"]::after {
+		content: " (" attr(href) ")";
+		font-size: 0.85em;
+		word-break: break-all;
+	}
+
+	h1,
+	h2,
+	h3 {
+		page-break-after: avoid;
+		break-after: avoid;
+	}
+
+	img,
+	figure,
+	blockquote,
+	pre,
+	table {
+		page-break-inside: avoid;
+		break-inside: avoid;
+	}
+
+	img {
+		max-width: 100% !important;
+	}
+
+	.post-title {
+		font-size: 18pt;
+	}
+
+	/* Letterhead: the site identity as a document masthead on the first page.
+	   A rule beneath it sets it apart from the article title that follows. */
+	.print-letterhead {
+		display: block;
+		margin: 0 0 8mm;
+		padding: 0 0 3mm;
+		border-bottom: 1.5pt solid #000;
+	}
+	.print-letterhead-name {
+		display: block;
+		font-family: var(--k-font-heading, Georgia, serif);
+		font-size: 15pt;
+		font-weight: 700;
+		letter-spacing: 0.01em;
+	}
+	.print-letterhead-tag {
+		display: block;
+		margin-top: 1mm;
+		font-size: 9pt;
+		font-style: italic;
+		color: #444;
+	}
+
+	/* Colophon: the citation block at the foot of the article. Kept together on
+	   one page and set off with a rule, so it reads as apparatus rather than
+	   body text. */
+	.print-colophon {
+		display: block;
+		margin: 10mm 0 0;
+		padding: 4mm 0 0;
+		border-top: 0.5pt solid #999;
+		page-break-inside: avoid;
+		break-inside: avoid;
+		font-size: 9pt;
+		line-height: 1.4;
+	}
+	.print-colophon-label {
+		margin: 0 0 2mm;
+		font-family: var(--k-font-heading, Georgia, serif);
+		font-size: 8pt;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		color: #444;
+	}
+	.print-colophon-citation {
+		margin: 0 0 1.5mm;
+	}
+	.print-colophon-site {
+		font-style: italic;
+	}
+	.print-colophon-source {
+		margin: 0;
+		color: #444;
+		word-break: break-all;
+	}
+
+	/* The 404 backdrop is a decorative watermark; on paper it is a giant
+	   grey number with no purpose. */
+	.not-found-backdrop {
+		display: none;
+	}
+}

@@ -1,5 +1,5 @@
 /*!
- * menj.bio keyboard navigation.
+ * Kolofon keyboard navigation.
  *
  * Digits 0-9 follow the correspondingly numbered navigation link. The boxed
  * digits in the sidebar exist to advertise exactly this.

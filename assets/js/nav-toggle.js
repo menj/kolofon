@@ -1,5 +1,5 @@
 /*!
- * menj.bio navigation toggle.
+ * Kolofon navigation toggle.
  *
  * Progressive enhancement. The markup ships with the navigation visible, so a
  * visitor without JavaScript gets a plain wrapping menu rather than a menu

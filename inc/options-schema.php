@@ -119,20 +119,78 @@ function get_option_fields() {
 	$fields = array();
 
 	// Identity.
-	$fields['hero_eyebrow']  = array( 'label' => __( 'Hero eyebrow', 'kolofon' ), 'tab' => 'identity', 'type' => 'text', 'args' => array( 'help' => __( 'A short line above the heading, set in small letterspaced capitals. Leave empty to hide it.', 'kolofon' ) ) );
-	$fields['hero_heading']  = array( 'label' => __( 'Hero heading', 'kolofon' ), 'tab' => 'identity', 'type' => 'heading_text', 'args' => array( 'help' => __( 'Wrap a phrase in <mark> to give it the accent colour. Only mark, em, strong, and br are allowed.', 'kolofon' ) ) );
-	$fields['hero_body']     = array( 'label' => __( 'Hero body copy', 'kolofon' ), 'tab' => 'identity', 'type' => 'textarea', 'args' => array( 'help' => __( 'The intro paragraph. Basic HTML allowed.', 'kolofon' ), 'rows' => 5 ) );
-	$fields['hero_portrait'] = array( 'label' => __( 'Hero portrait', 'kolofon' ), 'tab' => 'identity', 'type' => 'image', 'args' => array( 'help' => __( 'Square image works best. Rendered as a circle.', 'kolofon' ) ) );
-	$fields['footer_text']   = array( 'label' => __( 'Footer text', 'kolofon' ), 'tab' => 'identity', 'type' => 'textarea', 'args' => array( 'help' => __( 'Basic HTML is allowed.', 'kolofon' ) ) );
+	$fields['hero_eyebrow']    = array(
+		'label' => __( 'Hero eyebrow', 'kolofon' ),
+		'tab'   => 'identity',
+		'type'  => 'text',
+		'args'  => array( 'help' => __( 'A short line above the heading, set in small letterspaced capitals. Leave empty to hide it.', 'kolofon' ) ),
+	);
+	$fields['hero_heading']    = array(
+		'label' => __( 'Hero heading', 'kolofon' ),
+		'tab'   => 'identity',
+		'type'  => 'heading_text',
+		'args'  => array( 'help' => __( 'Wrap a phrase in <mark> to give it the accent colour. Only mark, em, strong, and br are allowed.', 'kolofon' ) ),
+	);
+	$fields['citation_author'] = array(
+		'label' => __( 'Citation name', 'kolofon' ),
+		'tab'   => 'identity',
+		'type'  => 'text',
+		'args'  => array(
+			'help' => __( 'Your name inverted for citations, as MLA requires: Last, First (for example, "Juferi, Mohd Elfie Nieshaem"). Used in the citation printed at the foot of a post. If left empty, the hero heading is used as written.', 'kolofon' ),
+		),
+	);
+	$fields['hero_body']       = array(
+		'label' => __( 'Hero body copy', 'kolofon' ),
+		'tab'   => 'identity',
+		'type'  => 'textarea',
+		'args'  => array(
+			'help' => __( 'The intro paragraph. Basic HTML allowed, including links: <a href="...">like this</a>. Links render bold with an accent underline. Blank lines become paragraphs.', 'kolofon' ),
+			'rows' => 5,
+		),
+	);
+	$fields['hero_portrait']   = array(
+		'label' => __( 'Hero portrait', 'kolofon' ),
+		'tab'   => 'identity',
+		'type'  => 'image',
+		'args'  => array( 'help' => __( 'Square image works best. Rendered as a circle.', 'kolofon' ) ),
+	);
+	$fields['footer_text']     = array(
+		'label' => __( 'Footer text', 'kolofon' ),
+		'tab'   => 'identity',
+		'type'  => 'textarea',
+		'args'  => array( 'help' => __( 'Basic HTML is allowed.', 'kolofon' ) ),
+	);
 
 	// Sections.
-	$fields['section_slugs']          = array( 'label' => __( 'Section categories', 'kolofon' ), 'tab' => 'sections', 'type' => 'section_slugs', 'args' => array( 'help' => __( 'Category slugs in the order they should appear, separated by commas or new lines. Each must be an existing category. Sections are mutually exclusive: a post belongs to exactly one. Use tags for topics that cut across sections.', 'kolofon' ) ) );
-	$fields['show_section_chooser']   = array( 'label' => __( 'Show section chooser', 'kolofon' ), 'tab' => 'sections', 'type' => 'checkbox', 'args' => array( 'help' => __( 'Displays the row of section links on the home page and on section archives.', 'kolofon' ) ) );
-	$fields['section_all_label']      = array( 'label' => __( 'Label for the all-sections link', 'kolofon' ), 'tab' => 'sections', 'type' => 'text' );
-	$fields['show_list_tags']         = array( 'label' => __( 'Show tags in post lists', 'kolofon' ), 'tab' => 'sections', 'type' => 'checkbox', 'args' => array( 'help' => __( 'Tags are the counterpart to sections: a post lives in one section and carries any number of tags, so tags are how a topic crosses sections.', 'kolofon' ) ) );
-	$fields['list_tag_limit']         = array( 'label' => __( 'Tags shown per row', 'kolofon' ), 'tab' => 'sections', 'type' => 'number', 'args' => array( 'min' => 1, 'max' => 10, 'step' => 1, 'help' => __( 'Any beyond this are summarised as a count.', 'kolofon' ) ) );
-	$fields['enforce_single_section'] = array( 'label' => __( 'One category per post', 'kolofon' ), 'tab' => 'sections', 'type' => 'checkbox', 'args' => array( 'help' => __( 'Reduces every post to a single category on save, and makes the block editor category panel behave as a single-choice list. Applies to posts created through REST, WP-CLI, and imports too.', 'kolofon' ) ) );
-	$fields['scope_adjacent_posts']   = array( 'label' => __( 'Keep previous and next within a section', 'kolofon' ), 'tab' => 'sections', 'type' => 'checkbox', 'args' => array( 'help' => __( 'Without this, the links at the foot of a post run chronologically across every section, so a reader following one topic is dropped into another.', 'kolofon' ) ) );
+	$fields['section_slugs']          = array(
+		'label' => __( 'Section categories', 'kolofon' ),
+		'tab'   => 'sections',
+		'type'  => 'section_slugs',
+		'args'  => array( 'help' => __( 'Category slugs in the order they should appear, separated by commas or new lines. Each must be an existing category. Sections are mutually exclusive: a post belongs to exactly one. Use tags for topics that cut across sections.', 'kolofon' ) ),
+	);
+	$fields['show_section_chooser']   = array(
+		'label' => __( 'Show section chooser', 'kolofon' ),
+		'tab'   => 'sections',
+		'type'  => 'checkbox',
+		'args'  => array( 'help' => __( 'Displays the row of section links on the home page and on section archives.', 'kolofon' ) ),
+	);
+	$fields['section_all_label']      = array(
+		'label' => __( 'Label for the all-sections link', 'kolofon' ),
+		'tab'   => 'sections',
+		'type'  => 'text',
+	);
+	$fields['enforce_single_section'] = array(
+		'label' => __( 'One category per post', 'kolofon' ),
+		'tab'   => 'sections',
+		'type'  => 'checkbox',
+		'args'  => array( 'help' => __( 'Reduces every post to a single category on save, and makes the block editor category panel behave as a single-choice list. Applies to posts created through REST, WP-CLI, and imports too.', 'kolofon' ) ),
+	);
+	$fields['scope_adjacent_posts']   = array(
+		'label' => __( 'Keep previous and next within a section', 'kolofon' ),
+		'tab'   => 'sections',
+		'type'  => 'checkbox',
+		'args'  => array( 'help' => __( 'Without this, the links at the foot of a post run chronologically across every section, so a reader following one topic is dropped into another.', 'kolofon' ) ),
+	);
 
 	// Social. The platform list is filterable, so this loop picks up additions.
 	$fields['email_obfuscation'] = array(
@@ -141,7 +199,7 @@ function get_option_fields() {
 		'type'  => 'select',
 		'args'  => array(
 			'choices' => get_email_modes(),
-			'help'    => __( 'Keeps plain mailto: strings out of the served HTML so harvesters find nothing to scrape. Applies to the icon below, to mailto: links in post content, and to the [menj_email] shortcode.', 'kolofon' ),
+			'help'    => __( 'Keeps plain mailto: strings out of the served HTML so harvesters find nothing to scrape. Applies to the icon below, to mailto: links in post content, and to the [kolofon_email] shortcode.', 'kolofon' ),
 		),
 	);
 
@@ -162,34 +220,205 @@ function get_option_fields() {
 	}
 
 	// Appearance.
-	$fields['colour_scheme'] = array( 'label' => __( 'Colour scheme', 'kolofon' ), 'tab' => 'appearance', 'type' => 'radio_presets' );
+	$fields['colour_scheme'] = array(
+		'label' => __( 'Colour scheme', 'kolofon' ),
+		'tab'   => 'appearance',
+		'type'  => 'radio_presets',
+	);
 
-
-	$fields['font_stack']        = array( 'label' => __( 'Font stack', 'kolofon' ), 'tab' => 'appearance', 'type' => 'font_stack' );
-	$fields['hero_heading_size'] = array( 'label' => __( 'Lede heading size (px)', 'kolofon' ), 'tab' => 'appearance', 'type' => 'number', 'args' => array( 'min' => 28, 'max' => 96, 'step' => 2, 'help' => __( 'Maximum size. The heading scales down fluidly on narrow screens.', 'kolofon' ) ) );
-	$fields['hero_body_size']    = array( 'label' => __( 'Lede body size (px)', 'kolofon' ), 'tab' => 'appearance', 'type' => 'number', 'args' => array( 'min' => 14, 'max' => 28, 'step' => 1, 'help' => __( 'Size of the intro paragraph under the heading.', 'kolofon' ) ) );
+	$fields['font_stack']        = array(
+		'label' => __( 'Font stack', 'kolofon' ),
+		'tab'   => 'appearance',
+		'type'  => 'font_stack',
+	);
+	$fields['hero_heading_size'] = array(
+		'label' => __( 'Lede heading size (px)', 'kolofon' ),
+		'tab'   => 'appearance',
+		'type'  => 'slider',
+		'args'  => array(
+			'min'  => 28,
+			'max'  => 96,
+			'step' => 2,
+			'unit' => 'px',
+			'help' => __( 'Maximum size. The heading scales down fluidly on narrow screens. Drag to preview, or type an exact value.', 'kolofon' ),
+		),
+	);
+	$fields['hero_body_size']    = array(
+		'label' => __( 'Lede body size (px)', 'kolofon' ),
+		'tab'   => 'appearance',
+		'type'  => 'slider',
+		'args'  => array(
+			'min'  => 14,
+			'max'  => 28,
+			'step' => 1,
+			'unit' => 'px',
+			'help' => __( 'Size of the intro paragraph under the heading. Drag to preview, or type an exact value.', 'kolofon' ),
+		),
+	);
 
 	// Layout.
-	$fields['chrome_layout'] = array( 'label' => __( 'Chrome layout', 'kolofon' ), 'tab' => 'layout', 'type' => 'select', 'args' => array( 'choices' => array( 'topbar' => __( 'Top bar: full-width header above the content', 'kolofon' ), 'sidebar' => __( 'Sidebar: floating card in a left rail', 'kolofon' ) ), 'help' => __( 'The sidebar card holds the wordmark, a numbered navigation, and the stay-in-touch links, leaving the content column free. Collapses to the top bar on narrow screens.', 'kolofon' ) ) );
-	$fields['keyboard_nav'] = array( 'label' => __( 'Keyboard shortcuts', 'kolofon' ), 'tab' => 'layout', 'type' => 'checkbox', 'args' => array( 'help' => __( 'Digits 0 to 9 follow the correspondingly numbered navigation link. Sidebar layout only. Never fires while typing in a field. Turn off if it conflicts with assistive tooling.', 'kolofon' ) ) );
-	$fields['sidebar_social_heading'] = array( 'label' => __( 'Stay-in-touch heading', 'kolofon' ), 'tab' => 'layout', 'type' => 'text' );
-	$fields['container_width'] = array( 'label' => __( 'Content width (px)', 'kolofon' ), 'tab' => 'layout', 'type' => 'number', 'args' => array( 'min' => 600, 'max' => 1600, 'step' => 20, 'help' => __( 'Widescreen sites sit well between 1040 and 1280.', 'kolofon' ) ) );
-	$fields['portrait_size']   = array( 'label' => __( 'Hero portrait size (px)', 'kolofon' ), 'tab' => 'layout', 'type' => 'number', 'args' => array( 'min' => 120, 'max' => 400, 'step' => 10, 'help' => __( 'Diameter or edge length of the hero portrait.', 'kolofon' ) ) );
-	$fields['portrait_style']  = array( 'label' => __( 'Hero portrait style', 'kolofon' ), 'tab' => 'layout', 'type' => 'select', 'args' => array( 'choices' => get_portrait_styles(), 'help' => __( 'Floating suits a cut-out PNG with a transparent background.', 'kolofon' ) ) );
-	$fields['list_style'] = array( 'label' => __( 'Post list style', 'kolofon' ), 'tab' => 'layout', 'type' => 'select', 'args' => array( 'choices' => array( 'stacked' => __( 'Stacked: title with date at the end', 'kolofon' ), 'columns' => __( 'Columns: date, section, title in aligned columns', 'kolofon' ), 'index'   => __( 'Index: title with year, excerpt underneath, indexical', 'kolofon' ) ), 'help' => __( 'Index reads as a table of contents: a hairline-ruled row list where the title carries the eye and the excerpt sits below. Suits sites organised by title rather than by date.', 'kolofon' ) ) );
-	$fields['hover_preview']   = array( 'label' => __( 'Post hover previews', 'kolofon' ), 'tab' => 'layout', 'type' => 'checkbox', 'args' => array( 'help' => __( 'Reveals a post featured image beside the list on hover or keyboard focus. Posts without a featured image show nothing. Pointer devices only.', 'kolofon' ) ) );
-	$fields['preview_size']    = array( 'label' => __( 'Hover preview width (px)', 'kolofon' ), 'tab' => 'layout', 'type' => 'number', 'args' => array( 'min' => 100, 'max' => 240, 'step' => 10, 'help' => __( 'Width of the small floating preview that appears below-right of a post row on hover. Kept small so it reads as a peek rather than a card.', 'kolofon' ) ) );
-	$fields['show_recent']     = array( 'label' => __( 'Show recent posts on home', 'kolofon' ), 'tab' => 'layout', 'type' => 'checkbox' );
-	$fields['recent_count']    = array( 'label' => __( 'Recent posts count', 'kolofon' ), 'tab' => 'layout', 'type' => 'number', 'args' => array( 'min' => 1, 'max' => 20, 'step' => 1 ) );
+	$fields['chrome_layout']          = array(
+		'label' => __( 'Chrome layout', 'kolofon' ),
+		'tab'   => 'layout',
+		'type'  => 'select',
+		'args'  => array(
+			'choices' => array(
+				'topbar'  => __( 'Top bar: full-width header above the content', 'kolofon' ),
+				'sidebar' => __( 'Sidebar: floating card in a left rail', 'kolofon' ),
+			),
+			'help'    => __( 'The sidebar card holds the wordmark, a numbered navigation, and the stay-in-touch links, leaving the content column free. Collapses to the top bar on narrow screens.', 'kolofon' ),
+		),
+	);
+	$fields['keyboard_nav']           = array(
+		'label' => __( 'Keyboard shortcuts', 'kolofon' ),
+		'tab'   => 'layout',
+		'type'  => 'checkbox',
+		'args'  => array( 'help' => __( 'Digits 0 to 9 follow the correspondingly numbered navigation link. Sidebar layout only. Never fires while typing in a field. Turn off if it conflicts with assistive tooling.', 'kolofon' ) ),
+	);
+	$fields['sidebar_social_heading'] = array(
+		'label' => __( 'Stay-in-touch heading', 'kolofon' ),
+		'tab'   => 'layout',
+		'type'  => 'text',
+	);
+	$fields['container_width']        = array(
+		'label' => __( 'Content width (px)', 'kolofon' ),
+		'tab'   => 'layout',
+		'type'  => 'number',
+		'args'  => array(
+			'min'  => 600,
+			'max'  => 1600,
+			'step' => 20,
+			'help' => __( 'Widescreen sites sit well between 1040 and 1280.', 'kolofon' ),
+		),
+	);
+	$fields['portrait_size']          = array(
+		'label' => __( 'Hero portrait size (px)', 'kolofon' ),
+		'tab'   => 'layout',
+		'type'  => 'number',
+		'args'  => array(
+			'min'  => 120,
+			'max'  => 400,
+			'step' => 10,
+			'help' => __( 'Diameter or edge length of the hero portrait.', 'kolofon' ),
+		),
+	);
+	$fields['portrait_style']         = array(
+		'label' => __( 'Hero portrait style', 'kolofon' ),
+		'tab'   => 'layout',
+		'type'  => 'select',
+		'args'  => array(
+			'choices' => get_portrait_styles(),
+			'help'    => __( 'Floating suits a cut-out PNG with a transparent background.', 'kolofon' ),
+		),
+	);
+	$fields['list_title_size']        = array(
+		'label' => __( 'Post list title size (px)', 'kolofon' ),
+		'tab'   => 'layout',
+		'type'  => 'number',
+		'args'  => array(
+			'min'  => 14,
+			'max'  => 30,
+			'step' => 1,
+			'help' => __( 'Size of the post titles in list views, including the main page. Stored in px, applied in rem so it still honours the reader\'s browser font size.', 'kolofon' ),
+		),
+	);
+	$fields['list_style']             = array(
+		'label' => __( 'Post list style', 'kolofon' ),
+		'tab'   => 'layout',
+		'type'  => 'select',
+		'args'  => array(
+			'choices' => array(
+				'stacked' => __( 'Stacked: title with date at the end', 'kolofon' ),
+				'columns' => __( 'Columns: date, section, title in aligned columns', 'kolofon' ),
+				'index'   => __( 'Index: title with year, excerpt underneath, indexical', 'kolofon' ),
+			),
+			'help'    => __( 'Index reads as a table of contents: a hairline-ruled row list where the title carries the eye and the excerpt sits below. Suits sites organised by title rather than by date.', 'kolofon' ),
+		),
+	);
+	$fields['hover_preview']          = array(
+		'label' => __( 'Post hover previews', 'kolofon' ),
+		'tab'   => 'layout',
+		'type'  => 'checkbox',
+		'args'  => array( 'help' => __( 'Reveals a post featured image beside the list on hover or keyboard focus. Posts without a featured image show nothing. Pointer devices only.', 'kolofon' ) ),
+	);
+	$fields['preview_size']           = array(
+		'label' => __( 'Hover preview width (px)', 'kolofon' ),
+		'tab'   => 'layout',
+		'type'  => 'number',
+		'args'  => array(
+			'min'  => 100,
+			'max'  => 240,
+			'step' => 10,
+			'help' => __( 'Width of the small floating preview that appears below-right of a post row on hover. Kept small so it reads as a peek rather than a card.', 'kolofon' ),
+		),
+	);
+	$fields['show_recent']            = array(
+		'label' => __( 'Show recent posts on home', 'kolofon' ),
+		'tab'   => 'layout',
+		'type'  => 'checkbox',
+	);
+	$fields['recent_count']           = array(
+		'label' => __( 'Recent posts count', 'kolofon' ),
+		'tab'   => 'layout',
+		'type'  => 'number',
+		'args'  => array(
+			'min'  => 1,
+			'max'  => 20,
+			'step' => 1,
+		),
+	);
 
 	// Advanced. Help text here depends on runtime state, so it is deferred.
-	$fields['disable_file_edit'] = array( 'label' => __( 'Disable file editors', 'kolofon' ), 'tab' => 'advanced', 'type' => 'checkbox', 'args' => array( 'help' => __NAMESPACE__ . '\\file_edit_help' ) );
-	$fields['emit_meta_tags']    = array( 'label' => __( 'Emit meta tags and schema', 'kolofon' ), 'tab' => 'advanced', 'type' => 'checkbox', 'args' => array( 'help' => __NAMESPACE__ . '\\meta_tags_help' ) );
-	$fields['planned_badge_label'] = array( 'label' => __( 'Planned page badge', 'kolofon' ), 'tab' => 'advanced', 'type' => 'text', 'args' => array( 'help' => __( 'Shown in the navigation next to pages marked as planned, and on the page itself. Mark a page as planned in its editor sidebar.', 'kolofon' ) ) );
-	$fields['planned_notice_text'] = array( 'label' => __( 'Planned page notice', 'kolofon' ), 'tab' => 'advanced', 'type' => 'text', 'args' => array( 'help' => __( 'The sentence shown in place of content on a planned page.', 'kolofon' ) ) );
-	$fields['export_action']     = array( 'label' => __( 'Export settings', 'kolofon' ), 'tab' => 'advanced', 'type' => 'export_button', 'args' => array( 'help' => __( 'Downloads every theme setting as a JSON file. Useful as a backup and for moving a configuration to another install.', 'kolofon' ) ) );
-	$fields['import_action']     = array( 'label' => __( 'Import settings', 'kolofon' ), 'tab' => 'advanced', 'type' => 'import_button', 'args' => array( 'help' => __( 'Replaces all current settings. Unknown keys are discarded and every value is re-validated, so an edited file cannot introduce anything the theme does not recognise.', 'kolofon' ) ) );
-	$fields['reset_action']      = array( 'label' => __( 'Reset to defaults', 'kolofon' ), 'tab' => 'advanced', 'type' => 'reset_button' );
+	$fields['csp_mode']            = array(
+		'label' => __( 'Content Security Policy', 'kolofon' ),
+		'tab'   => 'advanced',
+		'type'  => 'select',
+		'args'  => array(
+			'choices' => get_csp_modes(),
+			'help'    => __( 'Off by default. A policy strict enough to matter blocks inline scripts, which WordPress core and most plugins emit, so enforcing one without preparation can blank the front end. Start on Report only, watch the browser console across the site, and switch to Enforce once nothing legitimate is being flagged. Never applied to admin screens. Adjust the directives with the kolofon_csp_directives filter.', 'kolofon' ),
+		),
+	);
+	$fields['disable_file_edit']   = array(
+		'label' => __( 'Disable file editors', 'kolofon' ),
+		'tab'   => 'advanced',
+		'type'  => 'checkbox',
+		'args'  => array( 'help' => __NAMESPACE__ . '\\file_edit_help' ),
+	);
+	$fields['emit_meta_tags']      = array(
+		'label' => __( 'Emit meta tags and schema', 'kolofon' ),
+		'tab'   => 'advanced',
+		'type'  => 'checkbox',
+		'args'  => array( 'help' => __NAMESPACE__ . '\\meta_tags_help' ),
+	);
+	$fields['planned_badge_label'] = array(
+		'label' => __( 'Planned page badge', 'kolofon' ),
+		'tab'   => 'advanced',
+		'type'  => 'text',
+		'args'  => array( 'help' => __( 'Shown in the navigation next to pages marked as planned, and on the page itself. Mark a page as planned in its editor sidebar.', 'kolofon' ) ),
+	);
+	$fields['planned_notice_text'] = array(
+		'label' => __( 'Planned page notice', 'kolofon' ),
+		'tab'   => 'advanced',
+		'type'  => 'text',
+		'args'  => array( 'help' => __( 'The sentence shown in place of content on a planned page.', 'kolofon' ) ),
+	);
+	$fields['export_action']       = array(
+		'label' => __( 'Export settings', 'kolofon' ),
+		'tab'   => 'advanced',
+		'type'  => 'export_button',
+		'args'  => array( 'help' => __( 'Downloads every theme setting as a JSON file. Useful as a backup and for moving a configuration to another install.', 'kolofon' ) ),
+	);
+	$fields['import_action']       = array(
+		'label' => __( 'Import settings', 'kolofon' ),
+		'tab'   => 'advanced',
+		'type'  => 'import_button',
+		'args'  => array( 'help' => __( 'Replaces all current settings. Unknown keys are discarded and every value is re-validated, so an edited file cannot introduce anything the theme does not recognise.', 'kolofon' ) ),
+	);
+	$fields['reset_action']        = array(
+		'label' => __( 'Reset to defaults', 'kolofon' ),
+		'tab'   => 'advanced',
+		'type'  => 'reset_button',
+	);
 
 	/**
 	 * Filter the options page fields.
@@ -204,4 +433,3 @@ function get_option_fields() {
 	 */
 	return apply_filters( 'kolofon_option_fields', $fields );
 }
-

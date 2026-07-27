@@ -4,10 +4,13 @@
  * Slug: kolofon/callout
  * Categories: kolofon
  * Description: A short aside set off with the accent colour.
+ *
+ * @package Kolofon
  */
+
 ?>
-<!-- wp:group {"tagName":"aside","className":"menj-callout","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}}} -->
-<aside class="wp-block-group menj-callout" style="padding:var(--wp--preset--spacing--40)">
+<!-- wp:group {"tagName":"aside","className":"kolofon-callout","style":{"spacing":{"padding":{"top":"var:preset|spacing|40","bottom":"var:preset|spacing|40","left":"var:preset|spacing|40","right":"var:preset|spacing|40"}}}} -->
+<aside class="wp-block-group kolofon-callout" style="padding:var(--wp--preset--spacing--40)">
 	<!-- wp:paragraph {"fontSize":"small","textColor":"accent"} -->
 	<p class="has-accent-color has-text-color has-small-font-size"><strong><?php echo esc_html__( 'Note', 'kolofon' ); ?></strong></p>
 	<!-- /wp:paragraph -->

@@ -1,6 +1,6 @@
 <?php
 /**
- * menj.bio theme bootstrap.
+ * Kolofon theme bootstrap.
  *
  * @package Kolofon
  * @since   1.0.0
@@ -10,7 +10,7 @@ namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'KOLOFON_VERSION', '2.10.2' );
+define( 'KOLOFON_VERSION', '5.7.0' );
 define( 'KOLOFON_DIR', trailingslashit( get_template_directory() ) );
 define( 'KOLOFON_URI', trailingslashit( get_template_directory_uri() ) );
 define( 'KOLOFON_OPTION_KEY', 'kolofon_options' );
@@ -40,6 +40,7 @@ $kolofon_modules = array(
 	'tags',
 	'meta',
 	'syndication',
+	'print-branding',
 	'docs',
 	'system-report',
 	'dynamic-css',

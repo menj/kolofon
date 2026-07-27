@@ -2,8 +2,10 @@
 /**
  * In-admin markdown documentation rendering.
  *
- * Reads *.md files from the /docs/ directory and renders them on the
- * Documentation tab of the Theme Options page using Parsedown.
+ * Reads documentation from the docs/ subfolders (guides, reference, specs) and
+ * renders it on the Documentation tab of the Theme Options page. Markdown files
+ * are parsed with Parsedown; yaml specs are shown as escaped preformatted
+ * source.
  *
  * @package Kolofon
  * @since   1.0.0
@@ -104,6 +106,15 @@ function render_doc( $slug ) {
 		return '';
 	}
 
+	// YAML specs are structured source, not prose. Rendering them through the
+	// markdown parser would mangle the # and - lines, so they are shown as
+	// escaped preformatted text regardless of whether a parser is available.
+	if ( 'yml' === strtolower( pathinfo( $path, PATHINFO_EXTENSION ) ) ) {
+		$html = '<pre class="kolofon-doc-source">' . esc_html( $markdown ) . '</pre>';
+		set_transient( $key, $html, DAY_IN_SECONDS );
+		return $html;
+	}
+
 	if ( ! $parser ) {
 		// Without a parser, show the source rather than nothing. Escaped and
 		// preformatted, so it stays readable and cannot inject markup.
@@ -119,20 +130,37 @@ function render_doc( $slug ) {
 }
 
 /**
- * Canonical documentation set: slug => display label, in sub-nav order.
+ * Canonical documentation set: slug => [label, relative path], in sub-nav order.
  *
- * Files are expected at docs/{slug}.md in lowercase. Any additional .md file
- * found in the directory is appended after these, alphabetically, with an
+ * Docs are organised into subfolders under docs/ (guides, reference, specs), so
+ * each entry carries its path relative to docs/. Any additional doc file found
+ * in those subfolders is appended after these, alphabetically, with an
  * auto-generated label.
  *
- * @return array<string, string>
+ * @return array<string, array{label:string, file:string}>
  */
 function get_doc_manifest() {
 	return array(
-		'readme'    => __( 'Readme', 'kolofon' ),
-		'ssot'      => __( 'SSOT', 'kolofon' ),
-		'upgrading' => __( 'Upgrading', 'kolofon' ),
-		'changelog' => __( 'Changelog', 'kolofon' ),
+		'readme'           => array(
+			'label' => __( 'Readme', 'kolofon' ),
+			'file'  => 'guides/readme.md',
+		),
+		'ssot'             => array(
+			'label' => __( 'SSOT', 'kolofon' ),
+			'file'  => 'reference/ssot.md',
+		),
+		'upgrading'        => array(
+			'label' => __( 'Upgrading', 'kolofon' ),
+			'file'  => 'guides/upgrading.md',
+		),
+		'changelog'        => array(
+			'label' => __( 'Changelog', 'kolofon' ),
+			'file'  => 'reference/changelog.md',
+		),
+		'now-feature-spec' => array(
+			'label' => __( 'Now feature spec', 'kolofon' ),
+			'file'  => 'specs/now-feature-spec.yml',
+		),
 	);
 }
 
@@ -151,8 +179,8 @@ function derive_doc_label( $slug ) {
 /**
  * List available doc slugs and their labels for the sub-nav.
  *
- * Manifest documents come first in manifest order, then any extra .md files
- * alphabetically. Only files that exist are listed.
+ * Manifest documents come first in manifest order, then any extra doc files in
+ * the docs subfolders alphabetically. Only files that exist are listed.
  *
  * @return array<string, array{label:string, path:string}>
  */
@@ -162,31 +190,36 @@ function list_docs() {
 	$manifest = get_doc_manifest();
 
 	// Manifest documents first, in declared order.
-	foreach ( $manifest as $slug => $label ) {
-		$path = $dir . $slug . '.md';
+	foreach ( $manifest as $slug => $entry ) {
+		$path = $dir . $entry['file'];
 		if ( is_readable( $path ) ) {
 			$out[ $slug ] = array(
-				'label' => $label,
+				'label' => $entry['label'],
 				'path'  => $path,
 			);
 		}
 	}
 
-	// Any other .md files, alphabetically.
-	$files = glob( $dir . '*.md' );
-	if ( is_array( $files ) ) {
-		sort( $files, SORT_NATURAL | SORT_FLAG_CASE );
+	// Any other doc files in the subfolders, alphabetically. Markdown and the
+	// yaml spec are both surfaced. The manifest already covers the known set;
+	// this picks up anything added later without a code change.
+	$files = array_merge(
+		(array) glob( $dir . '*/*.md' ),
+		(array) glob( $dir . '*/*.yml' )
+	);
+	$files = array_filter( $files );
+	sort( $files, SORT_NATURAL | SORT_FLAG_CASE );
 
-		foreach ( $files as $path ) {
-			$slug = strtolower( basename( $path, '.md' ) );
-			if ( isset( $out[ $slug ] ) ) {
-				continue;
-			}
-			$out[ $slug ] = array(
-				'label' => derive_doc_label( $slug ),
-				'path'  => $path,
-			);
+	foreach ( $files as $path ) {
+		$slug = strtolower( basename( $path, '.md' ) );
+		$slug = strtolower( basename( $slug, '.yml' ) );
+		if ( isset( $out[ $slug ] ) ) {
+			continue;
 		}
+		$out[ $slug ] = array(
+			'label' => derive_doc_label( $slug ),
+			'path'  => $path,
+		);
 	}
 
 	return $out;
@@ -210,8 +243,8 @@ function render_docs_panel() {
 
 	echo '<nav class="kolofon-docs-nav" aria-label="' . esc_attr__( 'Documents', 'kolofon' ) . '">';
 	foreach ( $docs as $slug => $meta ) {
-		$url    = add_query_arg( 'doc', $slug, $base_url ) . '#tab-docs';
-		$class  = 'kolofon-doc-link' . ( $slug === $active ? ' is-current' : '' );
+		$url   = add_query_arg( 'doc', $slug, $base_url ) . '#tab-docs';
+		$class = 'kolofon-doc-link' . ( $slug === $active ? ' is-current' : '' );
 		printf(
 			'<a href="%1$s" class="%2$s">%3$s</a>',
 			esc_url( $url ),

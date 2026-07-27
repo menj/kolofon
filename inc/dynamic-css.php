@@ -67,6 +67,14 @@ function palette_vars( $c ) {
 	);
 }
 
+/**
+ * Build the `:root` custom-property block for the active palette and fonts.
+ *
+ * Emitted inline on the front end and again on the editor sheet, so the editor
+ * canvas resolves the same variables the front end does.
+ *
+ * @return string CSS text, no `<style>` wrapper.
+ */
 function build_root_css() {
 	$scheme = opt( 'colour_scheme' );
 
@@ -87,11 +95,11 @@ function build_root_css() {
 	$muted  = $light['muted'];
 	$rule   = $light['rule'];
 
-	$stacks     = get_font_stacks();
-	$font_key   = opt( 'font_stack' );
-	$font       = $stacks[ $font_key ] ?? reset( $stacks );
-	$body_font  = $font['body'];
-	$head_font  = $font['heading'];
+	$stacks    = get_font_stacks();
+	$font_key  = opt( 'font_stack' );
+	$font      = $stacks[ $font_key ] ?? reset( $stacks );
+	$body_font = $font['body'];
+	$head_font = $font['heading'];
 
 	$width    = intval( opt( 'container_width' ) );
 	$portrait = intval( opt( 'portrait_size' ) );
@@ -100,13 +108,17 @@ function build_root_css() {
 	// Lede sizes are stored in px for a familiar UI but emitted in rem so they
 	// honour the reader's browser font-size setting. The heading floor is 60%
 	// of the ceiling, which keeps the fluid clamp proportional at any setting.
-	$head_px   = intval( opt( 'hero_heading_size' ) );
-	$head_max  = round( $head_px / 16, 4 );
-	$head_min  = round( ( $head_px * 0.6 ) / 16, 4 );
-	$body_rem  = round( intval( opt( 'hero_body_size' ) ) / 16, 4 );
+	$head_px  = intval( opt( 'hero_heading_size' ) );
+	$head_max = round( $head_px / 16, 4 );
+	$head_min = round( ( $head_px * 0.6 ) / 16, 4 );
+	$body_rem = round( intval( opt( 'hero_body_size' ) ) / 16, 4 );
+
+	// Post list row titles. Stored in px for a familiar UI, emitted in rem so it
+	// honours the reader's browser font-size setting.
+	$list_title_rem = round( intval( opt( 'list_title_size' ) ) / 16, 4 );
 
 	$css = sprintf(
-		':root{--k-bg:%s;--k-text:%s;--k-accent:%s;--k-muted:%s;--k-rule:%s;--k-font-body:%s;--k-font-heading:%s;--k-container:%dpx;--k-portrait:%dpx;--k-preview:%dpx;--k-lede-heading-max:%srem;--k-lede-heading-min:%srem;--k-lede-body:%srem;}',
+		':root{--k-bg:%s;--k-text:%s;--k-accent:%s;--k-muted:%s;--k-rule:%s;--k-font-body:%s;--k-font-heading:%s;--k-container:%dpx;--k-portrait:%dpx;--k-preview:%dpx;--k-lede-heading-max:%srem;--k-lede-heading-min:%srem;--k-lede-body:%srem;--k-list-title:%srem;}',
 		esc_html( $bg ),
 		esc_html( $text ),
 		esc_html( $accent ),
@@ -119,7 +131,8 @@ function build_root_css() {
 		$preview,
 		$head_max,
 		$head_min,
-		$body_rem
+		$body_rem,
+		$list_title_rem
 	);
 
 	if ( null !== $dark ) {

@@ -20,57 +20,33 @@ namespace Kolofon;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Whether tags should be listed against each row in a post list.
- *
- * @return bool
- */
-function list_tags_enabled() {
-	return 1 === intval( opt( 'show_list_tags' ) );
-}
-
-/**
  * Render a post's tags as a list of links.
  *
+ * Used at the foot of a single post. Tags were once also rendered against each
+ * row of a post list, truncated with a "+N more" tail; that display was removed
+ * in 5.0.0 because it crowded the list and pulled the eye off the titles, so
+ * the truncation logic went with it.
+ *
  * @param int|null $post_id Post ID, or null for the current post.
- * @param int      $limit   Maximum tags to show. 0 for no limit.
- * @param string   $class   Extra class for the wrapping list.
  */
-function render_post_tags( $post_id = null, $limit = 0, $class = '' ) {
+function render_post_tags( $post_id = null ) {
 	$tags = get_the_tags( $post_id );
 
 	if ( empty( $tags ) || is_wp_error( $tags ) ) {
 		return;
 	}
-
-	$total = count( $tags );
-
-	if ( $limit > 0 && $total > $limit ) {
-		$tags = array_slice( $tags, 0, $limit );
-	}
-
-	$classes = trim( 'tags ' . $class );
 	?>
-	<ul class="<?php echo esc_attr( $classes ); ?>">
-		<?php foreach ( $tags as $tag ) : ?>
-			<li>
-				<a href="<?php echo esc_url( get_tag_link( $tag->term_id ) ); ?>"
-					rel="tag"><?php echo esc_html( $tag->name ); ?></a>
-			</li>
-		<?php endforeach; ?>
-		<?php if ( $limit > 0 && $total > $limit ) : ?>
-			<li class="tags-more">
-				<?php
-				echo esc_html(
-					sprintf(
-						/* translators: %s: number of additional tags */
-						_n( '+%s more', '+%s more', $total - $limit, 'kolofon' ),
-						number_format_i18n( $total - $limit )
-					)
-				);
-				?>
-			</li>
-		<?php endif; ?>
-	</ul>
+	<div class="post-tags">
+		<span class="post-tags-label"><?php esc_html_e( 'Tagged', 'kolofon' ); ?></span>
+		<ul class="tags">
+			<?php foreach ( $tags as $tag ) : ?>
+				<li>
+					<a href="<?php echo esc_url( get_tag_link( $tag->term_id ) ); ?>"
+						rel="tag"><?php echo esc_html( $tag->name ); ?></a>
+				</li>
+			<?php endforeach; ?>
+		</ul>
+	</div>
 	<?php
 }
 
@@ -199,16 +175,19 @@ function render_tag_index( $limit = 0 ) {
 }
 
 /**
- * Shortcode: [menj_tags] or [menj_tags limit="20"]
+ * Shortcode: [kolofon_tags] or [kolofon_tags limit="20"]
+ * ([menj_tags] is kept as a back-compat alias for pre-rename content.)
  *
  * @param array $atts Shortcode attributes.
  * @return string
  */
 function tag_index_shortcode( $atts ) {
-	$atts = shortcode_atts( array( 'limit' => 0 ), $atts, 'menj_tags' );
+	$atts = shortcode_atts( array( 'limit' => 0 ), $atts, 'kolofon_tags' );
 
 	ob_start();
 	render_tag_index( max( 0, intval( $atts['limit'] ) ) );
 	return ob_get_clean();
 }
+add_shortcode( 'kolofon_tags', __NAMESPACE__ . '\\tag_index_shortcode' );
+// Back-compat alias from before the 3.0.0 rename; existing content may use it.
 add_shortcode( 'menj_tags', __NAMESPACE__ . '\\tag_index_shortcode' );

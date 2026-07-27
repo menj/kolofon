@@ -71,4 +71,15 @@ function enqueue_assets() {
 			true
 		);
 	}
+
+	// The search overlay enhances search that already works without it, so it
+	// loads on every front-end page. The trigger button and overlay are built
+	// by the script from a template the header prints.
+	wp_enqueue_script(
+		'kolofon-search-overlay',
+		KOLOFON_URI . 'assets/js/search-overlay.js',
+		array(),
+		KOLOFON_VERSION,
+		true
+	);
 }

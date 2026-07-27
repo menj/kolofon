@@ -9,26 +9,23 @@
 
 get_header();
 ?>
-<main>
-	<article class="page-index">
+<main itemprop="mainContentOfPage" itemscope="itemscope" itemtype="https://schema.org/WebPageElement">
+	<article class="page-index" itemscope="itemscope" itemtype="https://schema.org/CollectionPage">
 		<div class="container">
 			<header class="content-header">
-				<?php the_title( '<h1 class="post-title">', '</h1>' ); ?>
+				<?php the_title( '<h1 class="post-title" itemprop="name">', '</h1>' ); ?>
 				<?php if ( get_the_content() ) : ?>
-					<div class="description"><?php the_content(); ?></div>
+					<div class="description" itemprop="description"><?php the_content(); ?></div>
 				<?php endif; ?>
 			</header>
 
 			<?php
-			$blog_query = new WP_Query(
+			$kolofon_blog_query = new WP_Query(
 				array(
 					'post_type'      => 'post',
 					'posts_per_page' => -1,
-					'no_found_rows'  => true,
 				)
 			);
-
-			$sections = \Kolofon\get_sections();
 			?>
 
 			<div class="content-meta">
@@ -36,39 +33,34 @@ get_header();
 					<?php
 					printf(
 						/* translators: %d: post count */
-						esc_html( _n( '%d post', '%d posts', $blog_query->found_posts, 'kolofon' ) ),
-						intval( $blog_query->found_posts )
+						esc_html( _n( '%d post', '%d posts', $kolofon_blog_query->found_posts, 'kolofon' ) ),
+						intval( $kolofon_blog_query->found_posts )
 					);
 					?>
 				</p>
-				<?php if ( ! empty( $sections ) ) : ?>
-					<nav class="content-filter" aria-label="<?php esc_attr_e( 'Filter by section', 'kolofon' ); ?>">
-						<span class="content-filter-label"><?php esc_html_e( 'Sections:', 'kolofon' ); ?></span>
-						<a class="content-filter-link is-current" href="<?php echo esc_url( \Kolofon\get_blog_index_url() ); ?>"><?php esc_html_e( 'All', 'kolofon' ); ?></a>
-						<?php foreach ( $sections as $section ) : ?>
-							<a class="content-filter-link" href="<?php echo esc_url( get_category_link( $section ) ); ?>">
-								<?php echo esc_html( $section->name ); ?>
-							</a>
-						<?php endforeach; ?>
-					</nav>
-				<?php endif; ?>
 			</div>
 
 			<div class="content">
 				<?php
 
-				if ( $blog_query->have_posts() ) :
-					$current_year = null;
-					while ( $blog_query->have_posts() ) :
-						$blog_query->the_post();
-						$year = get_the_date( 'Y' );
+				if ( $kolofon_blog_query->have_posts() ) :
+					$kolofon_current_year = null;
+					while ( $kolofon_blog_query->have_posts() ) :
+						$kolofon_blog_query->the_post();
+						$kolofon_group_year = get_the_date( 'Y' );
 
-						if ( $year !== $current_year ) :
-							if ( null !== $current_year ) :
+						if ( $kolofon_group_year !== $kolofon_current_year ) :
+							if ( null !== $kolofon_current_year ) :
 								echo '</ul></section>';
 							endif;
-							echo '<section class="year-group"><h2 class="year-heading">' . esc_html( $year ) . '</h2><ul class="' . esc_attr( \Kolofon\post_list_classes( $blog_query ) ) . '">';
-							$current_year = $year;
+							// `post-list` alone, not through `post_list_classes()`, since the blog
+							// page is a full chronological list where hover previews would be noise:
+							// the reader is here to scan an archive, not preview individual posts.
+							// Each year group is its own schema.org ItemList; reset the position
+							// counter so ListItem positions start at 1 within each year.
+							$GLOBALS['kolofon_list_position'] = 0;
+							echo '<section class="year-group" itemscope="itemscope" itemtype="https://schema.org/ItemList"><h2 class="year-heading" itemprop="name">' . esc_html( $kolofon_group_year ) . '</h2><ul class="post-list">';
+							$kolofon_current_year = $kolofon_group_year;
 						endif;
 						\Kolofon\post_list_item( array( 'date_format' => 'M j' ) );
 					endwhile;

@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Kolofon Coding Standards" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/squizlabs/PHP_CodeSniffer/master/phpcs.xsd">
+	<description>Coding standards for the Kolofon theme.</description>
+
+	<file>.</file>
+
+	<!-- Third-party and generated code is not ours to police. -->
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/assets/*</exclude-pattern>
+	<exclude-pattern>*.xml</exclude-pattern>
+	<exclude-pattern>*.js</exclude-pattern>
+	<exclude-pattern>*/wordpress/*</exclude-pattern>
+	<!-- The boot-test stubs deliberately mirror WordPress core function names
+	     and signatures (__return_*, wp_list_pluck($list), the checked/selected
+	     output), which the WordPress standard flags. The test runner itself
+	     (boot-test.php) is held to the standard; only the stub file is exempt. -->
+	<exclude-pattern>*/tests/boot/wordpress-stubs.php</exclude-pattern>
+
+	<arg name="basepath" value="."/>
+	<arg name="parallel" value="8"/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+
+	<rule ref="WordPress"/>
+	<rule ref="VariableAnalysis"/>
+	<rule ref="Generic.Commenting.Todo"/>
+
+	<config name="testVersion" value="8.0-"/>
+	<rule ref="PHPCompatibilityWP">
+		<include-pattern>*\.php</include-pattern>
+	</rule>
+
+	<config name="minimum_wp_version" value="6.4"/>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="kolofon"/>
+				<element value="Kolofon"/>
+				<element value="KOLOFON"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="kolofon"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- assert_can_manage() calls check_admin_referer() internally, so handlers
+	     guarded by it are nonce-verified even though the sniff cannot see it. -->
+	<rule ref="WordPress.Security.NonceVerification">
+		<properties>
+			<property name="customNonceVerificationFunctions" type="array">
+				<element value="assert_can_manage"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Templates legitimately read query vars for navigation. -->
+	<rule ref="WordPress.Security.NonceVerification.Recommended">
+		<exclude-pattern>*/inc/docs.php</exclude-pattern>
+	</rule>
+</ruleset>

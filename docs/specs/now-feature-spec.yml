@@ -1,0 +1,381 @@
+# The Now feature: portable specification
+#
+# A complete, implementation-ready description of the "Now page" feature
+# built in Kolofon 3.4.0 through 3.11.x and removed in 4.0.0 as a sequencing
+# decision. Written so the feature can be carried forward into a Kolofon
+# rebuild, a companion plugin, or an unrelated theme.
+#
+# Names below use the `kolofon` prefix as the reference implementation. A port
+# replaces the prefix throughout (options, meta keys, REST namespace, nonces,
+# CSS classes, hooks) and keeps everything else.
+
+spec:
+  name: Now page
+  version: 1.0.0
+  status: specification (feature removed from Kolofon in 4.0.0, roadmapped for rebuild)
+  origin: Kolofon theme 3.4.0-3.11.5, menj.bio
+  author: Mohd Elfie Nieshaem Juferi
+  inspired_by: nownownow.com movement; P2 theme inline posting
+  license: GPL-2.0-or-later
+
+concept:
+  purpose: >
+    A single page answering "what is this person doing right now". Three
+    content layers stack on one page: prose the owner writes by hand, an
+    activity feed aggregated from external platforms, and quick micro-posts
+    composed inline on the page itself.
+  audience: single-author sites; the owner is the only writer
+  opt_in: >
+    The page is never auto-created on activation. It is provisioned on demand
+    from a button in the theme or plugin settings, or by the owner creating a
+    page that uses the template.
+
+architecture:
+  layers:
+    - id: prose
+      name: Working on
+      source: the page's own post_content, edited normally
+      rendering: wpautop'd page content inside the template
+    - id: aggregation
+      name: External activity feed
+      source: RSS feeds fetched server-side
+      rendering: merged, date-sorted list of feed items
+    - id: manual_entries
+      name: Manual entries
+      source: page meta, entered via an admin meta box or the compose form
+      purpose: platforms without usable RSS (X, Instagram, Facebook)
+    - id: microblog
+      name: Inline micro-posts
+      source: front-end compose form, owner-only
+      destinations: [external, publish]
+  separation_of_concerns:
+    # The single most important structural rule, learned the hard way:
+    # Kolofon's first attempt put all five concerns in one 1,308-line file.
+    modules:
+      - now-feed:   fetch, cache, fallback, prune
+      - now-rest:   route registration, permissions, append, publish
+      - now-meta:   meta registration, meta box, save handler, sanitiser
+      - now-render: feed row, compose form, labels, merged-feed assembly
+    note: >
+      In a companion plugin these are four files from the first commit. The
+      theme's only parts are the page template and the stylesheet block.
+
+data_model:
+  options:
+    # Stored inside the single theme/plugin options row, one key per feed.
+    - key: now_goodreads_rss
+      type: url
+      default: ""
+      sanitiser: esc_url_raw
+      help: Goodreads updates RSS; user id from the profile URL at /user/updates_rss/[id]
+    - key: now_threads_rss
+      type: url
+      default: ""
+      sanitiser: esc_url_raw
+      help: Threads has no native RSS; a bridge service (for example RSS.app) generates one
+    - key: now_other_rss
+      type: url
+      default: ""
+      sanitiser: esc_url_raw
+      help: any additional feed to merge (Micro.blog, another writer, a status page)
+    - key: hide_now_from_blog
+      type: boolean
+      default: 1
+      sanitiser: bool
+      help: exclude micro-posts in the now category from blog, archives, and search
+  post_meta:
+    - key: _kolofon_now_entries
+      object: page (the Now page)
+      type: array of entry
+      show_in_rest: false
+      protected: true
+      auth_callback: current_user_can('edit_pages')
+      sanitiser: per-field after JSON decode (see entry schema)
+  entry_schema:
+    # One manual entry. Stored newest-first.
+    fields:
+      - name: platform
+        type: string
+        allowlist: [x, instagram, facebook]
+        sanitiser: sanitize_key + allowlist check
+      - name: url
+        type: url
+        sanitiser: esc_url_raw
+      - name: snippet
+        type: string
+        sanitiser: sanitize_textarea_field
+        rendering: esc_html on output
+      - name: date
+        type: ISO 8601 date string
+        sanitiser: validated date
+  taxonomy:
+    - term: now
+      taxonomy: category
+      created: lazily, on first publish-destination micro-post
+  post_format:
+    value: status
+    theme_support: "add_theme_support( 'post-formats', array( 'status' ) )"
+    note: declared only while this feature exists; remove with the feature
+  transients:
+    - pattern: "kolofon_now_feed_{md5(feed_url)}"
+      ttl_seconds: 3600
+      contents: parsed, normalised feed items
+  orphanable_options:
+    - pattern: "kolofon_now_fallback_{md5(feed_url)}"
+      ttl_seconds: 2592000   # 30 days, enforced by a timestamp inside the value
+      contents: { ts: unix time, items: [normalised items] }
+      prune: >
+        A prune routine must delete fallback rows whose feed URL is no longer
+        configured, hooked to the settings save. If the feature is ever
+        removed, a one-shot cleanup migration must delete every row matching
+        the pattern (Kolofon 4.0.1 is the reference; flag
+        kolofon_now_cleanup_done).
+
+template:
+  file: page-now.php
+  header: "Template Name: Now"
+  resolution:
+    # Critical correctness lesson. Two paths make a page render this template:
+    #   1. Explicit selection: _wp_page_template meta = 'page-now.php'
+    #   2. Slug rule: WordPress applies page-{slug}.php to a page slugged
+    #      'now' WITHOUT ever writing the meta.
+    # Every functional gate (REST permission, form handler, meta box, robots)
+    # must use a shared resolver that accepts BOTH, or manually created pages
+    # render correctly while every behaviour silently fails.
+    resolver: |
+      function is_now_page( $post_id ): bool
+        - not a page                          -> false
+        - meta == 'page-now.php'              -> true
+        - meta set to some OTHER template     -> false (that template renders)
+        - meta empty/default AND slug == 'now'-> true
+  structure:
+    - last-updated line (relative time) with stale badge when stale
+    - 'prose layer: "Working on" heading + page content'
+    - compose form (owner only; see microblog)
+    - '"Recently" heading + merged feed list'
+
+aggregation:
+  fetch:
+    api: fetch_feed() (SimplePie) or wp_remote_get for non-RSS bridges
+    timeout_seconds: 10
+    trigger:
+      v1_behaviour: on request, when the transient is cold
+      v2_requirement: >
+        MUST fetch on a schedule (WP-Cron or system cron) and never on a
+        visitor request. The v1 design could hold a cold page load for
+        3 feeds x 10s = 30 seconds. The page only ever reads cache.
+  cache_strategy:
+    layer_1: transient, 1 hour, per feed URL
+    layer_2: >
+      timestamped fallback option, 30 days, written on every successful
+      fetch; served when a fetch fails so a dead feed degrades to stale
+      content instead of an empty section
+  normalised_item:
+    fields: [platform, url, snippet, date]
+    note: feed items and manual entries share one shape so rendering is uniform
+  merge: all sources concatenated, sorted by date descending, capped for display
+
+microblog:
+  compose_form:
+    visibility: rendered only when current_user_can('edit_page', $now_page_id)
+    fields:
+      - textarea: the snippet / post body
+      - url input: external link (external destination)
+      - platform select: for external destination
+      - destination radio:
+          external: append an entry to _kolofon_now_entries (default)
+          publish: create a real WP post
+    nonce: kolofon_now_compose (field kolofon_now_compose_nonce)
+  publish_destination:
+    creates: post
+    post_format: status
+    category: now (created if absent)
+    content_sanitiser: wp_kses_post
+    capability: publish_posts, checked independently of edit_page
+  progressive_enhancement:
+    with_js: POST to the REST endpoint; response HTML prepended to the list
+    without_js: >
+      the same form POSTs to the page URL; a template_redirect handler
+      validates (template -> nonce -> capability -> sanitise, in that order)
+      and calls the same append/publish internals, then safe-redirects back
+
+rest_api:
+  namespace: kolofon/v1
+  route: /now/(?P<id>\d+)/entries
+  method: POST
+  permission_callback:
+    - current_user_can( 'edit_page', id )
+    - is_now_page( id )    # the resolver above; a meta-only check is a bug
+  request:
+    destination: "external | publish"   # sanitize_key, default external
+    external_fields: [platform, url, snippet]
+    publish_fields: [body]
+  responses:
+    success:
+      returns: entry or post identifiers
+      html: server-rendered feed row, escaped before return
+    errors:
+      kolofon_now_forbidden: 401/403 via rest_authorization_required_code()
+      kolofon_now_wrong_template: 400
+      kolofon_now_cannot_publish: 403 (publish_posts missing)
+      kolofon_now_empty: 400
+  security_notes:
+    - core REST nonce (X-WP-Nonce) covers CSRF for cookie auth
+    - the html field is server-escaped before return; the client inserts it verbatim
+    - publish privilege is never inferred from edit_page
+
+query_rules:
+  hide_from_blog:
+    option: hide_now_from_blog (default on)
+    hook: pre_get_posts
+    scope: main query only; blog index, archives, search
+    mechanism: exclude the now category term
+    removal_note: >
+      if the feature is removed while this option is dropped, micro-posts
+      reappear in the blog; document this to the site owner (Kolofon 4.0.0
+      changelog is the reference wording)
+
+seo:
+  stale_noindex:
+    threshold_days: 90
+    hook: wp_robots (filter runs on every load; gate on is_page() first)
+    behaviour: noindex + follow when the page has not been updated in 90 days
+    rationale: an abandoned Now page is worse in search results than none
+
+admin:
+  settings_tab:
+    label: Now
+    fields: [now_goodreads_rss, now_threads_rss, now_other_rss, hide_now_from_blog]
+    intro: explains the feature, links or creates the page
+  create_page_button:
+    action: admin_post handler, nonce kolofon_create_now_page
+    behaviour: idempotent; finds an existing template-bearing page before creating
+    created_page: { title: Now, slug: now, status: publish, comments: closed }
+  meta_box:
+    id: kolofon-now-entries
+    screen: page editor, only when is_now_page()
+    purpose: add/edit/delete manual entries
+    nonce: kolofon_now_entries (field kolofon_now_entries_nonce)
+
+frontend_assets:
+  css_classes:
+    page: [page-index is-now, now-updated, now-stale-badge, now-section-heading,
+           now-prose, now-prose-body, now-empty]
+    feed: [now-feed-list, now-feed-item, now-feed-item is-new, now-feed-meta,
+           now-feed-platform, now-feed-time, now-feed-snippet]
+    compose: [now-compose, now-compose-row, now-compose-text, now-compose-url,
+              now-compose-platform, now-compose-destination,
+              now-compose-destination-option, now-compose-row-publish,
+              now-compose-submit, now-compose-status]
+  js:
+    file: now-compose.js
+    enqueue: only on the Now page AND only for a viewer who can post
+    behaviour: intercept submit, POST to REST, prepend returned html, flash is-new
+    reduced_motion: disable the is-new flash animation
+  print: hide the compose form; reveal external link destinations after snippets
+
+design:
+  # How the Now feature should look so it reads as native Kolofon rather than a
+  # bolted-on module. The rule that matters most: never hardcode a colour. Every
+  # colour is a CSS custom property the theme already defines, so the feature
+  # recolours automatically with the active scheme and with any custom scheme.
+  principle: >
+    Style entirely through the theme's CSS custom properties (the --k-* tokens).
+    A rebuild must not introduce its own palette; it consumes the tokens the
+    theme publishes, so switching scheme or editing the accent retints the Now
+    page with no Now-specific change. This is the same discipline the rest of
+    the theme follows.
+  tokens:
+    # Published by the theme on :root; the Now CSS references these, never literals.
+    colour:
+      "--k-bg": page background
+      "--k-text": body text
+      "--k-accent": links, the section heading, the is-new flash, the stale badge
+      "--k-muted": timestamps, meta, secondary labels (0 posts found, platform)
+      "--k-rule": hairline borders between feed items and around the compose form
+    type:
+      "--k-font-body": body and snippet text
+      "--k-font-heading": the section heading and compose submit
+    layout:
+      "--k-container": max content width; the Now page uses the same column as posts
+  schemes:
+    # The two built-in palettes, for reference. A rebuild should not copy these
+    # literals into its own CSS; they are shown so the intended contrast and
+    # mood are clear. The feature reads them through the tokens above.
+    charcoal:
+      bg: "#1a1a1a"
+      text: "#e8e6df"
+      accent: "#d4a574"   # warm gold
+      muted: "#9a978e"
+      rule: "#2f2f2f"
+    ivory:
+      bg: "#fafaf7"
+      text: "#111111"
+      accent: "#1f3d5a"   # deep navy
+      muted: "#6a6a66"
+      rule: "#e5e5e0"
+  fonts:
+    approach: >
+      The theme ships editorial font stacks selected on the Appearance tab and
+      exposes the chosen pair as --k-font-body and --k-font-heading. The Now CSS
+      uses those variables, so the feature inherits whichever stack is active
+      (the default editorial stack is XCharter, a Charter-family serif).
+  class_styling:
+    # Intended treatment for each class in frontend_assets.css_classes. Keep the
+    # feature minimalist and type-forward, matching the rest of the theme: flat
+    # backgrounds, hairline rules, the accent used sparingly for emphasis.
+    now-section-heading: accent colour (var(--k-accent)), heading font, matching the "Recent Posts" heading on the home page
+    now-updated: muted colour, small, sits under the heading as a "last updated" line
+    now-stale-badge: accent-tinted pill shown when the newest entry is older than a threshold; low-key, not alarming
+    now-prose-body: body font and colour, the same measure and line-height as post content
+    now-empty: muted colour, centred, calm ("Nothing here yet.")
+    now-feed-list: no bullets; items separated by a single var(--k-rule) hairline, not boxes
+    now-feed-item: flat, generous vertical padding; no card, no shadow (the theme avoids cards on the front end)
+    now-feed-item.is-new: brief one-shot flash of an accent-tinted background that fades to transparent; disabled under prefers-reduced-motion
+    now-feed-meta: muted, small; platform name and timestamp on one row
+    now-feed-platform: muted; optionally the accent if a platform link is present
+    now-feed-time: muted; a relative or absolute time
+    now-feed-snippet: body colour and font
+    now-compose: bordered with a single var(--k-rule); the one place a light bounding box is acceptable, since it is an input surface, not reading content
+    now-compose-submit: accent background, background-token text for contrast, heading font; mirrors the search overlay's submit button
+    now-compose-status: muted for idle, accent on success, and the theme's error treatment on failure
+  gradient_note: >
+    Kolofon reserves gradients for the home hero alone. Earlier the theme tried a
+    gradient wash on mid-page listing headers and removed it (see changelog
+    4.9.0): a wash suits the top-of-page hero but reads as a boxed panel or an
+    invisible smudge mid-page. The Now page is a mid-page listing, so it should
+    stay flat and take its character from the accent heading and type, not a
+    background gradient.
+
+
+lifecycle:
+  install: nothing; the feature is dormant until the page exists
+  uninstall_or_removal:
+    - strip the four option keys from the settings row
+    - delete kolofon_now_fallback_* options
+    - delete kolofon_now_feed_* transients and their timeout rows
+    - never delete user content (the page, its entries meta, the category,
+      micro-posts); document manual steps instead
+    - gate the cleanup on a one-shot flag so it runs once
+  plugin_advantage: an uninstall hook gets this contract for free
+
+lessons:
+  # Inherited from the Kolofon 3.x attempt; see ../guides/upgrading.md Roadmap.
+  - one module per concern, four modules minimum, from the first commit
+  - build against a live install from the first week; eight releases of
+    unverified code is how the first attempt failed
+  - resolve the template by behaviour (meta OR slug), never meta alone
+  - fetch feeds asynchronously; a visitor request never waits on a remote host
+  - write the cleanup/uninstall contract alongside the feature, not after it
+
+porting:
+  rename: >
+    Replace the kolofon prefix in option keys, meta keys, the REST namespace,
+    nonces, transient and fallback prefixes, CSS classes, and hook names.
+  theme_coupling:
+    required_from_theme: page template registration, stylesheet block, and the
+      colour and type tokens documented in the design section (Kolofon publishes
+      them as CSS custom properties, --k-*)
+    everything_else: portable as a standalone plugin
+  wordpress_floor: 6.0 (wp_robots, REST, block editor meta boxes all older)
+  php_floor: "8.0"

@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
 add_filter( 'xmlrpc_enabled', '__return_false' );
 add_filter( 'wp_headers', __NAMESPACE__ . '\\strip_pingback_header' );
 
-// Front-end comments locked off site-wide for this bio microsite.
+// Front-end comments locked off site-wide for this writer's microsite.
 add_filter( 'comments_open', '__return_false', 20 );
 add_filter( 'pings_open', '__return_false', 20 );
 add_filter( 'comments_array', '__return_empty_array', 10 );
@@ -56,7 +56,9 @@ function disable_file_editors() {
 	}
 
 	if ( ! defined( 'DISALLOW_FILE_EDIT' ) ) {
-		define( 'DISALLOW_FILE_EDIT', true );
+		// A WordPress core constant, not one this theme owns, so the theme
+		// prefix does not apply.
+		define( 'DISALLOW_FILE_EDIT', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
 	}
 
 	// Belt and braces: drop the menu entries and block direct URL access, in
@@ -169,9 +171,88 @@ function send_security_headers() {
 
 	// Permissions-Policy: opt out of browser features the site never uses.
 	// Every declared feature is closed; the specific list is the browser API
-	// surface a bio microsite has no legitimate reason to touch. Fullscreen
+	// surface a writer's microsite has no legitimate reason to touch. Fullscreen
 	// stays permitted from same-origin for image lightboxes and video posts.
 	header( 'Permissions-Policy: geolocation=(), midi=(), sync-xhr=(), accelerometer=(), gyroscope=(), magnetometer=(), camera=(), microphone=(), payment=(), usb=(), fullscreen=(self)' );
+
+	send_csp_header();
+}
+
+/**
+ * Available Content Security Policy modes.
+ *
+ * Keyed by stored value, as the shared `$enum_from` sanitiser validates with
+ * `array_key_exists()`.
+ *
+ * @return array<string, string> Mode slug to label.
+ */
+function get_csp_modes() {
+	return array(
+		'off'     => __( 'Off', 'kolofon' ),
+		'report'  => __( 'Report only (logs violations, blocks nothing)', 'kolofon' ),
+		'enforce' => __( 'Enforce', 'kolofon' ),
+	);
+}
+
+/**
+ * Content Security Policy, off unless switched on.
+ *
+ * Off by default, and that default is deliberate. A policy strict enough to be
+ * worth having blocks inline scripts, and WordPress core, most plugins, and the
+ * block editor all emit them. Enforcing one on an unprepared site produces a
+ * blank page rather than a secure page.
+ *
+ * The `csp_mode` option offers a rollout path instead: `report` sends
+ * Content-Security-Policy-Report-Only, which changes nothing about how the
+ * browser behaves while logging every violation to the console. Watch that
+ * console across the site, confirm nothing legitimate trips, then switch to
+ * `enforce`.
+ *
+ * `style-src` has to carry 'unsafe-inline' either way. The palette is applied
+ * through `wp_add_inline_style()` in dynamic-css.php, and WordPress offers no
+ * nonce mechanism for inline styles. Naming that limit is more useful than
+ * pretending the policy is tighter than it is.
+ *
+ * Admin screens are never covered. The block editor's inline scripts make a
+ * meaningful admin policy impossible without breaking editing.
+ */
+function send_csp_header() {
+	$mode = (string) opt( 'csp_mode' );
+
+	if ( 'off' === $mode || is_admin() ) {
+		return;
+	}
+
+	$directives = array(
+		"default-src 'self'",
+		"script-src 'self'",
+		"style-src 'self' 'unsafe-inline'",
+		"img-src 'self' data: https:",
+		"font-src 'self' data:",
+		"connect-src 'self'",
+		"frame-src 'self' https:",
+		"object-src 'none'",
+		"base-uri 'self'",
+		"form-action 'self'",
+		"frame-ancestors 'self'",
+	);
+
+	/**
+	 * Filter the Content Security Policy directives.
+	 *
+	 * A site running embeds, analytics, or a CDN needs sources this default
+	 * does not include. Adjust here rather than switching the policy off.
+	 *
+	 * @param string[] $directives One policy directive per entry.
+	 * @param string   $mode       Either `report` or `enforce`.
+	 */
+	$directives = apply_filters( 'kolofon_csp_directives', $directives, $mode );
+
+	$header = ( 'report' === $mode )
+		? 'Content-Security-Policy-Report-Only'
+		: 'Content-Security-Policy';
+
+	header( $header . ': ' . implode( '; ', $directives ) );
 }
 
 /**

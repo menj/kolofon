@@ -18,6 +18,10 @@ namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
+// Running position counter for schema.org ListItem markup, reset at the start
+// of each rendered list (see post_list_classes and the blog year groups).
+$GLOBALS['kolofon_list_position'] = 0;
+
 /**
  * Whether hover previews are switched on and possible in this context.
  *
@@ -25,6 +29,124 @@ defined( 'ABSPATH' ) || exit;
  */
 function previews_enabled() {
 	return 1 === intval( opt( 'hover_preview' ) );
+}
+
+/**
+ * A deterministic printer's mark for a post that has no featured image.
+ *
+ * The theme is named for the colophon, the printer's device that closes a
+ * manuscript, so an image-less post gets a generated device of its own rather
+ * than an empty card. The composition is seeded from the post slug, so a given
+ * post always draws the same mark, and it is built from the scheme's own
+ * tokens, so it recolours with Charcoal, Ivory, or any custom scheme.
+ *
+ * Inline SVG: no HTTP request, no image file, no external dependency.
+ *
+ * @param string $seed Stable per-post string, normally the slug.
+ * @return string SVG markup.
+ */
+function preview_device( $seed ) {
+	$hash = md5( $seed );
+
+	/**
+	 * Pull a bounded integer out of the hash at a fixed offset.
+	 *
+	 * @param int $offset Character offset into the hash.
+	 * @param int $mod    Exclusive upper bound.
+	 * @return int
+	 */
+	$pick = function ( $offset, $mod ) use ( $hash ) {
+		return hexdec( substr( $hash, $offset, 2 ) ) % $mod;
+	};
+
+	$variant = $pick( 0, 5 );
+	$rotate  = $pick( 2, 90 );
+	$count   = 5 + $pick( 4, 4 );
+	$shift   = -18 + $pick( 6, 36 );
+
+	$marks = '';
+
+	switch ( $variant ) {
+		case 0:
+			// Concentric roundel, one ring broken like an impression that
+			// did not take.
+			for ( $i = 0; $i < $count; $i++ ) {
+				$r      = 14 + ( $i * 9 );
+				$dash   = ( 1 === $i % 3 ) ? ' stroke-dasharray="4 7"' : '';
+				$marks .= sprintf(
+					'<circle cx="150" cy="100" r="%d" fill="none" stroke="currentColor" stroke-width="1.25" opacity="%s"%s/>',
+					$r,
+					number_format( 0.85 - ( $i * 0.09 ), 2 ),
+					$dash
+				);
+			}
+			break;
+
+		case 1:
+			// Nested squares, each turned a little further.
+			for ( $i = 0; $i < $count; $i++ ) {
+				$s      = 24 + ( $i * 13 );
+				$marks .= sprintf(
+					'<rect x="%1$s" y="%2$s" width="%3$d" height="%3$d" fill="none" stroke="currentColor" stroke-width="1.25" opacity="%4$s" transform="rotate(%5$d 150 100)"/>',
+					number_format( 150 - ( $s / 2 ), 2 ),
+					number_format( 100 - ( $s / 2 ), 2 ),
+					$s,
+					number_format( 0.8 - ( $i * 0.09 ), 2 ),
+					$rotate + ( $i * 9 )
+				);
+			}
+			break;
+
+		case 2:
+			// Radiating rule, a compass-rose device.
+			$spokes = 12 + ( $count * 2 );
+			for ( $i = 0; $i < $spokes; $i++ ) {
+				$angle  = ( 360 / $spokes ) * $i;
+				$len    = ( 0 === $i % 3 ) ? 62 : 44;
+				$marks .= sprintf(
+					'<line x1="150" y1="100" x2="150" y2="%d" stroke="currentColor" stroke-width="1.25" opacity="0.55" transform="rotate(%s 150 100)"/>',
+					100 - $len,
+					number_format( $angle + $rotate, 2 )
+				);
+			}
+			$marks .= '<circle cx="150" cy="100" r="9" fill="none" stroke="currentColor" stroke-width="1.25" opacity="0.85"/>';
+			break;
+
+		case 3:
+			// A stack of rules, the ghost of a set page.
+			for ( $i = 0; $i < $count + 3; $i++ ) {
+				$w      = 40 + ( ( ( $i * 37 ) + abs( $shift ) ) % 120 );
+				$marks .= sprintf(
+					'<rect x="%s" y="%d" width="%d" height="2" fill="currentColor" opacity="%s"/>',
+					number_format( 150 - ( $w / 2 ), 2 ),
+					58 + ( $i * 11 ),
+					$w,
+					number_format( 0.7 - ( $i * 0.06 ), 2 )
+				);
+			}
+			break;
+
+		default:
+			// A quiet grid of dots, sized by position.
+			for ( $row = 0; $row < 5; $row++ ) {
+				for ( $col = 0; $col < 7; $col++ ) {
+					$r      = 1.5 + ( ( ( $row * 7 ) + $col + $shift ) % 4 );
+					$marks .= sprintf(
+						'<circle cx="%d" cy="%d" r="%s" fill="currentColor" opacity="%s"/>',
+						96 + ( $col * 18 ),
+						56 + ( $row * 22 ),
+						number_format( max( 1.2, $r ), 2 ),
+						number_format( 0.28 + ( ( ( $row + $col ) % 4 ) * 0.16 ), 2 )
+					);
+				}
+			}
+			break;
+	}
+
+	return sprintf(
+		'<svg class="post-preview-device" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid slice">%s</svg>',
+		$marks
+	);
 }
 
 /**
@@ -40,7 +162,11 @@ function previews_enabled() {
  *                              every row emits a preview.
  * @return string
  */
-function post_list_classes( $query = null ) {
+function post_list_classes( $query = null ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found, VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable -- retained for backward compatibility with existing callers, see docblock.
+	// Each rendered list is a schema.org ItemList; reset the per-list position
+	// counter so ListItem positions start at 1 for every list on the page.
+	$GLOBALS['kolofon_list_position'] = 0;
+
 	$classes = 'post-list';
 
 	if ( previews_enabled() ) {
@@ -180,12 +306,16 @@ function post_list_item( $args = array() ) {
 				)
 			);
 		} else {
-			// Typographic placeholder for image-less posts. Same 3:2 anchor,
-			// same slot in the layout, but the peek shows the post title
-			// over a subtle palette background — so posts without a featured
-			// image still get a peek and don't feel like second-class rows.
+			// No featured image: draw a generated printer's mark seeded from
+			// the post slug, with the title set over it. Same 3:2 anchor and
+			// slot as an image preview, so image-less posts get a peek with
+			// real presence rather than an empty card.
+			$post_object = get_post();
+			$seed        = ( $post_object && $post_object->post_name ) ? $post_object->post_name : get_the_title();
+
 			$preview = sprintf(
-				'<span class="post-preview is-typographic" aria-hidden="true"><span class="post-preview-title">%s</span></span>',
+				'<span class="post-preview is-typographic" aria-hidden="true">%1$s<span class="post-preview-title">%2$s</span></span>',
+				preview_device( $seed ),
 				esc_html( wp_trim_words( get_the_title(), 10, '…' ) )
 			);
 		}
@@ -214,30 +344,31 @@ function post_list_item( $args = array() ) {
 	// show_dek is honoured but not required.
 	$show_dek = $args['show_dek'] || 'index' === $style;
 	?>
-	<li class="<?php echo esc_attr( $classes ); ?>">
-		<a href="<?php the_permalink(); ?>">
+	<li class="<?php echo esc_attr( $classes ); ?>" itemprop="itemListElement" itemscope="itemscope" itemtype="https://schema.org/ListItem">
+		<meta itemprop="position" content="<?php echo esc_attr( (string) ( ++$GLOBALS['kolofon_list_position'] ) ); ?>" />
+		<a href="<?php the_permalink(); ?>" itemprop="url">
+			<span itemprop="item" itemscope="itemscope" itemtype="https://schema.org/BlogPosting">
+			<meta itemprop="url" content="<?php the_permalink(); ?>" />
 			<?php if ( 'columns' === $style ) : ?>
-				<span class="post-col post-col-date"><?php echo esc_html( $date ); ?></span>
+				<span class="post-col post-col-date"><time itemprop="datePublished" datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>"><?php echo esc_html( $date ); ?></time></span>
 				<span class="post-col post-col-section">
 					<?php echo $section ? esc_html( $section->name ) : ''; ?>
 				</span>
 			<?php endif; ?>
 			<span class="post-item-main">
-				<span class="post-title"><?php the_title(); ?></span>
-				<?php if ( list_tags_enabled() ) : ?>
-					<?php render_post_tags( null, intval( opt( 'list_tag_limit' ) ), 'tags-inline' ); ?>
-				<?php endif; ?>
+				<span class="post-title" itemprop="headline name"><?php the_title(); ?></span>
 				<?php if ( $show_dek ) : ?>
 					<?php $dek = get_the_excerpt(); ?>
 					<?php if ( $dek ) : ?>
-						<span class="post-dek"><?php echo esc_html( wp_trim_words( $dek, 22 ) ); ?></span>
+						<span class="post-dek" itemprop="abstract"><?php echo esc_html( wp_trim_words( $dek, 22 ) ); ?></span>
 					<?php endif; ?>
 				<?php endif; ?>
 			</span>
 			<?php if ( 'columns' !== $style ) : ?>
-				<span class="post-date"><?php echo esc_html( $date ); ?></span>
+				<span class="post-date"><time itemprop="datePublished" datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>"><?php echo esc_html( $date ); ?></time></span>
 			<?php endif; ?>
 			<?php echo $preview; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from core template tags above. ?>
+			</span>
 		</a>
 	</li>
 	<?php

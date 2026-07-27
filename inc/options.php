@@ -61,6 +61,55 @@ function enqueue_options_assets( $hook ) {
 		KOLOFON_VERSION,
 		true
 	);
+
+	// Load every stack's webfont so the live preview can show each in its true
+	// face, not just the active one. Attached to the admin stylesheet.
+	if ( function_exists( __NAMESPACE__ . '\\all_webfont_faces' ) ) {
+		$faces = all_webfont_faces();
+		if ( '' !== $faces ) {
+			wp_add_inline_style( 'kolofon-admin-options', $faces );
+		}
+	}
+
+	// Hand the preview the data it needs: each stack's body and heading
+	// families, and each colour preset's five values. The preview reads the
+	// live form controls for the chosen slug and sizes, then looks up the
+	// families and colours here. No server round-trip, no save required.
+	$stack_data = array();
+	foreach ( get_font_stacks() as $slug => $stack ) {
+		$stack_data[ $slug ] = array(
+			'body'    => $stack['body'],
+			'heading' => $stack['heading'],
+		);
+	}
+
+	$scheme_data = array();
+	foreach ( get_colour_presets() as $slug => $preset ) {
+		if ( ! isset( $preset['bg'] ) ) {
+			continue; // 'auto' has no colours of its own.
+		}
+		$scheme_data[ $slug ] = array(
+			'bg'     => $preset['bg'],
+			'text'   => $preset['text'],
+			'accent' => $preset['accent'],
+			'muted'  => $preset['muted'],
+			'rule'   => $preset['rule'],
+		);
+	}
+
+	wp_localize_script(
+		'kolofon-admin-options',
+		'kolofonPreview',
+		array(
+			'stacks'  => $stack_data,
+			'schemes' => $scheme_data,
+			'strings' => array(
+				'heading' => __( 'The reader arrives here first', 'kolofon' ),
+				'lede'    => __( 'A lede paragraph sets the scene in slightly larger type, carrying the voice before the body settles in.', 'kolofon' ),
+				'body'    => __( 'This is body copy at reading size. It is the measure of the whole design: the face you choose and the size you set decide how a visitor experiences everything you publish. Adjust the controls and watch this specimen answer.', 'kolofon' ),
+			),
+		)
+	);
 }
 
 /**
@@ -121,13 +170,36 @@ function register_settings() {
  * @param array  $args  Extra render args.
  */
 function add_field( $key, $label, $tab, $type, $args = array() ) {
+	// The label cell carries the field name and its explanation together, so
+	// the right-hand column holds nothing but the control. Help text under an
+	// input pushes rows apart and leaves the control column ragged; beside it,
+	// the form reads as two clean columns. The help is resolved here rather
+	// than at render time so the description travels with the title.
+	$title = '<span class="kolofon-field-name">' . esc_html( $label ) . '</span>';
+
+	$help = isset( $args['help'] ) ? $args['help'] : '';
+	if ( is_callable( $help ) ) {
+		$help = call_user_func( $help );
+	}
+	if ( '' !== $help ) {
+		$title .= '<span class="kolofon-field-help">' . esc_html( $help ) . '</span>';
+		// Consumed here; render_field must not print it again below the input.
+		$args['help_in_label'] = true;
+	}
+
 	add_settings_field(
 		$key,
-		esc_html( $label ),
+		$title,
 		__NAMESPACE__ . '\\render_field',
 		OPTION_PAGE,
 		$tab,
-		array_merge( array( 'key' => $key, 'type' => $type ), $args )
+		array_merge(
+			array(
+				'key'  => $key,
+				'type' => $type,
+			),
+			$args
+		)
 	);
 }
 
@@ -156,7 +228,7 @@ function render_field( $args ) {
 			$placeholder = isset( $args['placeholder'] ) ? $args['placeholder'] : 'https://';
 			// Some fields (Email) accept a bare address as well as a full URL,
 			// so they opt out of the browser's native URL validation.
-			$input_type  = isset( $args['input_type'] ) ? $args['input_type'] : 'url';
+			$input_type = isset( $args['input_type'] ) ? $args['input_type'] : 'url';
 			printf(
 				'<input type="%1$s" class="regular-text" name="%2$s" id="%3$s" value="%4$s" placeholder="%5$s" />',
 				esc_attr( $input_type ),
@@ -171,7 +243,7 @@ function render_field( $args ) {
 			$rows = isset( $args['rows'] ) ? intval( $args['rows'] ) : 3;
 			printf(
 				'<textarea class="large-text" rows="%1$d" name="%2$s" id="%3$s">%4$s</textarea>',
-				$rows,
+				absint( $rows ),
 				esc_attr( $name ),
 				esc_attr( $key ),
 				esc_textarea( $value )
@@ -206,9 +278,38 @@ function render_field( $args ) {
 				esc_attr( $name ),
 				esc_attr( $key ),
 				esc_attr( $value ),
-				$min,
-				$max,
-				$step
+				intval( $min ),
+				intval( $max ),
+				absint( $step )
+			);
+			break;
+
+		case 'slider':
+			$min  = isset( $args['min'] ) ? intval( $args['min'] ) : 0;
+			$max  = isset( $args['max'] ) ? intval( $args['max'] ) : 100;
+			$step = isset( $args['step'] ) ? intval( $args['step'] ) : 1;
+			$unit = isset( $args['unit'] ) ? $args['unit'] : '';
+			// A range input for feel, plus a small number input for precision.
+			// Both carry the same field name is impossible (only one submits),
+			// so the range is the submitting control and the number mirrors it
+			// with no name; admin-options.js keeps the two in sync. With JS off
+			// the range still submits a valid value and the readout shows it.
+			printf(
+				'<span class="kolofon-slider" data-kolofon-slider>
+					<input type="range" class="kolofon-slider-range" name="%1$s" id="%2$s" value="%3$s" min="%4$d" max="%5$d" step="%6$d" />
+					<span class="kolofon-slider-readout">
+						<input type="number" class="kolofon-slider-number" value="%3$s" min="%4$d" max="%5$d" step="%6$d" aria-label="%7$s" />
+						<span class="kolofon-slider-unit">%8$s</span>
+					</span>
+				</span>',
+				esc_attr( $name ),
+				esc_attr( $key ),
+				esc_attr( $value ),
+				intval( $min ),
+				intval( $max ),
+				absint( $step ),
+				esc_attr__( 'Exact value', 'kolofon' ),
+				esc_html( $unit )
 			);
 			break;
 
@@ -227,12 +328,15 @@ function render_field( $args ) {
 			break;
 
 		case 'checkbox':
+			$toggle_label = isset( $args['args']['label'] ) && '' !== $args['args']['label']
+				? $args['args']['label']
+				: __( 'Enabled', 'kolofon' );
 			printf(
-				'<label><input type="checkbox" name="%1$s" id="%2$s" value="1" %3$s /> %4$s</label>',
+				'<label class="kolofon-toggle"><input type="checkbox" class="kolofon-toggle-input" name="%1$s" id="%2$s" value="1" %3$s /><span class="kolofon-toggle-track" aria-hidden="true"><span class="kolofon-toggle-thumb"></span></span><span class="kolofon-toggle-text">%4$s</span></label>',
 				esc_attr( $name ),
 				esc_attr( $key ),
 				checked( 1, intval( $value ), false ),
-				esc_html__( 'Enabled', 'kolofon' )
+				esc_html( $toggle_label )
 			);
 			break;
 
@@ -282,7 +386,7 @@ function render_field( $args ) {
 			// options.php and cannot carry a file upload to a different handler.
 			printf(
 				'<div class="kolofon-import">
-					<input type="file" form="kolofon-import-form" name="kolofon_import_file" accept="application/json,.json" required />
+					<input type="file" form="kolofon-import-form" name="kolofon_import_file" accept="application/json,.json" required="required" />
 					<button type="submit" form="kolofon-import-form" class="button button-secondary" onclick="return confirm(\'%1$s\');">%2$s</button>
 				</div>',
 				esc_js( __( 'This replaces all current settings. Continue?', 'kolofon' ) ),
@@ -361,7 +465,9 @@ function render_field( $args ) {
 			break;
 	}
 
-	if ( ! empty( $args['help'] ) ) {
+	// Help text normally lives in the label column (see add_field). It is only
+	// printed here for fields that bypass add_field and set help directly.
+	if ( ! empty( $args['help'] ) && empty( $args['help_in_label'] ) ) {
 		printf( '<p class="description">%s</p>', esc_html( $args['help'] ) );
 	}
 }
@@ -381,6 +487,7 @@ function handle_reset() {
 	redirect_to_options( 'reset-ok' );
 }
 
+
 /**
  * Render the options page shell (tabs + Settings API form).
  */
@@ -396,11 +503,36 @@ function render_options_page() {
 	$form_tabs = get_form_tabs();
 	?>
 	<div class="wrap kolofon-wrap">
-		<h1><?php esc_html_e( 'Theme Options', 'kolofon' ); ?></h1>
+		<div class="kolofon-masthead">
+			<p class="kolofon-masthead-eyebrow"><?php esc_html_e( 'Theme Options', 'kolofon' ); ?></p>
+			<h1 class="kolofon-options-title">
+				<?php
+				// wp_get_theme() returns a WP_Theme in WordPress, but guard the
+				// call so a non-object environment cannot fatal the screen.
+				$kolofon_theme      = function_exists( 'wp_get_theme' ) ? wp_get_theme() : null;
+				$kolofon_theme_name = ( is_object( $kolofon_theme ) && method_exists( $kolofon_theme, 'get' ) )
+					? (string) $kolofon_theme->get( 'Name' )
+					: '';
+				echo esc_html( '' !== $kolofon_theme_name ? $kolofon_theme_name : __( 'Kolofon', 'kolofon' ) );
+				?>
+				<span class="kolofon-version-pill">
+					<?php
+					printf(
+						/* translators: %s: theme version number */
+						esc_html__( 'v%s', 'kolofon' ),
+						esc_html( KOLOFON_VERSION )
+					);
+					?>
+				</span>
+			</h1>
+			<p class="kolofon-masthead-desc">
+				<?php esc_html_e( 'Identity, sections, social, appearance, and layout settings for the site.', 'kolofon' ); ?>
+			</p>
+		</div>
 
 		<?php
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only status flag set by our own redirect.
-		$status = isset( $_GET['mb_status'] ) ? sanitize_key( wp_unslash( $_GET['mb_status'] ) ) : '';
+		$status  = isset( $_GET['kolofon_status'] ) ? sanitize_key( wp_unslash( $_GET['kolofon_status'] ) ) : '';
 		$notices = get_status_messages();
 
 		if ( $status && isset( $notices[ $status ] ) ) {
@@ -445,6 +577,10 @@ function render_options_page() {
 			<?php foreach ( array_keys( $form_tabs ) as $slug ) : ?>
 				<div class="kolofon-panel" id="tab-<?php echo esc_attr( $slug ); ?>" role="tabpanel"
 					aria-labelledby="tabctl-<?php echo esc_attr( $slug ); ?>" tabindex="0">
+					<?php if ( 'appearance' === $slug ) : ?>
+						<?php render_appearance_preview(); ?>
+						<?php render_appearance_tab_intro(); ?>
+					<?php endif; ?>
 					<table class="form-table" role="presentation">
 						<?php do_settings_fields( OPTION_PAGE, $slug ); ?>
 					</table>
@@ -464,3 +600,76 @@ function render_options_page() {
 	</div>
 	<?php
 }
+
+/**
+ * Live typography and colour preview for the Appearance tab.
+ *
+ * A specimen block that re-renders as the font stack, sizes, and colour scheme
+ * controls change, entirely client-side. The markup here is the initial state;
+ * admin-options.js reads the localised stack and scheme data and updates the
+ * inline styles as the controls move. With JavaScript off it still shows a
+ * static, readable specimen in the default face.
+ */
+function render_appearance_preview() {
+	?>
+	<div class="kolofon-preview" data-kolofon-preview aria-live="polite">
+		<p class="kolofon-preview-label"><?php esc_html_e( 'Live preview', 'kolofon' ); ?></p>
+		<div class="kolofon-preview-stage" data-preview-stage>
+			<p class="kolofon-preview-eyebrow" data-preview-eyebrow><?php esc_html_e( 'Specimen', 'kolofon' ); ?></p>
+			<h2 class="kolofon-preview-heading" data-preview-heading><?php esc_html_e( 'The reader arrives here first', 'kolofon' ); ?></h2>
+			<p class="kolofon-preview-lede" data-preview-lede><?php esc_html_e( 'A lede paragraph sets the scene in slightly larger type, carrying the voice before the body settles in.', 'kolofon' ); ?></p>
+			<p class="kolofon-preview-body" data-preview-body><?php esc_html_e( 'This is body copy at reading size. It is the measure of the whole design: the face you choose and the size you set decide how a visitor experiences everything you publish. Adjust the controls and watch this specimen answer.', 'kolofon' ); ?></p>
+		</div>
+		<p class="kolofon-preview-note description"><?php esc_html_e( 'Updates as you change the font, sizes, and colour scheme below. Nothing is saved until you press Save Changes.', 'kolofon' ); ?></p>
+	</div>
+	<?php
+}
+
+/**
+ * Intro block on the Appearance tab: explains the favicon.
+ *
+ * The theme ships a default favicon (a serif K on the Charcoal background, in
+ * the theme's own display face) and emits it as a fallback only when no Site
+ * Icon is set. Changing it is core's job: the Site Icon control handles
+ * cropping and generates every required size, which a theme option would
+ * reproduce badly. So rather than duplicate that UI, point at it.
+ */
+function render_appearance_tab_intro() {
+	$customize_url = wp_customize_url();
+	// Deep-link straight to the Site Icon control when the current WordPress
+	// supports autofocus; harmless query args on versions that do not.
+	$site_icon_url = add_query_arg(
+		array(
+			'autofocus' => array( 'section' => 'title_tagline' ),
+			'return'    => rawurlencode( admin_url( 'themes.php?page=' . OPTION_PAGE ) ),
+		),
+		$customize_url
+	);
+
+	$has_icon = function_exists( 'has_site_icon' ) && has_site_icon();
+	?>
+	<div class="kolofon-intro">
+		<p>
+			<?php esc_html_e( 'The theme ships a default favicon, shown in the browser tab until you set your own. It is a serif K on the Charcoal background, matching the wordmark.', 'kolofon' ); ?>
+		</p>
+		<p>
+			<?php
+			if ( $has_icon ) {
+				printf(
+					/* translators: %s: link to the Site Icon control */
+					esc_html__( 'You have set a custom Site Icon, which overrides the default. %s to change it.', 'kolofon' ),
+					'<a href="' . esc_url( $site_icon_url ) . '">' . esc_html__( 'Open Site Identity', 'kolofon' ) . '</a>'
+				);
+			} else {
+				printf(
+					/* translators: %s: link to the Site Icon control */
+					esc_html__( 'To use your own, set a Site Icon in the Customizer. %s. It handles cropping and generates every size browsers and devices ask for.', 'kolofon' ),
+					'<a href="' . esc_url( $site_icon_url ) . '">' . esc_html__( 'Open Site Identity', 'kolofon' ) . '</a>'
+				);
+			}
+			?>
+		</p>
+	</div>
+	<?php
+}
+

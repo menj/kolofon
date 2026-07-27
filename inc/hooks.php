@@ -129,6 +129,69 @@ function migrate_stored_options() {
 		update_option( 'kolofon_typewriter_reset', 1, false );
 	}
 
+	// 4.0.0: the Now feature was removed. Three kinds of database residue are
+	// cleaned here, all of it theme-owned ephemera the removed code would have
+	// managed itself:
+	//
+	// 1. The four Now option keys inside the settings row.
+	// 2. Orphaned `kolofon_now_fallback_*` cache options. These were 30-day
+	// fallback copies of fetched feeds; the prune routine that expired them
+	// was removed with the feature, so without this they persist forever.
+	// 3. `kolofon_now_feed_*` transients and their timeout rows. They expire
+	// hourly on their own, but expired transients linger in the options
+	// table until something deletes them, and nothing will ask for these
+	// again.
+	//
+	// User content is deliberately NOT touched: the Now page, its
+	// `_kolofon_now_entries` meta, the `now` category, and any micro-posts
+	// published through the feature are the site owner's data, and a theme
+	// update has no business deleting content. docs/guides/upgrading.md carries the
+	// manual steps for anyone who wants those gone too.
+	//
+	// Gated on a one-shot flag so the LIKE query runs once, not on every load.
+	if ( ! get_option( 'kolofon_now_cleanup_done' ) ) {
+		foreach ( array( 'now_goodreads_rss', 'now_threads_rss', 'now_other_rss', 'hide_now_from_blog' ) as $key ) {
+			if ( array_key_exists( $key, $stored ) ) {
+				unset( $stored[ $key ] );
+				$dirty = true;
+			}
+		}
+
+		global $wpdb;
+		$orphans = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- one-shot cleanup of orphaned rows no API enumerates.
+			$wpdb->prepare(
+				"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s",
+				$wpdb->esc_like( 'kolofon_now_fallback_' ) . '%',
+				$wpdb->esc_like( '_transient_kolofon_now_feed_' ) . '%',
+				$wpdb->esc_like( '_transient_timeout_kolofon_now_feed_' ) . '%'
+			)
+		);
+
+		foreach ( (array) $orphans as $orphan ) {
+			delete_option( $orphan );
+		}
+
+		update_option( 'kolofon_now_cleanup_done', 1, false );
+	}
+
+	// 5.0.0 removed the tags-in-post-lists display, so its two option keys are
+	// dead. Strip them from the settings row rather than leaving stale data
+	// behind. No content is touched: the tags themselves are WordPress terms
+	// and remain on their posts, still shown at the foot of a single post and
+	// still reachable through tag archives.
+	//
+	// Gated on its own one-shot flag so it runs once.
+	if ( ! get_option( 'kolofon_list_tags_cleanup_done' ) ) {
+		foreach ( array( 'show_list_tags', 'list_tag_limit' ) as $key ) {
+			if ( array_key_exists( $key, $stored ) ) {
+				unset( $stored[ $key ] );
+				$dirty = true;
+			}
+		}
+
+		update_option( 'kolofon_list_tags_cleanup_done', 1, false );
+	}
+
 	if ( $dirty ) {
 		update_option( KOLOFON_OPTION_KEY, $stored );
 	}
@@ -185,14 +248,13 @@ function get_option_sanitizers() {
 		'enforce_single_section' => $bool,
 		'scope_adjacent_posts'   => $bool,
 		'show_section_chooser'   => $bool,
-		'show_list_tags'         => $bool,
-		'list_tag_limit'         => $int_between( 1, 10, $defaults['list_tag_limit'] ),
 
 		// Identity.
 		'hero_eyebrow'           => 'sanitize_text_field',
 		'hero_heading'           => function ( $value ) {
 			return wp_kses( $value, allowed_heading_html() );
 		},
+		'citation_author'        => 'sanitize_text_field',
 		'hero_body'              => 'wp_kses_post',
 		'hero_portrait'          => 'esc_url_raw',
 		'footer_text'            => 'wp_kses_post',
@@ -200,9 +262,12 @@ function get_option_sanitizers() {
 		// Privacy and hardening.
 		'email_obfuscation'      => $enum_from( __NAMESPACE__ . '\\get_email_modes', $defaults['email_obfuscation'] ),
 		'disable_file_edit'      => $bool,
+		'csp_mode'               => $enum_from( __NAMESPACE__ . '\\get_csp_modes', $defaults['csp_mode'] ),
 		'emit_meta_tags'         => $bool,
 		'planned_badge_label'    => 'sanitize_text_field',
 		'planned_notice_text'    => 'sanitize_text_field',
+
+		// Now tab (RSS URLs).
 
 		// Appearance.
 		'colour_scheme'          => $enum_from( __NAMESPACE__ . '\\get_colour_presets', $defaults['colour_scheme'] ),
@@ -224,6 +289,7 @@ function get_option_sanitizers() {
 		},
 		'hover_preview'          => $bool,
 		'preview_size'           => $int_between( 100, 240, $defaults['preview_size'] ),
+		'list_title_size'        => $int_between( 14, 30, $defaults['list_title_size'] ),
 		'show_recent'            => $bool,
 		'recent_count'           => $int_between( 1, 20, $defaults['recent_count'] ),
 	);

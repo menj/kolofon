@@ -1,5 +1,5 @@
 /*!
- * menj.bio email guard.
+ * Kolofon email guard.
  * Rebuilds mailto: hrefs from an encoded payload so the served HTML contains
  * no address-shaped string for harvesters to collect.
  */

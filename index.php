@@ -9,36 +9,36 @@ get_header();
 
 global $wp_query;
 ?>
-<main>
-	<article class="page-index">
+<main itemprop="mainContentOfPage" itemscope="itemscope" itemtype="https://schema.org/WebPageElement">
+	<article class="page-index" itemscope="itemscope" itemtype="https://schema.org/CollectionPage">
 		<div class="container">
 			<header class="content-header">
 				<?php
 				if ( is_search() ) {
 					printf(
-						'<h1 class="post-title">%s <span class="term">%s</span></h1>',
+						'<h1 class="post-title" itemprop="name">%s <span class="term term-query">%s</span></h1>',
 						esc_html__( 'Search results for:', 'kolofon' ),
 						esc_html( get_search_query() )
 					);
 				} elseif ( is_category() ) {
 					printf(
-						'<h1 class="post-title">%s <span class="term">%s</span></h1>',
+						'<h1 class="post-title" itemprop="name">%s <span class="term">%s</span></h1>',
 						esc_html__( 'Posts in:', 'kolofon' ),
 						esc_html( single_cat_title( '', false ) )
 					);
 				} elseif ( is_tag() ) {
 					printf(
-						'<h1 class="post-title">%s <span class="term">%s</span></h1>',
+						'<h1 class="post-title" itemprop="name">%s <span class="term">%s</span></h1>',
 						esc_html__( 'Posts tagged:', 'kolofon' ),
 						esc_html( single_tag_title( '', false ) )
 					);
 				} elseif ( is_archive() ) {
-					printf( '<h1 class="post-title">%s</h1>', esc_html( get_the_archive_title() ) );
+					printf( '<h1 class="post-title" itemprop="name">%s</h1>', esc_html( get_the_archive_title() ) );
 				} else {
-					printf( '<h1 class="post-title">%s</h1>', esc_html__( 'Posts', 'kolofon' ) );
+					printf( '<h1 class="post-title" itemprop="name">%s</h1>', esc_html__( 'Posts', 'kolofon' ) );
 				}
 				?>
-				<p class="description">
+				<p class="description" itemprop="description">
 					<?php
 					printf(
 						/* translators: %d: post count */
@@ -62,11 +62,11 @@ global $wp_query;
 
 			<div class="content">
 				<?php if ( have_posts() ) : ?>
-					<ul class="<?php echo esc_attr( \Kolofon\post_list_classes() ); ?>">
+					<ul class="<?php echo esc_attr( \Kolofon\post_list_classes() ); ?>" itemprop="mainEntity" itemscope="itemscope" itemtype="https://schema.org/ItemList">
 						<?php
 						while ( have_posts() ) :
 							the_post();
-							\Kolofon\post_list_item( array( 'show_dek' => true ) );
+							\Kolofon\post_list_item();
 						endwhile;
 						?>
 					</ul>

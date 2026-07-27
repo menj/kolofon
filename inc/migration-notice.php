@@ -48,14 +48,16 @@ function render_migration_notice() {
 			<strong><?php esc_html_e( 'Kolofon: migration complete.', 'kolofon' ); ?></strong>
 			<?php
 			printf(
-				/* translators: %d: number of stored options migrated */
-				esc_html( _n(
-					'%d setting was carried over from the previous menj-bio theme.',
-					'%d settings were carried over from the previous menj-bio theme.',
-					$count,
-					'kolofon'
-				) ),
-				$count
+				esc_html(
+					/* translators: %d: number of stored options migrated */
+					_n(
+						'%d setting was carried over from the previous menj-bio theme.',
+						'%d settings were carried over from the previous menj-bio theme.',
+						$count,
+						'kolofon'
+					)
+				),
+				absint( $count )
 			);
 			?>
 			<?php esc_html_e( 'Review the Kolofon options page to confirm everything is where you expect it.', 'kolofon' ); ?>

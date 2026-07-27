@@ -1,5 +1,5 @@
 /*!
- * menj.bio single-section enforcement for the block editor.
+ * Kolofon single-section enforcement for the block editor.
  *
  * Gutenberg renders categories as checkboxes, which invites assigning several.
  * This watches the selection and reduces it to the most recently added term,

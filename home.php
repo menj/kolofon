@@ -10,25 +10,25 @@ use function Kolofon\opt;
 get_header();
 ?>
 
-<main class="home">
+<main class="home" itemprop="mainEntity" itemscope="itemscope" itemtype="https://schema.org/Person">
 	<?php do_action( 'kolofon_before_hero' ); ?>
 
 	<section class="hero">
 		<div class="container">
 			<div class="hero-inner">
 				<div class="hero-copy">
-					<?php $eyebrow = opt( 'hero_eyebrow' ); ?>
-					<?php if ( $eyebrow ) : ?>
-						<p class="hero-eyebrow"><?php echo esc_html( $eyebrow ); ?></p>
+					<?php $kolofon_eyebrow = opt( 'hero_eyebrow' ); ?>
+					<?php if ( $kolofon_eyebrow ) : ?>
+						<p class="hero-eyebrow" itemprop="jobTitle"><?php echo esc_html( $kolofon_eyebrow ); ?></p>
 					<?php endif; ?>
 
-					<h1 class="hero-heading">
+					<h1 class="hero-heading" itemprop="name">
 						<?php echo wp_kses( opt( 'hero_heading' ), \Kolofon\allowed_heading_html() ); ?>
 					</h1>
 
-					<?php $body = opt( 'hero_body' ); ?>
-					<?php if ( $body ) : ?>
-						<div class="hero-body"><?php echo wp_kses_post( wpautop( $body ) ); ?></div>
+					<?php $kolofon_body = opt( 'hero_body' ); ?>
+					<?php if ( $kolofon_body ) : ?>
+						<div class="hero-body" itemprop="description"><?php echo wp_kses_post( wpautop( $kolofon_body ) ); ?></div>
 					<?php endif; ?>
 
 					<?php \Kolofon\render_social_icons(); ?>
@@ -39,11 +39,14 @@ get_header();
 				</div>
 
 				<?php
-				$portrait = opt( 'hero_portrait' ) ?: \Kolofon\default_portrait_url();
-				$pstyle   = sanitize_html_class( opt( 'portrait_style' ) );
+				$kolofon_portrait = opt( 'hero_portrait' );
+				if ( '' === $kolofon_portrait ) {
+					$kolofon_portrait = \Kolofon\default_portrait_url();
+				}
+				$kolofon_pstyle = sanitize_html_class( opt( 'portrait_style' ) );
 				?>
-				<div class="hero-portrait is-<?php echo esc_attr( $pstyle ); ?>">
-					<img src="<?php echo esc_url( $portrait ); ?>" alt="<?php echo esc_attr( wp_strip_all_tags( opt( 'hero_heading' ) ) ); ?>" fetchpriority="high" decoding="async" width="<?php echo esc_attr( intval( opt( 'portrait_size' ) ) ); ?>" height="<?php echo esc_attr( intval( opt( 'portrait_size' ) ) ); ?>" />
+				<div class="hero-portrait is-<?php echo esc_attr( $kolofon_pstyle ); ?>">
+					<img itemprop="image" src="<?php echo esc_url( $kolofon_portrait ); ?>" alt="<?php echo esc_attr( wp_strip_all_tags( opt( 'hero_heading' ) ) ); ?>" fetchpriority="high" decoding="async" width="<?php echo esc_attr( intval( opt( 'portrait_size' ) ) ); ?>" height="<?php echo esc_attr( intval( opt( 'portrait_size' ) ) ); ?>" />
 				</div>
 			</div>
 		</div>
@@ -53,7 +56,7 @@ get_header();
 
 	<?php if ( intval( opt( 'show_recent' ) ) === 1 ) : ?>
 		<?php
-		$recent = new WP_Query(
+		$kolofon_recent = new WP_Query(
 			array(
 				'post_type'      => 'post',
 				'posts_per_page' => intval( opt( 'recent_count' ) ),
@@ -61,19 +64,19 @@ get_header();
 			)
 		);
 		?>
-		<?php if ( $recent->have_posts() ) : ?>
-			<section class="recent">
+		<?php if ( $kolofon_recent->have_posts() ) : ?>
+			<section class="recent" itemscope="itemscope" itemtype="https://schema.org/ItemList">
 				<div class="container">
 					<?php
 					if ( 1 === intval( opt( 'show_section_chooser' ) ) ) {
 						\Kolofon\render_section_chooser( 0 );
 					}
 					?>
-					<h2 class="section-heading"><?php esc_html_e( 'Recent Posts', 'kolofon' ); ?> <a class="section-link" href="<?php echo esc_url( \Kolofon\get_blog_index_url() ); ?>"><?php esc_html_e( 'View all', 'kolofon' ); ?></a></h2>
-					<ul class="<?php echo esc_attr( \Kolofon\post_list_classes( $recent ) ); ?>">
+					<h2 class="section-heading" itemprop="name"><?php esc_html_e( 'Recent Posts', 'kolofon' ); ?></h2>
+					<ul class="<?php echo esc_attr( \Kolofon\post_list_classes( $kolofon_recent ) ); ?>">
 						<?php
-						while ( $recent->have_posts() ) :
-							$recent->the_post();
+						while ( $kolofon_recent->have_posts() ) :
+							$kolofon_recent->the_post();
 							\Kolofon\post_list_item();
 						endwhile;
 						?>
