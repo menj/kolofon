@@ -1,0 +1,206 @@
+<?php
+/**
+ * System report.
+ *
+ * Theme-owned runtime facts on one screen, deliberately not restating Site
+ * Health. Every row answers a question that has actually come up: is the
+ * bundled parser loaded, which icon is winning, which mode is a feature in,
+ * where is the portrait coming from.
+ *
+ * @package Kolofon
+ * @since   1.4.0
+ */
+
+namespace Kolofon;
+
+defined( 'ABSPATH' ) || exit;
+
+/**
+ * Build the report rows.
+ *
+ * Each row: label, value, and an optional note explaining consequence.
+ *
+ * @return array<int, array{label:string, value:string, note:string}>
+ */
+function get_system_report() {
+	$rows = array();
+
+	// Versions.
+	$rows[] = array(
+		'label' => __( 'Theme version', 'kolofon' ),
+		'value' => KOLOFON_VERSION,
+		'note'  => is_child_theme()
+			? __( 'Running as the parent of an active child theme.', 'kolofon' )
+			: __( 'Running directly, no child theme active.', 'kolofon' ),
+	);
+
+	// Markdown parser.
+	$parser = docs_parser();
+	$rows[] = array(
+		'label' => __( 'Documentation parser', 'kolofon' ),
+		'value' => $parser ? get_class( $parser ) : __( 'Unavailable', 'kolofon' ),
+		'note'  => $parser
+			? __( 'Documentation renders as HTML on the Documentation tab.', 'kolofon' )
+			: __( 'Documentation falls back to escaped source in a pre block.', 'kolofon' ),
+	);
+
+	// Icon precedence.
+	$has_site_icon = (bool) get_option( 'site_icon' );
+	$rows[]        = array(
+		'label' => __( 'Favicon source', 'kolofon' ),
+		'value' => $has_site_icon ? __( 'Site Icon (Customiser)', 'kolofon' ) : __( 'Theme bundled icons', 'kolofon' ),
+		'note'  => $has_site_icon
+			? __( 'A Site Icon is set, so WordPress emits it and the theme stands down.', 'kolofon' )
+			: __( 'No Site Icon set; the theme emits its bundled favicon set.', 'kolofon' ),
+	);
+
+	// Email protection.
+	$modes  = get_email_modes();
+	$mode   = email_mode();
+	$rows[] = array(
+		'label' => __( 'Email protection', 'kolofon' ),
+		'value' => isset( $modes[ $mode ] ) ? $modes[ $mode ] : $mode,
+		'note'  => 'js' === $mode
+			? __( 'The decoder script is enqueued only on pages that render a protected link.', 'kolofon' )
+			: '',
+	);
+
+	// Colour scheme.
+	$scheme  = opt( 'colour_scheme' );
+	$presets = get_colour_presets();
+	$label   = isset( $presets[ $scheme ]['label'] ) ? $presets[ $scheme ]['label'] : $scheme;
+
+	if ( 'auto' === $scheme ) {
+		$note = __( 'Ivory when the device prefers light, Charcoal when it prefers dark.', 'kolofon' );
+	} else {
+		$note = '';
+	}
+
+	$rows[] = array(
+		'label' => __( 'Colour scheme', 'kolofon' ),
+		'value' => $label,
+		'note'  => $note,
+	);
+
+	// Portrait source.
+	$portrait = opt( 'hero_portrait' );
+	$rows[]   = array(
+		'label' => __( 'Hero portrait', 'kolofon' ),
+		'value' => $portrait ? __( 'Uploaded image', 'kolofon' ) : __( 'Bundled default', 'kolofon' ),
+		'note'  => $portrait ? esc_url( $portrait ) : KOLOFON_URI . 'assets/img/profile.png',
+	);
+
+	// Metadata ownership.
+	$detected = detected_seo_plugin();
+	$emitting = ( '' === $detected ) && 1 === intval( opt( 'emit_meta_tags' ) );
+	$rows[]   = array(
+		'label' => __( 'Meta tags and schema', 'kolofon' ),
+		'value' => $emitting ? __( 'Emitted by the theme', 'kolofon' ) : __( 'Standing down', 'kolofon' ),
+		'note'  => '' !== $detected
+			? sprintf(
+				/* translators: %s: plugin name */
+				__( '%s is active and owns this output.', 'kolofon' ),
+				$detected
+			)
+			: ( $emitting ? '' : __( 'Disabled on the Advanced tab.', 'kolofon' ) ),
+	);
+
+	// File editors.
+	$config_locked = defined( 'DISALLOW_FILE_EDIT' ) && DISALLOW_FILE_EDIT;
+	$rows[]        = array(
+		'label' => __( 'File editors', 'kolofon' ),
+		'value' => ( $config_locked || file_editors_disabled() ) ? __( 'Disabled', 'kolofon' ) : __( 'Available', 'kolofon' ),
+		'note'  => $config_locked
+			? __( 'Locked by DISALLOW_FILE_EDIT in wp-config.php, which takes precedence over the theme setting.', 'kolofon' )
+			: __( 'Controlled by the theme setting on the Advanced tab.', 'kolofon' ),
+	);
+
+	// Blog index page — where "View all" points, and whether the activation
+	// hook has provisioned it. Written to surface the class of bug where the
+	// hook did not fire, since a 404 on /blog is otherwise mysterious.
+	$blog_url            = get_blog_index_url();
+	$page_for_posts      = (int) get_option( 'page_for_posts' );
+	$blog_template_pages = get_posts(
+		array(
+			'post_type'      => 'page',
+			'post_status'    => 'publish',
+			'meta_key'       => '_wp_page_template', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+			'meta_value'     => 'page-blog.php',     // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+		)
+	);
+
+	if ( $page_for_posts ) {
+		$blog_source = __( 'Settings > Reading (Posts page)', 'kolofon' );
+	} elseif ( ! empty( $blog_template_pages ) ) {
+		$blog_source = __( 'Page with Blog Index template', 'kolofon' );
+	} else {
+		$blog_source = __( 'Convention (/blog); no page found', 'kolofon' );
+	}
+
+	$rows[] = array(
+		'label' => __( 'Blog index', 'kolofon' ),
+		'value' => $blog_url,
+		'note'  => empty( $blog_template_pages ) && ! $page_for_posts
+			? __( 'No page provisioned. Reactivate the theme to trigger the activation hook, or set a Posts page under Settings > Reading.', 'kolofon' )
+			: $blog_source,
+	);
+
+	// Sections.
+	$sections = get_sections();
+	$slugs    = parse_section_slugs( opt( 'section_slugs' ) );
+	$rows[]   = array(
+		'label' => __( 'Sections', 'kolofon' ),
+		'value' => sprintf(
+			/* translators: 1: resolved count, 2: configured count */
+			__( '%1$d of %2$d configured slugs resolve', 'kolofon' ),
+			count( $sections ),
+			count( $slugs )
+		),
+		'note'  => count( $sections ) < count( $slugs )
+			? __( 'At least one configured slug has no matching category. The Sections tab lists which.', 'kolofon' )
+			: '',
+	);
+
+	// Documentation set.
+	$docs   = list_docs();
+	$rows[] = array(
+		'label' => __( 'Documentation files', 'kolofon' ),
+		'value' => (string) count( $docs ),
+		'note'  => implode( ', ', array_keys( $docs ) ),
+	);
+
+	/**
+	 * Filter the system report rows.
+	 *
+	 * @param array $rows Report rows.
+	 */
+	return apply_filters( 'kolofon_system_report', $rows );
+}
+
+/**
+ * Render the report panel.
+ */
+function render_system_panel() {
+	?>
+	<div class="kolofon-system-panel">
+		<table class="widefat striped kolofon-system-table">
+			<tbody>
+				<?php foreach ( get_system_report() as $row ) : ?>
+					<tr>
+						<th scope="row"><?php echo esc_html( $row['label'] ); ?></th>
+						<td>
+							<strong><?php echo esc_html( $row['value'] ); ?></strong>
+							<?php if ( '' !== $row['note'] ) : ?>
+								<p class="description"><?php echo esc_html( $row['note'] ); ?></p>
+							<?php endif; ?>
+						</td>
+					</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+	</div>
+	<?php
+}
