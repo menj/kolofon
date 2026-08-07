@@ -1,12 +1,12 @@
-/* XFedi Microblog composer */
+/* Kolofon microblog composer */
 ( function () {
 	'use strict';
 
-	if ( typeof window.xfediMicroblog === 'undefined' ) {
+	if ( typeof window.kolofonMicroblog === 'undefined' ) {
 		return;
 	}
 
-	var cfg = window.xfediMicroblog;
+	var cfg = window.kolofonMicroblog;
 	var strings = cfg.strings || {};
 	var panel;
 
@@ -126,7 +126,7 @@
 	}
 
 	document.addEventListener( 'click', function ( event ) {
-		var trigger = event.target.closest ? event.target.closest( '.xfedi-mb-composer-trigger' ) : null;
+		var trigger = event.target.closest ? event.target.closest( '.kolofon-microblog-composer-trigger' ) : null;
 		if ( ! trigger ) {
 			return;
 		}

@@ -4,7 +4,7 @@ Contributors: menj
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 6.7.0
+Stable tag: 7.1.0
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: blog, one-column, custom-colors, custom-menu, editor-style, featured-images, translation-ready
@@ -79,6 +79,27 @@ Special Elite font, (C) Astigmatic, Apache License 2.0.
 Font licenses are included alongside the fonts in `assets/fonts/`.
 
 == Changelog ==
+
+= 7.1.0 =
+* Your Fediverse handle is now a Theme Options setting, defaulting to the short form @you@yourdomain instead of repeating the domain.
+
+= 7.0.1 =
+* Licence documentation consolidated into a single LICENSE.md.
+
+= 7.0.0 =
+* The microblog is now fully part of Kolofon: the plugin's xfedi naming is gone from the post type, namespace, REST routes, hooks and CSS. Existing statuses are migrated automatically.
+
+= 6.11.0 =
+* Development-only files no longer ship. The test stubs redeclared WordPress core functions and would fatal any site that loaded them.
+
+= 6.10.0 =
+* Fixed: the Statuses admin menu never appeared, and the Fediverse tab showed only one of the two handles the site publishes.
+
+= 6.9.0 =
+* Every Kolofon admin screen now draws from one shared stylesheet, so the design cannot drift between them.
+
+= 6.8.0 =
+* The bundled ActivityPub settings screens now carry the theme's design instead of stock wp-admin. Statuses get their own archive template matching the blog page.
 
 = 6.7.0 =
 * The hover preview now travels between rows as a single card instead of fading in place.

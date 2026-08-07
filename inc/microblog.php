@@ -190,16 +190,16 @@ function boot_microblog() {
 	}
 
 	// The carried-over classes expect these two constants.
-	if ( ! defined( 'XFEDI_MICROBLOG_VERSION' ) ) {
-		define( 'XFEDI_MICROBLOG_VERSION', KOLOFON_VERSION );
+	if ( ! defined( 'KOLOFON_MICROBLOG_VERSION' ) ) {
+		define( 'KOLOFON_MICROBLOG_VERSION', KOLOFON_VERSION );
 	}
-	if ( ! defined( 'XFEDI_MICROBLOG_URL' ) ) {
-		define( 'XFEDI_MICROBLOG_URL', KOLOFON_URI . 'inc/microblog/' );
+	if ( ! defined( 'KOLOFON_MICROBLOG_URL' ) ) {
+		define( 'KOLOFON_MICROBLOG_URL', KOLOFON_URI . 'inc/microblog/' );
 	}
 
 	// Stand down entirely if the standalone plugin is also active, so the post
 	// type is not registered twice.
-	if ( class_exists( '\\XFediMicroblog\\CPT' ) ) {
+	if ( class_exists( '\\Kolofon\Microblog\\CPT' ) ) {
 		return;
 	}
 
@@ -210,22 +210,22 @@ function boot_microblog() {
 		}
 	}
 
-	if ( class_exists( '\\XFediMicroblog\\CPT' ) ) {
-		\XFediMicroblog\CPT::register();
+	if ( class_exists( '\\Kolofon\Microblog\\CPT' ) ) {
+		\Kolofon\Microblog\CPT::register();
 	}
-	if ( class_exists( '\\XFediMicroblog\\Composer' ) ) {
-		\XFediMicroblog\Composer::register();
+	if ( class_exists( '\\Kolofon\Microblog\\Composer' ) ) {
+		\Kolofon\Microblog\Composer::register();
 	}
-	if ( class_exists( '\\XFediMicroblog\\Timeline' ) ) {
-		\XFediMicroblog\Timeline::register();
+	if ( class_exists( '\\Kolofon\Microblog\\Timeline' ) ) {
+		\Kolofon\Microblog\Timeline::register();
 	}
-	if ( class_exists( '\\XFediMicroblog\\REST' ) ) {
-		\XFediMicroblog\REST::register();
+	if ( class_exists( '\\Kolofon\Microblog\\REST' ) ) {
+		\Kolofon\Microblog\REST::register();
 	}
 
 	// The bridge hands the status post type to ActivityPub. Registered late so
 	// the plugin has finished its own bootstrap before we ask about it.
-	if ( fediverse_enabled() && class_exists( '\\XFediMicroblog\\ActivityPub_Bridge' ) ) {
+	if ( fediverse_enabled() && class_exists( '\\Kolofon\Microblog\\ActivityPub_Bridge' ) ) {
 		add_action( 'init', __NAMESPACE__ . '\\register_fediverse_bridge', 20 );
 	}
 }
@@ -235,8 +235,8 @@ add_action( 'after_setup_theme', __NAMESPACE__ . '\\boot_microblog', 5 );
  * Hand the status post type to the ActivityPub plugin.
  */
 function register_fediverse_bridge() {
-	if ( method_exists( '\\XFediMicroblog\\ActivityPub_Bridge', 'maybe_register' ) ) {
-		\XFediMicroblog\ActivityPub_Bridge::maybe_register();
+	if ( method_exists( '\\Kolofon\Microblog\\ActivityPub_Bridge', 'maybe_register' ) ) {
+		\Kolofon\Microblog\ActivityPub_Bridge::maybe_register();
 	}
 }
 
@@ -246,7 +246,7 @@ function register_fediverse_bridge() {
  * @return string
  */
 function status_post_type() {
-	return class_exists( '\\XFediMicroblog\\CPT' ) ? \XFediMicroblog\CPT::POST_TYPE : 'xfedi_status';
+	return class_exists( '\\Kolofon\Microblog\\CPT' ) ? \Kolofon\Microblog\CPT::POST_TYPE : 'kolofon_status';
 }
 
 /**
@@ -290,14 +290,49 @@ function fediverse_help() {
  */
 function fediverse_identity() {
 	$host = wp_parse_url( home_url(), PHP_URL_HOST );
-	// Guard the lookup: this panel must not fatal in any context where the
-	// current-user API is unavailable.
-	$user = function_exists( 'wp_get_current_user' ) ? wp_get_current_user() : null;
-	$name = ( is_object( $user ) && ! empty( $user->user_login ) )
-		? $user->user_login
-		: sanitize_title( get_bloginfo( 'name' ) );
 
-	$handle = $name . '@' . $host;
+	/*
+	 * Ask the engine for the handles rather than reconstructing them. The two
+	 * actors derive their usernames differently, and an earlier version of this
+	 * panel guessed the author handle from the current user, which is not what
+	 * a reader searching for the site would use.
+	 */
+	$handles = array();
+	// Read the theme's setting, which is authoritative and written through to
+	// the engine on init, so the panel cannot disagree with what is published.
+	$choice = (string) opt( 'fediverse_profile' );
+	$mode   = array(
+		'author'     => 'actor',
+		'blog'       => 'blog',
+		'actor_blog' => 'actor_blog',
+	)[ $choice ] ?? (string) get_option( 'activitypub_actor_mode', 'actor' );
+
+	// Blog actor: the site itself. Its username is the host without "www.",
+	// unless overridden on the ActivityPub screen.
+	if ( 'actor' !== $mode ) {
+		$blog_name = (string) get_option( 'activitypub_blog_identifier', '' );
+		if ( '' === $blog_name ) {
+			$blog_name = preg_replace( '/^www\./i', '', (string) $host );
+		}
+		$handles[] = array(
+			'label'  => __( 'The site', 'kolofon' ),
+			'handle' => $blog_name . '@' . $host,
+			'note'   => __( 'Follow this to receive everything published here. This is usually the one to share.', 'kolofon' ),
+		);
+	}
+
+	// Author actor: the individual writer.
+	if ( 'blog' !== $mode ) {
+		$user  = function_exists( 'wp_get_current_user' ) ? wp_get_current_user() : null;
+		$login = ( is_object( $user ) && ! empty( $user->user_login ) ) ? $user->user_login : '';
+		if ( '' !== $login ) {
+			$handles[] = array(
+				'label'  => __( 'You as author', 'kolofon' ),
+				'handle' => $login . '@' . $host,
+				'note'   => __( 'Follow this to receive only posts written by this account.', 'kolofon' ),
+			);
+		}
+	}
 
 	$checks = array();
 
@@ -350,10 +385,185 @@ function fediverse_identity() {
 			: __( 'A local or staging host cannot be reached by other servers.', 'kolofon' ),
 	);
 
+	$primary = isset( $handles[0]['handle'] ) ? $handles[0]['handle'] : '';
+
 	return array(
-		'handle'    => $handle,
-		'actor'     => home_url( '/author/' . $name . '/' ),
-		'webfinger' => home_url( '/.well-known/webfinger?resource=acct:' . rawurlencode( $handle ) ),
+		'mode'      => $mode,
+		'handles'   => $handles,
+		'handle'    => $primary,
+		'webfinger' => home_url( '/.well-known/webfinger?resource=acct:' . rawurlencode( $primary ) ),
 		'checks'    => $checks,
 	);
 }
+
+/**
+ * Style the bundled ActivityPub screens to match Theme Options.
+ *
+ * The engine ships inside the theme, so its settings pages should not look like
+ * a separate product. This is done entirely from the outside with a stylesheet
+ * and a body class: no file under inc/activitypub/ is touched, so updating the
+ * engine stays a diff of a single file.
+ *
+ * @param string $hook Current admin page hook.
+ */
+function enqueue_activitypub_admin_style( $hook ) {
+	if ( ! is_bundled_activitypub_screen() ) {
+		return;
+	}
+
+	wp_enqueue_style(
+		'kolofon-admin-base',
+		asset_css( 'admin-base.css' ),
+		array(),
+		KOLOFON_VERSION
+	);
+
+	wp_enqueue_style(
+		'kolofon-admin-activitypub',
+		asset_css( 'admin-activitypub.css' ),
+		array( 'kolofon-admin-base' ),
+		KOLOFON_VERSION
+	);
+}
+add_action( 'admin_enqueue_scripts', __NAMESPACE__ . '\\enqueue_activitypub_admin_style' );
+
+/**
+ * Whether the current admin screen belongs to the bundled engine.
+ *
+ * Matched on the page query arg rather than the hook suffix, because the engine
+ * registers several screens whose hooks differ by menu position. Only applies
+ * when the theme is providing the engine; if the standalone plugin is active it
+ * owns its own presentation.
+ *
+ * @return bool
+ */
+function is_bundled_activitypub_screen() {
+	if ( ! is_admin() || activitypub_plugin_active() ) {
+		return false;
+	}
+
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- reading a page slug to decide whether to load a stylesheet.
+	$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+
+	return '' !== $page && 0 === strpos( $page, 'activitypub' );
+}
+
+/**
+ * Add a scoping class so the stylesheet cannot affect other admin pages.
+ *
+ * @param string $classes Existing body classes.
+ * @return string
+ */
+function activitypub_admin_body_class( $classes ) {
+	if ( is_bundled_activitypub_screen() ) {
+		// kolofon-admin scopes the shared base; kolofon-ap scopes the rules
+		// specific to the engine's own markup.
+		$classes .= ' kolofon-admin kolofon-ap';
+	}
+
+	return $classes;
+}
+add_filter( 'admin_body_class', __NAMESPACE__ . '\\activitypub_admin_body_class' );
+
+/**
+ * Move statuses published under the pre-integration post type.
+ *
+ * The microblog was merged from a plugin whose post type slug was
+ * `xfedi_status`, and that slug is written into wp_posts for every status
+ * already published. Renaming the constant alone would leave those rows
+ * pointing at a post type that no longer exists: the statuses would disappear
+ * from the admin, from the archive, and from the Fediverse, while still sitting
+ * in the database.
+ *
+ * This rewrites them once, keyed on its own flag so it cannot run twice, and
+ * flushes rewrite rules afterwards because the permalink structure belongs to
+ * the new post type.
+ */
+function migrate_status_post_type() {
+	if ( get_option( 'kolofon_status_slug_migrated' ) ) {
+		return;
+	}
+
+	global $wpdb;
+
+	if ( ! isset( $wpdb ) || ! is_object( $wpdb ) ) {
+		return;
+	}
+
+	$legacy = 'xfedi_status';
+	$current = status_post_type();
+
+	if ( $legacy === $current ) {
+		return;
+	}
+
+	$moved = $wpdb->update(
+		$wpdb->posts,
+		array( 'post_type' => $current ),
+		array( 'post_type' => $legacy ),
+		array( '%s' ),
+		array( '%s' )
+	);
+
+	update_option( 'kolofon_status_slug_migrated', 1, false );
+
+	if ( $moved ) {
+		// Post counts and permalinks are both stale after a bulk post_type
+		// change, so clear the caches that hold them.
+		if ( function_exists( 'wp_cache_flush' ) ) {
+			wp_cache_flush();
+		}
+		flush_rewrite_rules();
+	}
+}
+add_action( 'init', __NAMESPACE__ . '\\migrate_status_post_type', 25 );
+
+/**
+ * Help text for the handle-style setting, showing the real resulting handle.
+ *
+ * @return string
+ */
+function fediverse_profile_help() {
+	$host  = wp_parse_url( home_url(), PHP_URL_HOST );
+	$user  = function_exists( 'wp_get_current_user' ) ? wp_get_current_user() : null;
+	$login = ( is_object( $user ) && ! empty( $user->user_login ) ) ? $user->user_login : 'you';
+
+	return sprintf(
+		/* translators: 1: personal handle, 2: site handle */
+		__( 'What people follow you at. The first option gives one handle, %1$s. The site option repeats the domain, %2$s, because the engine will not let a site profile take an existing author name; that restriction exists so a handle resolves to exactly one identity. Changing this rewrites your profile, so anyone already following the old handle will need to follow the new one.', 'kolofon' ),
+		'@' . $login . '@' . $host,
+		'@' . preg_replace( '/^www\./i', '', (string) $host ) . '@' . $host
+	);
+}
+
+/**
+ * Apply the chosen handle style to the engine.
+ *
+ * The engine stores this as `activitypub_actor_mode`. Kolofon owns the setting
+ * so the whole Fediverse surface is configured in one place, and writes it
+ * through on save rather than duplicating the state.
+ */
+function sync_fediverse_profile_mode() {
+	if ( 1 !== intval( opt( 'fediverse_enabled' ) ) ) {
+		return;
+	}
+
+	$choice = (string) opt( 'fediverse_profile' );
+	$map    = array(
+		'author'     => 'actor',
+		'blog'       => 'blog',
+		'actor_blog' => 'actor_blog',
+	);
+
+	if ( ! isset( $map[ $choice ] ) ) {
+		return;
+	}
+
+	$mode = $map[ $choice ];
+
+	if ( (string) get_option( 'activitypub_actor_mode' ) !== $mode ) {
+		update_option( 'activitypub_actor_mode', $mode );
+		flush_rewrite_rules();
+	}
+}
+add_action( 'init', __NAMESPACE__ . '\\sync_fediverse_profile_mode', 26 );

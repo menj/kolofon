@@ -7,32 +7,7 @@
  * theme owns. Restrained enough to still read as part of wp-admin.
  */
 
-:root {
-	--kolofon-accent: #b8823c;        /* a darkened Charcoal-palette gold, legible on white */
-	--kolofon-accent-soft: #f3e9db;
-	--kolofon-accent-deep: #8a5e28;   /* the accent pushed darker, for gradient end-stops */
-	--kolofon-accent-safe: #95662d;   /* lightest gold that clears 4.5:1 with white text */
-	--kolofon-card-bg: #fff;
-	--kolofon-card-border: #e2e4e7;
-	--kolofon-card-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.06);
-	--kolofon-ink: #1d2327;
-	--kolofon-muted: #646970;
-	--kolofon-hairline: #e6e3dd;
-	--kolofon-field-bg: #fdfcfa;
-	--kolofon-field-border: #d8d3ca;
-
-	/* Gradient system. Every gradient on the page is one of these three, so the
-	   treatment reads as a single design language rather than scattered effects.
-	   All are built from the accent tokens above, so retinting the accent
-	   retints the whole page. */
-	/* Carries white text on the version pill and primary buttons, so both stops
-	   must clear WCAG AA for normal text: 4.98:1 and 5.66:1 respectively. The
-	   brighter --kolofon-accent is only 3.34:1 against white and must not be
-	   used as a background for white text. */
-	--kolofon-grad-accent: linear-gradient( 135deg, var(--kolofon-accent-safe) 0%, var(--kolofon-accent-deep) 100% );
-	--kolofon-grad-masthead: linear-gradient( 120deg, color-mix( in srgb, var(--kolofon-accent) 16%, #fff ) 0%, #fff 62% );
-	--kolofon-grad-card: linear-gradient( 180deg, color-mix( in srgb, var(--kolofon-accent) 4%, #fff ) 0%, #fff 100% );
-}
+/* Tokens live in admin-base.css, which this file depends on. */
 
 .kolofon-wrap { max-width: 1200px; }
 
@@ -49,57 +24,6 @@
 	background: linear-gradient( 115deg, #16130f 0%, #221c14 45%, #14110d 100% );
 	box-shadow: 0 2px 6px rgba( 0, 0, 0, 0.16 );
 }
-.kolofon-masthead::before {
-	content: "";
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 3px;
-	background: linear-gradient( 90deg, var(--kolofon-accent) 0%, var(--kolofon-accent-deep) 55%, transparent 100% );
-}
-.kolofon-masthead-eyebrow {
-	margin: 0 0 0.35rem;
-	font-size: 0.7rem;
-	font-weight: 700;
-	letter-spacing: 0.18em;
-	text-transform: uppercase;
-	color: var(--kolofon-accent);
-}
-.kolofon-options-title {
-	display: flex;
-	align-items: center;
-	gap: 0.7rem;
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 1.75rem;
-	font-weight: 700;
-	line-height: 1.15;
-	color: #fff;
-}
-.kolofon-masthead-desc {
-	margin: 0.5rem 0 0;
-	font-size: 0.88rem;
-	line-height: 1.5;
-	color: #b9b2a6;
-	max-width: 52rem;
-}
-.kolofon-version-pill {
-	display: inline-flex;
-	align-items: center;
-	font-size: 0.68rem;
-	font-weight: 700;
-	letter-spacing: 0.05em;
-	line-height: 1;
-	padding: 0.34em 0.72em;
-	border: 1px solid color-mix( in srgb, var(--kolofon-accent) 60%, transparent );
-	border-radius: 999px;
-	color: #e8bd6d;
-	background: color-mix( in srgb, var(--kolofon-accent) 16%, transparent );
-	vertical-align: middle;
-}
-.kolofon-tabs { margin-top: 1.25rem; }
 /* js-tabs is rendered server-side so tabs show on first paint. Panels hide
    immediately; the active one shows. Tab switching is handled by JS, which
    is loaded in the footer and picks up from this state. Without JS the page
@@ -125,37 +49,6 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.15rem;
-}
-.kolofon-tabs .nav-tab {
-	margin: 0;
-	border: 0;
-	border-bottom: 2px solid transparent;
-	border-radius: 0;
-	background: none;
-	padding: 0.7rem 1rem;
-	font-size: 0.76rem;
-	font-weight: 700;
-	letter-spacing: 0.075em;
-	text-transform: uppercase;
-	color: var(--kolofon-muted);
-	transition: color 0.12s ease, border-color 0.12s ease, background 0.12s ease;
-}
-.kolofon-tabs .nav-tab:hover {
-	color: var(--kolofon-accent-deep);
-	background: color-mix( in srgb, var(--kolofon-accent) 7%, transparent );
-}
-.kolofon-tabs .nav-tab:focus {
-	box-shadow: none;
-	outline: 2px solid var(--kolofon-accent);
-	outline-offset: -2px;
-}
-.kolofon-tabs .nav-tab-active,
-.kolofon-tabs .nav-tab-active:focus,
-.kolofon-tabs .nav-tab-active:hover {
-	border-bottom-color: var(--kolofon-accent);
-	color: var(--kolofon-accent-deep);
-	box-shadow: none;
-	background: none;
 }
 
 /* Each panel's form table becomes a card. The form-table itself keeps its
@@ -203,17 +96,6 @@
 .kolofon-form .form-table {
 	border-collapse: collapse;
 }
-.kolofon-form .form-table th {
-	width: 300px;
-	padding: 1.35rem 1.5rem 1.35rem 1.75rem;
-	vertical-align: top;
-	font-size: 0.75rem;
-	font-weight: 700;
-	line-height: 1.5;
-	letter-spacing: 0;
-	text-transform: none;
-	color: var(--kolofon-ink);
-}
 .kolofon-field-name {
 	display: block;
 	font-size: 0.95rem;
@@ -230,10 +112,6 @@
 	letter-spacing: 0;
 	text-transform: none;
 	color: var(--kolofon-muted);
-}
-.kolofon-form .form-table td {
-	padding: 1.2rem 1.75rem 1.35rem 0;
-	vertical-align: top;
 }
 /* A hairline between rows gives the form the same rhythm as the rules the
    front end uses to separate entries. */
@@ -258,31 +136,9 @@
 	box-shadow: none;
 	transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
 }
-.kolofon-form input[type="text"],
-.kolofon-form input[type="url"],
-.kolofon-form input[type="email"] {
-	max-width: 30rem;
-	width: 100%;
-}
-.kolofon-form textarea {
-	max-width: 46rem;
-	width: 100%;
-	line-height: 1.55;
-}
-.kolofon-form input[type="number"] {
-	width: 7rem;
-}
 .kolofon-form input::placeholder,
 .kolofon-form textarea::placeholder {
 	color: color-mix( in srgb, var(--kolofon-muted) 70%, #fff );
-}
-.kolofon-form input[type="text"]:hover,
-.kolofon-form input[type="url"]:hover,
-.kolofon-form input[type="email"]:hover,
-.kolofon-form input[type="number"]:hover,
-.kolofon-form textarea:hover,
-.kolofon-form select:hover {
-	border-color: color-mix( in srgb, var(--kolofon-accent) 55%, var(--kolofon-field-border) );
 }
 
 /* Help text: secondary copy, not an afterthought. The left hairline ties it to
@@ -296,15 +152,6 @@
 	line-height: 1.6;
 	color: var(--kolofon-muted);
 	font-style: normal;
-}
-.kolofon-form .form-table td .description code {
-	background: color-mix( in srgb, var(--kolofon-accent) 9%, #fff );
-	border-radius: 3px;
-	padding: 0.05rem 0.3rem;
-	color: var(--kolofon-accent-deep);
-}
-.kolofon-form .form-table td .description a {
-	color: var(--kolofon-accent-deep);
 }
 
 /* Focus rings and the colour picker adopt the accent so the whole surface
@@ -386,21 +233,6 @@
 	letter-spacing: 0.11em;
 	text-transform: uppercase;
 	border-radius: 8px;
-}
-.kolofon-wrap .kolofon-form .submit .button-primary,
-.kolofon-wrap .button-primary {
-	background: var(--kolofon-grad-accent);
-	border-color: var(--kolofon-accent-deep);
-	color: #fff;
-	text-shadow: none;
-	box-shadow: 0 1px 2px rgba( 0, 0, 0, 0.15 );
-}
-.kolofon-wrap .kolofon-form .submit .button-primary:hover,
-.kolofon-wrap .button-primary:hover,
-.kolofon-wrap .button-primary:focus {
-	background: linear-gradient( 135deg, var(--kolofon-accent-deep) 0%, var(--kolofon-accent-deep) 100% );
-	border-color: var(--kolofon-accent-deep);
-	color: #fff;
 }
 .kolofon-wrap .button-secondary {
 	border-color: var(--kolofon-accent);
@@ -835,4 +667,26 @@
 	border-radius: 3px;
 	padding: 0.05rem 0.3rem;
 	color: var(--kolofon-accent-deep);
+}
+
+/* Each published handle is its own block: who it represents, the handle to
+   copy, and what following it gets you. */
+.kolofon-fedi-handle {
+	margin: 0 0 1rem;
+}
+.kolofon-fedi-who {
+	display: block;
+	margin-bottom: 0.3rem;
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--kolofon-muted);
+}
+.kolofon-fedi-handle .kolofon-fedi-note {
+	display: block;
+	margin-top: 0.35rem;
+	font-size: 0.82rem;
+	line-height: 1.55;
+	color: var(--kolofon-muted);
 }

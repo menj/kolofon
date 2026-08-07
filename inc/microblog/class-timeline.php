@@ -2,10 +2,10 @@
 /**
  * Timeline rendering: shortcode and dynamic block.
  *
- * @package XFediMicroblog
+ * @package Kolofon\Microblog
  */
 
-namespace XFediMicroblog;
+namespace Kolofon\Microblog;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -22,6 +22,8 @@ class Timeline {
 		// Canonical name in the theme; the original plugin name is kept as an
 		// alias so content written before the merge keeps working.
 		add_shortcode( 'kolofon_microblog', [ __CLASS__, 'render_shortcode' ] );
+		// Retained so content written before the microblog was integrated keeps
+		// rendering. New content should use [kolofon_microblog].
 		add_shortcode( 'xfedi_microblog', [ __CLASS__, 'render_shortcode' ] );
 	}
 
@@ -31,7 +33,7 @@ class Timeline {
 		}
 
 		register_block_type(
-			'xfedi-microblog/timeline',
+			'kolofon/microblog-timeline',
 			[
 				'render_callback' => [ __CLASS__, 'render_block' ],
 				'attributes'      => [
@@ -50,13 +52,13 @@ class Timeline {
 
 	public static function enqueue(): void {
 		wp_register_style(
-			'xfedi-mb-timeline',
-			XFEDI_MICROBLOG_URL . 'assets/css/timeline.css',
+			'kolofon-microblog-timeline',
+			KOLOFON_MICROBLOG_URL . 'assets/css/timeline.css',
 			[],
-			XFEDI_MICROBLOG_VERSION
+			KOLOFON_MICROBLOG_VERSION
 		);
 
-		wp_add_inline_style( 'xfedi-mb-timeline', self::build_scheme_vars() );
+		wp_add_inline_style( 'kolofon-microblog-timeline', self::build_scheme_vars() );
 	}
 
 	private static function build_scheme_vars(): string {
@@ -68,7 +70,7 @@ class Timeline {
 		foreach ( $palette as $key => $value ) {
 			$vars .= '--xfmb-' . $key . ':' . $value . ';';
 		}
-		return '.xfedi-mb-timeline{' . $vars . '}';
+		return '.kolofon-microblog-timeline{' . $vars . '}';
 	}
 
 	public static function colour_schemes(): array {
@@ -115,7 +117,7 @@ class Timeline {
 				'author'   => 0,
 			],
 			$atts,
-			'xfedi_microblog'
+			'kolofon_microblog'
 		);
 
 		return self::render( (int) $atts['per_page'], (int) $atts['author'] );
@@ -129,7 +131,7 @@ class Timeline {
 	}
 
 	public static function render( int $per_page, int $author ): string {
-		wp_enqueue_style( 'xfedi-mb-timeline' );
+		wp_enqueue_style( 'kolofon-microblog-timeline' );
 
 		$args = [
 			'post_type'      => CPT::POST_TYPE,
@@ -145,11 +147,11 @@ class Timeline {
 		$query = new \WP_Query( $args );
 
 		if ( ! $query->have_posts() ) {
-			return '<div class="xfedi-mb-timeline xfedi-mb-empty">' . esc_html__( 'No statuses yet.', 'xfedi-microblog' ) . '</div>';
+			return '<div class="kolofon-microblog-timeline kolofon-microblog-empty">' . esc_html__( 'No statuses yet.', 'kolofon' ) . '</div>';
 		}
 
 		$density = esc_attr( (string) Plugin::get_setting( 'density' ) );
-		$out     = '<div class="xfedi-mb-timeline" data-density="' . $density . '">';
+		$out     = '<div class="kolofon-microblog-timeline" data-density="' . $density . '">';
 
 		while ( $query->have_posts() ) {
 			$query->the_post();
@@ -166,21 +168,21 @@ class Timeline {
 		$author_id     = (int) $post->post_author;
 		$author_name   = get_the_author_meta( 'display_name', $author_id );
 		$author_url    = get_author_posts_url( $author_id );
-		$avatar        = get_avatar( $author_id, 48, '', $author_name, [ 'class' => 'xfedi-mb-avatar' ] );
+		$avatar        = get_avatar( $author_id, 48, '', $author_name, [ 'class' => 'kolofon-microblog-avatar' ] );
 		$permalink     = get_permalink( $post );
 		$time_iso      = get_the_date( 'c', $post );
 		$time_display  = get_the_date( '', $post ) . ' · ' . get_the_time( '', $post );
 		$content       = apply_filters( 'the_content', $post->post_content );
 
-		$out  = '<article class="xfedi-mb-status" id="status-' . (int) $post->ID . '">';
-		$out .= '<header class="xfedi-mb-status-head">';
+		$out  = '<article class="kolofon-microblog-status" id="status-' . (int) $post->ID . '">';
+		$out .= '<header class="kolofon-microblog-status-head">';
 		$out .= $avatar;
-		$out .= '<div class="xfedi-mb-status-meta">';
-		$out .= '<a class="xfedi-mb-status-author" href="' . esc_url( $author_url ) . '">' . esc_html( $author_name ) . '</a>';
-		$out .= '<a class="xfedi-mb-status-time" href="' . esc_url( $permalink ) . '"><time datetime="' . esc_attr( $time_iso ) . '">' . esc_html( $time_display ) . '</time></a>';
+		$out .= '<div class="kolofon-microblog-status-meta">';
+		$out .= '<a class="kolofon-microblog-status-author" href="' . esc_url( $author_url ) . '">' . esc_html( $author_name ) . '</a>';
+		$out .= '<a class="kolofon-microblog-status-time" href="' . esc_url( $permalink ) . '"><time datetime="' . esc_attr( $time_iso ) . '">' . esc_html( $time_display ) . '</time></a>';
 		$out .= '</div>';
 		$out .= '</header>';
-		$out .= '<div class="xfedi-mb-status-body">' . $content . '</div>';
+		$out .= '<div class="kolofon-microblog-status-body">' . $content . '</div>';
 		$out .= '</article>';
 
 		return $out;

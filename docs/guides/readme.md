@@ -104,7 +104,7 @@ kolofon/
 │   │   └── changelog.md
 │   └── specs/
 │       └── now-feature-spec.yml
-└── LICENSE                   GPL v2 notice + full license text
+└── LICENSE.md                Licence, attribution, bundled components
 ```
 
 ## Theme options
@@ -431,4 +431,10 @@ namespace. See `changelog.md` for the full delta.
 
 ## License
 
-GNU General Public License v2 or later. See `LICENSE` in the theme root.
+GNU General Public License v2 or later. See `LICENSE.md` in the theme root,
+which also records attribution and every bundled third-party component.
+
+Bundled components keep their own licence files where they sit
+(`vendor/parsedown/`, `assets/fonts/*/`, `inc/activitypub/`). Those must stay:
+retaining the licence text is a condition of each grant, so removing them would
+put the theme outside the terms it is distributed under.

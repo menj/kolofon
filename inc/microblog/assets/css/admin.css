@@ -1,10 +1,10 @@
-/* XFedi Microblog admin */
+/* Kolofon microblog admin */
 
-.xfedi-mb-wrap .nav-tab-wrapper {
+.kolofon-microblog-wrap .nav-tab-wrapper {
 	margin-bottom: 20px;
 }
 
-.xfedi-mb-wrap .xfedi-mb-tab-body {
+.kolofon-microblog-wrap .kolofon-microblog-tab-body {
 	max-width: 900px;
 }
 

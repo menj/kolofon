@@ -1,6 +1,6 @@
-/* XFedi Microblog timeline */
+/* Kolofon microblog timeline */
 
-.xfedi-mb-timeline {
+.kolofon-microblog-timeline {
 	--xfmb-bg: #ffffff;
 	--xfmb-surface: #f6f6f4;
 	--xfmb-text: #111111;
@@ -15,7 +15,7 @@
 	margin: 0 auto;
 }
 
-.xfedi-mb-empty {
+.kolofon-microblog-empty {
 	padding: 32px;
 	text-align: center;
 	color: var(--xfmb-muted);
@@ -23,80 +23,80 @@
 	border-radius: 8px;
 }
 
-.xfedi-mb-status {
+.kolofon-microblog-status {
 	display: block;
 	padding: 20px 16px;
 	border-bottom: 1px solid var(--xfmb-border);
 }
 
-.xfedi-mb-timeline[data-density="compact"] .xfedi-mb-status {
+.kolofon-microblog-timeline[data-density="compact"] .kolofon-microblog-status {
 	padding: 12px 16px;
 }
 
-.xfedi-mb-status:last-child {
+.kolofon-microblog-status:last-child {
 	border-bottom: 0;
 }
 
-.xfedi-mb-status-head {
+.kolofon-microblog-status-head {
 	display: flex;
 	align-items: center;
 	gap: 12px;
 	margin-bottom: 10px;
 }
 
-.xfedi-mb-avatar {
+.kolofon-microblog-avatar {
 	width: 44px;
 	height: 44px;
 	border-radius: 50%;
 	display: block;
 }
 
-.xfedi-mb-timeline[data-density="compact"] .xfedi-mb-avatar {
+.kolofon-microblog-timeline[data-density="compact"] .kolofon-microblog-avatar {
 	width: 32px;
 	height: 32px;
 }
 
-.xfedi-mb-status-meta {
+.kolofon-microblog-status-meta {
 	display: flex;
 	flex-direction: column;
 	line-height: 1.3;
 }
 
-.xfedi-mb-status-author {
+.kolofon-microblog-status-author {
 	color: var(--xfmb-text);
 	font-weight: 600;
 	text-decoration: none;
 }
 
-.xfedi-mb-status-author:hover {
+.kolofon-microblog-status-author:hover {
 	text-decoration: underline;
 }
 
-.xfedi-mb-status-time {
+.kolofon-microblog-status-time {
 	color: var(--xfmb-muted);
 	font-size: 13px;
 	text-decoration: none;
 }
 
-.xfedi-mb-status-time:hover {
+.kolofon-microblog-status-time:hover {
 	color: var(--xfmb-accent);
 }
 
-.xfedi-mb-status-body {
+.kolofon-microblog-status-body {
 	font-size: 16px;
 	line-height: 1.55;
 	word-wrap: break-word;
 }
 
-.xfedi-mb-status-body p:first-child {
+.kolofon-microblog-status-body p:first-child {
 	margin-top: 0;
 }
 
-.xfedi-mb-status-body p:last-child {
+.kolofon-microblog-status-body p:last-child {
 	margin-bottom: 0;
 }
 
-.xfedi-mb-status-body img {
+.kolofon-microblog-status-body img {
 	max-width: 100%;
 	height: auto;
 	border-radius: 8px;

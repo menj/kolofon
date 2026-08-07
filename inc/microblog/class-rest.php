@@ -2,16 +2,16 @@
 /**
  * REST endpoint used by the composer JS.
  *
- * @package XFediMicroblog
+ * @package Kolofon\Microblog
  */
 
-namespace XFediMicroblog;
+namespace Kolofon\Microblog;
 
 defined( 'ABSPATH' ) || exit;
 
 class REST {
 
-	const NAMESPACE_STR = 'xfedi-microblog/v1';
+	const NAMESPACE_STR = 'kolofon/v1';
 
 	public static function register(): void {
 		add_action( 'rest_api_init', [ __CLASS__, 'register_routes' ] );

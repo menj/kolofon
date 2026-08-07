@@ -1,13 +1,13 @@
 <?php
 /**
  * Integration with the ActivityPub plugin by Matthias Pfefferle / Automattic.
- * When present and the user has enabled federation, the xfedi_status CPT is
+ * When present and the user has enabled federation, the status CPT is
  * opted in and posts are declared as short-form Notes rather than Articles.
  *
- * @package XFediMicroblog
+ * @package Kolofon\Microblog
  */
 
-namespace XFediMicroblog;
+namespace Kolofon\Microblog;
 
 defined( 'ABSPATH' ) || exit;
 

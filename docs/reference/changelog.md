@@ -1,5 +1,216 @@
 # Changelog
 
+## 7.1.0
+
+### Added: choose your Fediverse handle from Theme Options
+- **"Your Fediverse handle"** on the Fediverse tab, with three choices, and it
+  **defaults to the short personal form**: a site at `menj.blog` with the user
+  `menj` now publishes `@menj@menj.blog` rather than `@menj.blog@menj.blog`.
+- The setting writes through to the engine's `activitypub_actor_mode` on init
+  and flushes rewrite rules when it changes, so the whole Fediverse surface is
+  configured in one place instead of half here and half on the plugin's screen.
+- The identity panel reads the theme's setting rather than the engine option, so
+  what it displays cannot disagree with what is published.
+
+### Why the site handle repeats the domain
+The blog profile cannot simply be renamed to an existing author's name. The
+engine's sanitiser rejects any blog identifier matching a `user_login` or
+`user_nicename` and silently reverts to the default, which is the bare host:
+
+> You cannot use an existing author's name for the blog profile ID.
+
+That is deliberate, since WebFinger has to resolve a handle to exactly one
+identity, and it is where `@menj.blog@menj.blog` came from. Publishing only the
+author profile avoids the collision entirely and gives the short handle, which
+is why that is now the default.
+
+### Note
+- Changing this rewrites the published profile, so anyone following the old
+  handle will need to follow the new one. The help text says so.
+- 55 option keys to 56.
+
+## 7.0.1
+
+### Changed
+- **The theme's licence documentation is now one file, `LICENSE.md`.** The root
+  `LICENSE` and `LICENSE.microblog` are consolidated into it and removed. It
+  carries the GPL grant, the full GPL v2 text, attribution for the forked theme
+  and the microblog, an index of every bundled third-party component, and the
+  three adaptations made to the bundled ActivityPub engine along with the
+  procedure for updating it.
+- `docs/guides/readme.md` updated to point at the new file. Historical changelog
+  entries keep their original filenames, since they record what was true then.
+
+### Kept deliberately
+Four bundled licence files remain where they sit, and were not deleted:
+
+| File | Why it must stay |
+| --- | --- |
+| `assets/fonts/xcharter/LICENSE.txt` | The Bitstream Charter grant is conditional on "this notice is left intact on all copies of such fonts" |
+| `assets/fonts/special-elite/LICENSE-Apache-2.0.txt` | Apache 2.0 section 4(a) requires giving recipients a copy of the licence |
+| `vendor/parsedown/LICENSE.txt` | MIT requires the notice be "included in all copies" |
+| `inc/activitypub/LICENSE` | Same, for the bundled engine |
+
+In each case retaining the text is a condition of the grant rather than
+paperwork, so removing the files would put the theme outside the terms it is
+distributed under. `LICENSE.md` indexes them instead, which gives the single
+readable entry point without breaking any of them.
+
+## 7.0.0
+
+### Changed: the microblog is properly part of the theme
+The merge in 5.8.0 carried the code across but left the originating plugin's
+naming throughout, so an integrated feature still announced itself as a foreign
+plugin in post types, REST routes, hooks and CSS classes. All of it is renamed.
+
+| Was | Now |
+| --- | --- |
+| `XFediMicroblog` namespace | `Kolofon\Microblog` |
+| `xfedi_status` post type | `kolofon_status` |
+| `xfedi-microblog/v1` REST namespace | `kolofon/v1` |
+| `xfedi-microblog/timeline` block | `kolofon/microblog-timeline` |
+| `xfedi_microblog/status_published` hook | `kolofon_microblog/status_published` |
+| `xfedi-mb-` CSS prefix | `kolofon-microblog-` |
+| `XFEDI_MICROBLOG_*` constants | `KOLOFON_MICROBLOG_*` |
+| `xfedi-microblog` text domain | `kolofon` |
+| `archive-xfedi_status.php` | `archive-kolofon_status.php` |
+
+### Migration
+- **The post type slug is written into the database**, so renaming the constant
+  alone would have left every published status pointing at a post type that no
+  longer exists: they would have vanished from the admin, the archive and the
+  Fediverse while still sitting in `wp_posts`. A one-shot migration rewrites
+  those rows on the next load, keyed on `kolofon_status_slug_migrated` so it
+  cannot run twice, and flushes rewrite rules and caches afterwards because both
+  permalinks and post counts are stale after a bulk post-type change.
+- Verified: legacy statuses move to the new type, ordinary posts are untouched,
+  and a second run performs no database writes.
+
+### Kept for compatibility
+- The `[xfedi_microblog]` shortcode still renders, so content written before the
+  integration keeps working. `[kolofon_microblog]` is the name to use now.
+
+### Note
+- Major version because the post type slug, REST namespace, block name and
+  action hook are all public surface.
+
+## 6.11.0
+
+### Fixed: a latent fatal shipped with the theme
+- **`tests/boot/wordpress-stubs.php` redeclared 62 WordPress core functions**,
+  including `add_action`, `add_filter`, `get_option`, `apply_filters` and
+  `esc_html`, with only 9 of them guarded. The file is never loaded by the theme
+  at runtime, but anything that included it inside a real WordPress, a security
+  scanner, a file-enumerating plugin, or a stray require, would fatal
+  immediately on "Cannot redeclare add_action()" and take the whole site down.
+- Every declaration is now wrapped in a `function_exists` guard, so the file is
+  inert rather than fatal if it is ever loaded.
+- **Development-only material no longer ships.** `tests/` and `tools/` are
+  excluded from the distributed zip. Neither is referenced at runtime, verified
+  before removal, so the distribution now contains only what the theme actually
+  loads.
+
+### Investigated and ruled out
+Checked against Rank Math SEO 1.0.275 specifically:
+
+- No class collisions, including fully-qualified with namespaces: 0 of 171
+  theme classes clash with 496 Rank Math classes.
+- No global-namespace function collisions.
+- The bundled ActivityPub autoloader is correctly prefix-guarded and returns
+  early for classes outside its namespace, so it cannot intercept Rank Math's
+  class loading.
+- The theme's SEO output already stands down for Rank Math:
+  `RANK_MATH_VERSION` is in the detection list, and the check runs at `wp_head`,
+  long after the plugin defines it.
+
+## 6.10.0
+
+### Fixed (both from the 5.8.0 merge)
+- **The Statuses admin menu never appeared.** The post type was registered with
+  `'show_in_menu' => 'xfedi-microblog'`, the standalone plugin's own top-level
+  menu, which was deliberately not carried over in the merge. WordPress hides a
+  post type whose menu parent does not exist, so Statuses was registered,
+  federating and reachable on the front end, but invisible in wp-admin. It now
+  takes its own menu.
+- **The Fediverse tab showed the wrong handle.** It reconstructed one from the
+  current user, but the engine publishes two actors whose usernames derive
+  differently: the blog actor uses the host without `www.`, and the author actor
+  uses the login. With the ActivityPub screen set to "Both author and blog
+  profiles", a site at `menj.blog` publishes `@menj.blog@menj.blog` and
+  `@menj@menj.blog`, and the panel only ever showed the second. Searching
+  Mastodon for the wrong one finds nothing, which reads as federation being
+  broken when it is working.
+- The panel now reads the actor mode and reports every handle the site actually
+  publishes, each labelled with who it represents and what following it gets
+  you, and says plainly that searching for one will not find the other.
+
+### Note
+- Verified across all three actor modes: author-only reports one handle,
+  blog-only reports the other, and both-mode reports both in that order.
+
+## 6.9.0
+
+### Changed: one source of truth for admin styling
+6.8.0 styled the bundled ActivityPub screens by copying the palette and the
+shared furniture into a second stylesheet. The values matched on the day, but
+duplication is how drift starts: changing the accent in one file would have
+left the other behind. Consistency is now structural rather than a matter of
+remembering.
+
+- **`assets/css/admin-base.css`** holds the 14 design tokens and every shared
+  component: masthead, tab rail, form rows, fields, help text and the primary
+  action. It is scoped to `.kolofon-admin`, a class both the Theme Options
+  screen and the bundled ActivityPub screens now carry, so it cannot leak into
+  the rest of wp-admin.
+- `admin-options.css` and `admin-activitypub.css` are reduced to what is unique
+  to each screen and declare the base as a dependency, so it always loads
+  first. Twenty duplicated rules came out of the options stylesheet, taking it
+  from 23 KiB to 19 KiB.
+- Verified the change is invisible: every measured value on the Theme Options
+  screen (masthead gradient, pill, tab, label padding, help text, toggle,
+  button) is identical before and after, now supplied by the base.
+
+### Fixed
+- **Two tokens were used but never defined.** Extracting the base initially left
+  `--kolofon-card-bg` and `--kolofon-grad-card` behind, which would have broken
+  the intro cards on the options page. Caught by auditing used tokens against
+  defined ones; all 14 now resolve.
+- The CSS minifier had a hard-coded file list, so a newly added stylesheet was
+  silently shipped unminified. It now discovers every stylesheet in
+  `assets/css`.
+
+### Note
+- Admin CSS and enqueue wiring only. No option, no front-end change, and no file
+  under `inc/activitypub/` touched.
+
+## 6.8.0
+
+### Changed: the bundled ActivityPub screens look like Kolofon
+The engine ships inside the theme, so its settings pages sat next to Theme
+Options looking like a different product. They now carry the same design.
+
+- Dark brand masthead with the gold hairline, letterspaced tab rail, gold-edged
+  form cards, labels and help text in the theme's treatment, accent-tinted
+  controls, and the primary button.
+- **Not one file under `inc/activitypub/` was touched.** The styling is applied
+  from the outside through `assets/css/admin-activitypub.css` plus a
+  `kolofon-ap` body class, so updating the engine remains a diff of a single
+  file. Verified against the original 9.2.0 archive: `activitypub.php` is still
+  the only difference.
+- The stylesheet is scoped to admin pages whose `page` slug starts with
+  `activitypub`, and stands down entirely when the standalone plugin is active,
+  since that plugin owns its own presentation.
+- Every colour pairing checked against WCAG AA: lowest is 4.86:1 against a 4.5
+  requirement.
+
+### Added
+- **`archive-xfedi_status.php`**, a status archive matching the blog page: a
+  clean heading, the count set off by hairlines, and entries grouped by year.
+  The generic archive template prefixed the title with "Archives:" and put the
+  count inline, which read as a taxonomy listing rather than a timeline. The
+  filename keeps the underscore WordPress mandates for post-type templates,
+  which is the documented exception to the theme's kebab-case rule.
+
 ## 6.7.0
 
 ### Changed

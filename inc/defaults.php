@@ -80,6 +80,7 @@ function get_raw_defaults() {
 		'list_title_size'        => 20,
 		'microblog_enabled'      => 0,
 		'fediverse_enabled'      => 0,
+		'fediverse_profile'      => 'author',
 		'microblog_on_home'      => 0,
 		'microblog_noindex'      => 0,
 		'microblog_char_limit'   => 500,

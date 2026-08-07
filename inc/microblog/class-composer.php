@@ -2,10 +2,10 @@
 /**
  * Composer: admin bar quick-post and REST-backed submission.
  *
- * @package XFediMicroblog
+ * @package Kolofon\Microblog
  */
 
-namespace XFediMicroblog;
+namespace Kolofon\Microblog;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -24,11 +24,11 @@ class Composer {
 
 		$bar->add_node(
 			[
-				'id'    => 'xfedi-microblog-compose',
-				'title' => '<span class="ab-icon dashicons dashicons-format-status" style="top:3px"></span>' . esc_html__( 'Post', 'xfedi-microblog' ),
+				'id'    => 'kolofon-microblog-compose',
+				'title' => '<span class="ab-icon dashicons dashicons-format-status" style="top:3px"></span>' . esc_html__( 'Post', 'kolofon' ),
 				'href'  => '#',
 				'meta'  => [
-					'class' => 'xfedi-mb-composer-trigger',
+					'class' => 'kolofon-microblog-composer-trigger',
 				],
 			]
 		);
@@ -50,36 +50,36 @@ class Composer {
 
 	private static function enqueue_composer_assets(): void {
 		wp_enqueue_style(
-			'xfedi-mb-composer',
-			XFEDI_MICROBLOG_URL . 'assets/css/composer.css',
+			'kolofon-microblog-composer',
+			KOLOFON_MICROBLOG_URL . 'assets/css/composer.css',
 			[],
-			XFEDI_MICROBLOG_VERSION
+			KOLOFON_MICROBLOG_VERSION
 		);
 
 		wp_enqueue_script(
-			'xfedi-mb-composer',
-			XFEDI_MICROBLOG_URL . 'assets/js/composer.js',
+			'kolofon-microblog-composer',
+			KOLOFON_MICROBLOG_URL . 'assets/js/composer.js',
 			[ 'wp-api-fetch' ],
-			XFEDI_MICROBLOG_VERSION,
+			KOLOFON_MICROBLOG_VERSION,
 			true
 		);
 
 		wp_localize_script(
-			'xfedi-mb-composer',
-			'xfediMicroblog',
+			'kolofon-microblog-composer',
+			'kolofonMicroblog',
 			[
-				'restUrl'   => esc_url_raw( rest_url( 'xfedi-microblog/v1/status' ) ),
+				'restUrl'   => esc_url_raw( rest_url( 'kolofon/v1/status' ) ),
 				'nonce'     => wp_create_nonce( 'wp_rest' ),
 				'charLimit' => (int) Plugin::get_setting( 'char_limit' ),
 				'strings'   => [
-					'placeholder' => __( "What's happening?", 'xfedi-microblog' ),
-					'post'        => __( 'Post', 'xfedi-microblog' ),
-					'posting'     => __( 'Posting...', 'xfedi-microblog' ),
-					'posted'      => __( 'Posted', 'xfedi-microblog' ),
-					'error'       => __( 'Could not post. Try again.', 'xfedi-microblog' ),
-					'remaining'   => __( '%d characters remaining', 'xfedi-microblog' ),
-					'over'        => __( '%d characters over the limit', 'xfedi-microblog' ),
-					'close'       => __( 'Close', 'xfedi-microblog' ),
+					'placeholder' => __( "What's happening?", 'kolofon' ),
+					'post'        => __( 'Post', 'kolofon' ),
+					'posting'     => __( 'Posting...', 'kolofon' ),
+					'posted'      => __( 'Posted', 'kolofon' ),
+					'error'       => __( 'Could not post. Try again.', 'kolofon' ),
+					'remaining'   => __( '%d characters remaining', 'kolofon' ),
+					'over'        => __( '%d characters over the limit', 'kolofon' ),
+					'close'       => __( 'Close', 'kolofon' ),
 				],
 			]
 		);
@@ -93,15 +93,15 @@ class Composer {
 		$char_limit = (int) Plugin::get_setting( 'char_limit' );
 
 		if ( $content === '' ) {
-			return new \WP_Error( 'xfedi_empty', __( 'Status is empty.', 'xfedi-microblog' ), [ 'status' => 400 ] );
+			return new \WP_Error( 'kolofon_microblog_empty', __( 'Status is empty.', 'kolofon' ), [ 'status' => 400 ] );
 		}
 
 		if ( mb_strlen( $content ) > $char_limit ) {
 			return new \WP_Error(
-				'xfedi_too_long',
+				'kolofon_microblog_too_long',
 				sprintf(
 				/* translators: %d: character limit */
-					__( 'Status exceeds the %d character limit.', 'xfedi-microblog' ),
+					__( 'Status exceeds the %d character limit.', 'kolofon' ),
 					$char_limit
 				),
 				[ 'status' => 400 ]
@@ -110,7 +110,7 @@ class Composer {
 
 		$title = wp_trim_words( wp_strip_all_tags( $content ), 8, '' );
 		if ( $title === '' ) {
-			$title = __( 'Status', 'xfedi-microblog' );
+			$title = __( 'Status', 'kolofon' );
 		}
 
 		$post_id = wp_insert_post(
@@ -134,7 +134,7 @@ class Composer {
 		 * @param int   $post_id
 		 * @param array $meta
 		 */
-		do_action( 'xfedi_microblog/status_published', $post_id, $meta );
+		do_action( 'kolofon_microblog/status_published', $post_id, $meta );
 
 		return $post_id;
 	}

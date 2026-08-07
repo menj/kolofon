@@ -330,6 +330,19 @@ function get_option_fields() {
 			'help' => 'Kolofon\\fediverse_help',
 		),
 	);
+	$fields['fediverse_profile']      = array(
+		'label' => __( 'Your Fediverse handle', 'kolofon' ),
+		'tab'   => 'fediverse',
+		'type'  => 'select',
+		'args'  => array(
+			'choices' => array(
+				'author'     => __( 'One handle from your username, e.g. @menj@example.com', 'kolofon' ),
+				'blog'       => __( 'One handle for the site, e.g. @example.com@example.com', 'kolofon' ),
+				'actor_blog' => __( 'Both a site handle and a personal one', 'kolofon' ),
+			),
+			'help'    => 'Kolofon\\fediverse_profile_help',
+		),
+	);
 	$fields['microblog_on_home']      = array(
 		'label' => __( 'Show statuses on the blog', 'kolofon' ),
 		'tab'   => 'fediverse',

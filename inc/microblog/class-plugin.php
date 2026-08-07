@@ -11,10 +11,10 @@
  * rather than carrying it over, because the original also owned the plugin
  * bootstrap and its own settings screens, neither of which apply.
  *
- * @package XFediMicroblog
+ * @package Kolofon\Microblog
  */
 
-namespace XFediMicroblog;
+namespace Kolofon\Microblog;
 
 defined( 'ABSPATH' ) || exit;
 

@@ -1,17 +1,25 @@
 <?php
 /**
- * Registers the xfedi_status custom post type.
+ * Registers the status custom post type.
  *
- * @package XFediMicroblog
+ * @package Kolofon\Microblog
  */
 
-namespace XFediMicroblog;
+namespace Kolofon\Microblog;
 
 defined( 'ABSPATH' ) || exit;
 
 class CPT {
 
-	const POST_TYPE = 'xfedi_status';
+	const POST_TYPE = 'kolofon_status';
+
+	/**
+	 * The slug used before the microblog was integrated into the theme.
+	 *
+	 * Statuses published under the old name are migrated to POST_TYPE on
+	 * upgrade; see Kolofon\migrate_status_post_type().
+	 */
+	const LEGACY_POST_TYPE = 'xfedi_status';
 
 	public static function register(): void {
 		add_action( 'init', [ __CLASS__, 'register_post_type' ] );
@@ -20,17 +28,17 @@ class CPT {
 
 	public static function register_post_type(): void {
 		$labels = [
-			'name'               => __( 'Statuses', 'xfedi-microblog' ),
-			'singular_name'      => __( 'Status', 'xfedi-microblog' ),
-			'add_new'            => __( 'Add New', 'xfedi-microblog' ),
-			'add_new_item'       => __( 'Add New Status', 'xfedi-microblog' ),
-			'edit_item'          => __( 'Edit Status', 'xfedi-microblog' ),
-			'new_item'           => __( 'New Status', 'xfedi-microblog' ),
-			'view_item'          => __( 'View Status', 'xfedi-microblog' ),
-			'search_items'       => __( 'Search Statuses', 'xfedi-microblog' ),
-			'not_found'          => __( 'No statuses found', 'xfedi-microblog' ),
-			'not_found_in_trash' => __( 'No statuses in trash', 'xfedi-microblog' ),
-			'menu_name'          => __( 'Statuses', 'xfedi-microblog' ),
+			'name'               => __( 'Statuses', 'kolofon' ),
+			'singular_name'      => __( 'Status', 'kolofon' ),
+			'add_new'            => __( 'Add New', 'kolofon' ),
+			'add_new_item'       => __( 'Add New Status', 'kolofon' ),
+			'edit_item'          => __( 'Edit Status', 'kolofon' ),
+			'new_item'           => __( 'New Status', 'kolofon' ),
+			'view_item'          => __( 'View Status', 'kolofon' ),
+			'search_items'       => __( 'Search Statuses', 'kolofon' ),
+			'not_found'          => __( 'No statuses found', 'kolofon' ),
+			'not_found_in_trash' => __( 'No statuses in trash', 'kolofon' ),
+			'menu_name'          => __( 'Statuses', 'kolofon' ),
 		];
 
 		register_post_type(
@@ -40,7 +48,11 @@ class CPT {
 				'public'              => true,
 				'publicly_queryable'  => true,
 				'show_ui'             => true,
-				'show_in_menu'        => 'xfedi-microblog',
+				// Upstream nested this under the plugin's own top-level menu. That
+				// menu is not carried over, and pointing at a parent that does not
+				// exist makes WordPress hide the post type entirely, so Statuses
+				// takes its own menu instead.
+				'show_in_menu'        => true,
 				'show_in_rest'        => true,
 				'rest_base'           => 'statuses',
 				'has_archive'         => 'statuses',
@@ -58,7 +70,7 @@ class CPT {
 	}
 
 	/**
-	 * When the setting is enabled, include xfedi_status in the main blog loop
+	 * When the setting is enabled, include statuses in the main blog loop
 	 * alongside standard posts. Off by default so the microblog stays separate.
 	 */
 	public static function maybe_include_on_home( \WP_Query $query ): void {

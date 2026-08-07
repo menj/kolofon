@@ -292,6 +292,10 @@ function get_option_sanitizers() {
 		'list_title_size'        => $int_between( 14, 30, $defaults['list_title_size'] ),
 		'microblog_enabled'      => $bool,
 		'fediverse_enabled'      => $bool,
+		'fediverse_profile'      => static function ( $v ) {
+			$v = is_string( $v ) ? $v : 'author';
+			return in_array( $v, array( 'author', 'blog', 'actor_blog' ), true ) ? $v : 'author';
+		},
 		'microblog_on_home'      => $bool,
 		'microblog_noindex'      => $bool,
 		'microblog_char_limit'   => $int_between( 50, 5000, $defaults['microblog_char_limit'] ),

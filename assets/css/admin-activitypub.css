@@ -1,0 +1,111 @@
+/**
+ * Kolofon styling specific to the bundled ActivityPub screens.
+ *
+ * The tokens and the shared furniture (masthead, tab rail, form rows, fields,
+ * help text, buttons) all live in admin-base.css, which this file depends on.
+ * Only the pieces unique to these screens are here, so the two admin surfaces
+ * cannot drift apart.
+ *
+ * Not one file under inc/activitypub/ is touched: the plugin's own markup is
+ * restyled from the outside, so updating the engine stays a one-file diff.
+ */
+
+/* The engine prints a plain <h1>, not the theme's masthead markup, so the
+   heading itself takes the brand lockup treatment. */
+.kolofon-ap .wrap > h1:first-of-type {
+	position: relative;
+	margin: 0 0 1.25rem;
+	padding: 1.5rem 1.9rem 1.4rem;
+	border-radius: 10px;
+	overflow: hidden;
+	background: var(--kolofon-grad-masthead);
+	box-shadow: 0 2px 6px rgba( 0, 0, 0, 0.16 );
+	font-size: 1.6rem;
+	font-weight: 700;
+	line-height: 1.15;
+	color: #fff;
+}
+.kolofon-ap .wrap > h1:first-of-type::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: linear-gradient( 90deg, var(--kolofon-accent) 0%, var(--kolofon-accent-deep) 55%, transparent 100% );
+}
+
+/* The engine's sub-navigation is a bare run of links rather than nav-tab
+   markup, so it is given the same rail. */
+.kolofon-ap .wrap > h1 + p:has( a ) {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.15rem;
+	margin: 0 0 1.5rem;
+	padding-bottom: 0;
+	border-bottom: 1px solid var(--kolofon-hairline);
+}
+
+/* Section headings inside the engine's pages. */
+.kolofon-ap .wrap h2,
+.kolofon-ap .wrap h3 {
+	margin: 2rem 0 0.75rem;
+	padding-bottom: 0.6rem;
+	border-bottom: 1px solid var(--kolofon-hairline);
+	font-size: 1.05rem;
+	font-weight: 700;
+	color: var(--kolofon-ink);
+}
+
+/* The engine renders every settings group as its own form-table, so each one
+   becomes a card. Theme Options wraps its own panels instead. */
+.kolofon-ap .form-table {
+	background: #fff;
+	border: 1px solid var(--kolofon-card-border);
+	border-left: 3px solid var(--kolofon-accent);
+	border-radius: 0 8px 8px 0;
+	box-shadow: var(--kolofon-card-shadow);
+}
+.kolofon-ap .form-table th {
+	width: 260px;
+}
+
+/* Paragraphs inside a control cell are explanations here, so they read as help
+   text even without the .description class the engine sometimes omits. */
+.kolofon-ap .form-table td p:not( .submit ) {
+	margin: 0.6rem 0 0;
+	padding-left: 0.75rem;
+	border-left: 2px solid var(--kolofon-hairline);
+	max-width: 46rem;
+	font-size: 0.82rem;
+	line-height: 1.6;
+	color: var(--kolofon-muted);
+}
+
+/* Radio choices stack as labelled blocks with their explanation beneath. */
+.kolofon-ap .form-table td > label {
+	display: block;
+	margin: 0 0 0.35rem;
+	font-weight: 700;
+	color: var(--kolofon-ink);
+}
+.kolofon-ap .form-table td > label + p,
+.kolofon-ap .form-table td > p + label {
+	margin-bottom: 1.1rem;
+}
+
+/* List tables: followers, blocked actors. */
+.kolofon-ap .wp-list-table {
+	border: 1px solid var(--kolofon-card-border);
+	border-radius: 8px;
+	overflow: hidden;
+	box-shadow: var(--kolofon-card-shadow);
+}
+.kolofon-ap .wp-list-table thead th {
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--kolofon-accent-deep);
+	background: color-mix( in srgb, var(--kolofon-accent) 5%, #fff );
+}

@@ -1,30 +1,71 @@
-Kolofon WordPress Theme
-Copyright (C) 2026 Mohd Elfie Nieshaem Juferi
+# License
 
-Portions Copyright (C) Chris Wiegman, from the Chris Wiegman Theme v12.7.0.
-See docs/reference/changelog.md for the fork history and delta.
+Kolofon is free software released under the **GNU General Public License,
+version 2 or later**.
 
-This theme bundles code from XFedi Microblog 1.0.0 (Copyright (C) MENJ),
-GPL-2.0-or-later, in inc/microblog/. See LICENSE.microblog.
+    Kolofon WordPress Theme
+    Copyright (C) 2026 Mohd Elfie Nieshaem Juferi
 
-This theme vendors Parsedown 1.8.0 (Copyright (c) 2013-2018 Emanuil Rusev)
-under the MIT License. See vendor/parsedown/LICENSE.txt for the full text.
-Bundled fonts carry their own licenses alongside the font files in
-assets/fonts/ (XCharter: SIL OFL 1.1; Special Elite: Apache 2.0).
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the Free
+    Software Foundation; either version 2 of the License, or (at your option)
+    any later version.
 
-This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the Free
-Software Foundation; either version 2 of the License, or (at your option)
-any later version.
+    This program is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+    Public License for more details.
 
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
-more details.
+The full text of the GPL version 2 is reproduced at the end of this file.
 
-The full text of the GNU General Public License, version 2, follows.
+## Attribution
 
-----------------------------------------------------------------------
+Portions are derived from the Chris Wiegman Theme v12.7.0, copyright Chris
+Wiegman. See `docs/reference/changelog.md` for the fork history and delta.
+
+The microblog is derived from **XFedi Microblog 1.0.0**, copyright MENJ,
+GPL-2.0-or-later. Its status post type, composer, timeline, REST routes and
+ActivityPub bridge were carried into `inc/microblog/`; the plugin's own
+settings screens and its companion-reader bridge were not. Configuration lives
+on the Fediverse tab of Theme Options instead. As of 7.0.0 the code is
+renamed throughout to the theme's own namespace.
+
+## Bundled third-party components
+
+Each component below ships with its own licence file, which **must remain in
+place**: retaining the licence text is a condition of every one of these
+grants, not an administrative nicety.
+
+| Component | Licence | Licence file |
+| --- | --- | --- |
+| ActivityPub 9.2.0, by Matthias Pfefferle & Automattic | MIT | `inc/activitypub/LICENSE` |
+| Parsedown 1.8.0, by Emanuil Rusev | MIT | `vendor/parsedown/LICENSE.txt` |
+| XCharter, by Michael Sharpe, extending Bitstream Charter | Bitstream Charter free licence | `assets/fonts/xcharter/LICENSE.txt` |
+| Special Elite, by Astigmatic | Apache 2.0 | `assets/fonts/special-elite/LICENSE-Apache-2.0.txt` |
+
+BITSTREAM CHARTER is a registered trademark of Bitstream Inc.
+
+### On the bundled ActivityPub engine
+
+The engine provides WebFinger, NodeInfo, the Actor endpoint, the inbox, HTTP
+signatures and key management. Three adaptations were made for theme context,
+all in `inc/activitypub/activitypub.php` and each marked in the source:
+
+1. `ACTIVITYPUB_PLUGIN_DIR`, `_BASENAME`, `_FILE` and `_URL` derive from the
+   theme directory rather than a plugin directory, and
+   `ACTIVITYPUB_BUNDLED_IN_THEME` marks the context.
+2. `register_activation_hook` and `register_deactivation_hook` become
+   `after_switch_theme` and `switch_theme`. The uninstall hook is deliberately
+   not wired: removing a theme must not destroy actor keys or the follower
+   list.
+3. `plugin_init()` and `plugin_admin_init()` are called directly when bundled,
+   because a theme loads at `after_setup_theme`, after `plugins_loaded` has
+   already fired, so the upstream hook would never run.
+
+**Updating the engine:** re-apply those three adaptations against the new
+release. No other file was modified, so the change is a diff of one file.
+
+---
 
                     GNU GENERAL PUBLIC LICENSE
                        Version 2, June 1991

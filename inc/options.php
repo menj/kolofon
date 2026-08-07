@@ -45,9 +45,16 @@ function enqueue_options_assets( $hook ) {
 	}
 
 	wp_enqueue_style(
+		'kolofon-admin-base',
+		asset_css( 'admin-base.css' ),
+		array(),
+		KOLOFON_VERSION
+	);
+
+	wp_enqueue_style(
 		'kolofon-admin-options',
 		asset_css( 'admin-options.css' ),
-		array(),
+		array( 'kolofon-admin-base' ),
 		KOLOFON_VERSION
 	);
 
@@ -455,12 +462,24 @@ function render_field( $args ) {
 			$identity = \Kolofon\fediverse_identity();
 			echo '<div class="kolofon-fedi">';
 
-			echo '<p class="kolofon-fedi-lead">' . esc_html__( 'There is nothing to sign up for. With ActivityPub active this site is its own Fediverse server, and this is the handle people follow:', 'kolofon' ) . '</p>';
-			printf(
-				'<p class="kolofon-fedi-handle"><code>@%s</code></p>',
-				esc_html( $identity['handle'] )
-			);
-			echo '<p class="kolofon-fedi-lead">' . esc_html__( 'Someone on Mastodon pastes that into their search box and presses follow. New posts then reach them directly.', 'kolofon' ) . '</p>';
+			if ( empty( $identity['handles'] ) ) {
+				echo '<p class="kolofon-fedi-lead">' . esc_html__( 'No profile is published yet. Switch on "Federate statuses" below.', 'kolofon' ) . '</p>';
+			} else {
+				echo '<p class="kolofon-fedi-lead">' . esc_html__( 'There is nothing to sign up for: with the engine running, this site is its own Fediverse server. Paste a handle into the search box on Mastodon and press follow.', 'kolofon' ) . '</p>';
+
+				foreach ( $identity['handles'] as $entry ) {
+					printf(
+						'<p class="kolofon-fedi-handle"><span class="kolofon-fedi-who">%1$s</span><code>@%2$s</code><span class="kolofon-fedi-note">%3$s</span></p>',
+						esc_html( $entry['label'] ),
+						esc_html( $entry['handle'] ),
+						esc_html( $entry['note'] )
+					);
+				}
+
+				if ( count( $identity['handles'] ) > 1 ) {
+					echo '<p class="kolofon-fedi-lead">' . esc_html__( 'Both exist because the ActivityPub screen is set to publish author and blog profiles. Searching for one will not find the other, which is the usual reason a site seems missing from Mastodon.', 'kolofon' ) . '</p>';
+				}
+			}
 
 			echo '<ul class="kolofon-fedi-checks">';
 			foreach ( $identity['checks'] as $check ) {
@@ -474,11 +493,13 @@ function render_field( $args ) {
 			}
 			echo '</ul>';
 
-			printf(
-				'<p class="description"><a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a></p>',
-				esc_url( $identity['webfinger'] ),
-				esc_html__( 'Test discovery: this should return JSON describing you', 'kolofon' )
-			);
+			if ( '' !== $identity['handle'] ) {
+				printf(
+					'<p class="description"><a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a></p>',
+					esc_url( $identity['webfinger'] ),
+					esc_html__( 'Test discovery: this should return JSON describing the site', 'kolofon' )
+				);
+			}
 			echo '</div>';
 			break;
 
@@ -752,3 +773,24 @@ function render_fediverse_tab_intro() {
 	</div>
 	<?php
 }
+
+/**
+ * Scope the shared admin styling to the Theme Options screen.
+ *
+ * The base stylesheet is scoped to .kolofon-admin so it cannot leak into the
+ * rest of wp-admin. Both this screen and the bundled ActivityPub screens carry
+ * the class, which is what keeps the two consistent.
+ *
+ * @param string $classes Existing body classes.
+ * @return string
+ */
+function options_admin_body_class( $classes ) {
+	$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+
+	if ( is_object( $screen ) && isset( $screen->id ) && false !== strpos( (string) $screen->id, OPTION_PAGE ) ) {
+		$classes .= ' kolofon-admin';
+	}
+
+	return $classes;
+}
+add_filter( 'admin_body_class', __NAMESPACE__ . '\\options_admin_body_class' );
