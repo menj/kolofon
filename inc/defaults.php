@@ -40,6 +40,9 @@ function get_raw_defaults() {
 		'social_facebook'        => '',
 		'social_threads'         => '',
 		'social_pinterest'       => '',
+		'social_goodreads'       => '',
+		'social_librarything'    => '',
+		'social_gamingtribe'     => '',
 		'social_email'           => '',
 		'social_rss'             => '',
 
@@ -75,6 +78,12 @@ function get_raw_defaults() {
 		'sidebar_social_heading' => 'Stay in touch',
 		'list_style'             => 'stacked',
 		'list_title_size'        => 20,
+		'microblog_enabled'      => 0,
+		'fediverse_enabled'      => 0,
+		'microblog_on_home'      => 0,
+		'microblog_noindex'      => 0,
+		'microblog_char_limit'   => 500,
+		'microblog_page_size'    => 20,
 		'hover_preview'          => 1,
 		'preview_size'           => 140,
 		'show_recent'            => 1,
@@ -175,25 +184,25 @@ function get_font_stacks() {
 			'heading' => '"XCharter", Charter, Georgia, "Iowan Old Style", "Times New Roman", serif',
 			'webfont' => array(
 				'family'  => 'XCharter',
-				'preload' => 'xcharter/XCharter-Roman.otf',
+				'preload' => 'xcharter/XCharter-Roman.woff2',
 				'files'   => array(
 					array(
-						'src'    => 'xcharter/XCharter-Roman.otf',
+						'src'    => 'xcharter/XCharter-Roman.woff2',
 						'weight' => '400',
 						'style'  => 'normal',
 					),
 					array(
-						'src'    => 'xcharter/XCharter-Italic.otf',
+						'src'    => 'xcharter/XCharter-Italic.woff2',
 						'weight' => '400',
 						'style'  => 'italic',
 					),
 					array(
-						'src'    => 'xcharter/XCharter-Bold.otf',
+						'src'    => 'xcharter/XCharter-Bold.woff2',
 						'weight' => '700',
 						'style'  => 'normal',
 					),
 					array(
-						'src'    => 'xcharter/XCharter-BoldItalic.otf',
+						'src'    => 'xcharter/XCharter-BoldItalic.woff2',
 						'weight' => '700',
 						'style'  => 'italic',
 					),
@@ -206,10 +215,10 @@ function get_font_stacks() {
 			'heading' => '"Special Elite", "Courier Prime", Courier, "Courier New", monospace',
 			'webfont' => array(
 				'family'  => 'Special Elite',
-				'preload' => 'special-elite/SpecialElite-Regular.ttf',
+				'preload' => 'special-elite/SpecialElite-Regular.woff2',
 				'files'   => array(
 					array(
-						'src'    => 'special-elite/SpecialElite-Regular.ttf',
+						'src'    => 'special-elite/SpecialElite-Regular.woff2',
 						'weight' => '400',
 						'style'  => 'normal',
 					),
@@ -224,10 +233,10 @@ function get_font_stacks() {
 			'heading' => '"Special Elite", "Courier Prime", Courier, "Courier New", monospace',
 			'webfont' => array(
 				'family'  => 'Special Elite',
-				'preload' => 'special-elite/SpecialElite-Regular.ttf',
+				'preload' => 'special-elite/SpecialElite-Regular.woff2',
 				'files'   => array(
 					array(
-						'src'    => 'special-elite/SpecialElite-Regular.ttf',
+						'src'    => 'special-elite/SpecialElite-Regular.woff2',
 						'weight' => '400',
 						'style'  => 'normal',
 					),

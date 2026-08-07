@@ -34,14 +34,12 @@ defined( 'ABSPATH' ) || exit;
  */
 function get_option_tabs() {
 	$tabs = array(
-		'identity'   => __( 'Identity', 'kolofon' ),
-		'sections'   => __( 'Sections', 'kolofon' ),
-		'social'     => __( 'Social', 'kolofon' ),
-		'appearance' => __( 'Appearance', 'kolofon' ),
-		'layout'     => __( 'Layout', 'kolofon' ),
-		'advanced'   => __( 'Advanced', 'kolofon' ),
-		'system'     => __( 'System', 'kolofon' ),
-		'docs'       => __( 'Documentation', 'kolofon' ),
+		'identity'  => __( 'Identity', 'kolofon' ),
+		'layout'    => __( 'Layout', 'kolofon' ),
+		'social'    => __( 'Social', 'kolofon' ),
+		'fediverse' => __( 'Fediverse', 'kolofon' ),
+		'advanced'  => __( 'Advanced', 'kolofon' ),
+		'docs'      => __( 'Documentation', 'kolofon' ),
 	);
 
 	/**
@@ -164,30 +162,30 @@ function get_option_fields() {
 	// Sections.
 	$fields['section_slugs']          = array(
 		'label' => __( 'Section categories', 'kolofon' ),
-		'tab'   => 'sections',
+		'tab'   => 'layout',
 		'type'  => 'section_slugs',
 		'args'  => array( 'help' => __( 'Category slugs in the order they should appear, separated by commas or new lines. Each must be an existing category. Sections are mutually exclusive: a post belongs to exactly one. Use tags for topics that cut across sections.', 'kolofon' ) ),
 	);
 	$fields['show_section_chooser']   = array(
 		'label' => __( 'Show section chooser', 'kolofon' ),
-		'tab'   => 'sections',
+		'tab'   => 'layout',
 		'type'  => 'checkbox',
 		'args'  => array( 'help' => __( 'Displays the row of section links on the home page and on section archives.', 'kolofon' ) ),
 	);
 	$fields['section_all_label']      = array(
 		'label' => __( 'Label for the all-sections link', 'kolofon' ),
-		'tab'   => 'sections',
+		'tab'   => 'layout',
 		'type'  => 'text',
 	);
 	$fields['enforce_single_section'] = array(
 		'label' => __( 'One category per post', 'kolofon' ),
-		'tab'   => 'sections',
+		'tab'   => 'layout',
 		'type'  => 'checkbox',
 		'args'  => array( 'help' => __( 'Reduces every post to a single category on save, and makes the block editor category panel behave as a single-choice list. Applies to posts created through REST, WP-CLI, and imports too.', 'kolofon' ) ),
 	);
 	$fields['scope_adjacent_posts']   = array(
 		'label' => __( 'Keep previous and next within a section', 'kolofon' ),
-		'tab'   => 'sections',
+		'tab'   => 'layout',
 		'type'  => 'checkbox',
 		'args'  => array( 'help' => __( 'Without this, the links at the foot of a post run chronologically across every section, so a reader following one topic is dropped into another.', 'kolofon' ) ),
 	);
@@ -222,18 +220,18 @@ function get_option_fields() {
 	// Appearance.
 	$fields['colour_scheme'] = array(
 		'label' => __( 'Colour scheme', 'kolofon' ),
-		'tab'   => 'appearance',
+		'tab'   => 'identity',
 		'type'  => 'radio_presets',
 	);
 
 	$fields['font_stack']        = array(
 		'label' => __( 'Font stack', 'kolofon' ),
-		'tab'   => 'appearance',
+		'tab'   => 'identity',
 		'type'  => 'font_stack',
 	);
 	$fields['hero_heading_size'] = array(
 		'label' => __( 'Lede heading size (px)', 'kolofon' ),
-		'tab'   => 'appearance',
+		'tab'   => 'identity',
 		'type'  => 'slider',
 		'args'  => array(
 			'min'  => 28,
@@ -245,7 +243,7 @@ function get_option_fields() {
 	);
 	$fields['hero_body_size']    = array(
 		'label' => __( 'Lede body size (px)', 'kolofon' ),
-		'tab'   => 'appearance',
+		'tab'   => 'identity',
 		'type'  => 'slider',
 		'args'  => array(
 			'min'  => 14,
@@ -309,6 +307,65 @@ function get_option_fields() {
 		'args'  => array(
 			'choices' => get_portrait_styles(),
 			'help'    => __( 'Floating suits a cut-out PNG with a transparent background.', 'kolofon' ),
+		),
+	);
+	$fields['fediverse_identity']     = array(
+		'label' => __( 'Your Fediverse address', 'kolofon' ),
+		'tab'   => 'fediverse',
+		'type'  => 'fediverse_identity',
+	);
+	$fields['microblog_enabled']      = array(
+		'label' => __( 'Microblog', 'kolofon' ),
+		'tab'   => 'fediverse',
+		'type'  => 'checkbox',
+		'args'  => array(
+			'help' => __( 'Adds a Statuses post type for short, title-less posts, with a composer in the toolbar and a timeline shortcode. Merged into the theme, so no separate microblog plugin is needed.', 'kolofon' ),
+		),
+	);
+	$fields['fediverse_enabled']      = array(
+		'label' => __( 'Federate statuses', 'kolofon' ),
+		'tab'   => 'fediverse',
+		'type'  => 'checkbox',
+		'args'  => array(
+			'help' => 'Kolofon\\fediverse_help',
+		),
+	);
+	$fields['microblog_on_home']      = array(
+		'label' => __( 'Show statuses on the blog', 'kolofon' ),
+		'tab'   => 'fediverse',
+		'type'  => 'checkbox',
+		'args'  => array(
+			'help' => __( 'Mixes statuses into the main post list and the RSS feed alongside articles. Off by default, so statuses stay on their own archive at /statuses/ and do not crowd the front page.', 'kolofon' ),
+		),
+	);
+	$fields['microblog_noindex']      = array(
+		'label' => __( 'Hide statuses from search engines', 'kolofon' ),
+		'tab'   => 'fediverse',
+		'type'  => 'checkbox',
+		'args'  => array(
+			'help' => __( 'Adds a noindex header to the status archive. Statuses still federate and are still readable; they simply are not indexed.', 'kolofon' ),
+		),
+	);
+	$fields['microblog_char_limit']   = array(
+		'label' => __( 'Status length limit', 'kolofon' ),
+		'tab'   => 'fediverse',
+		'type'  => 'number',
+		'args'  => array(
+			'min'  => 50,
+			'max'  => 5000,
+			'step' => 10,
+			'help' => __( 'Characters allowed in the composer. Mastodon shows 500 by default, so anything longer may be truncated by some servers.', 'kolofon' ),
+		),
+	);
+	$fields['microblog_page_size']    = array(
+		'label' => __( 'Statuses per timeline page', 'kolofon' ),
+		'tab'   => 'fediverse',
+		'type'  => 'number',
+		'args'  => array(
+			'min'  => 1,
+			'max'  => 100,
+			'step' => 1,
+			'help' => __( 'How many statuses the [kolofon_microblog] shortcode shows at a time.', 'kolofon' ),
 		),
 	);
 	$fields['list_title_size']        = array(

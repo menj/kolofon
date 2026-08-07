@@ -10,6 +10,27 @@ namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * URL for a stylesheet, preferring the minified build when one exists.
+ *
+ * Sources stay readable and commented in assets/css/; `node tools/minify-css.js`
+ * emits the .min.css beside them. SCRIPT_DEBUG forces the readable file, which
+ * is what you want while working on the theme.
+ *
+ * @param string $file Stylesheet filename, for example 'main.css'.
+ * @return string
+ */
+function asset_css( $file ) {
+	$debug = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
+	$min   = str_replace( '.css', '.min.css', $file );
+
+	if ( ! $debug && is_readable( KOLOFON_DIR . 'assets/css/' . $min ) ) {
+		return KOLOFON_URI . 'assets/css/' . $min;
+	}
+
+	return KOLOFON_URI . 'assets/css/' . $file;
+}
+
 add_action( 'wp_head', __NAMESPACE__ . '\\preload_portrait', 5 );
 
 /**
@@ -34,9 +55,26 @@ function preload_portrait() {
 		return;
 	}
 
+	/*
+	 * Preload the WebP the browser will actually pick, not the PNG fallback.
+	 * Preloading the PNG would fetch 165 KiB the page never paints, since the
+	 * picture element resolves to the 21 KiB WebP in every current browser.
+	 */
+	$preload = $portrait;
+	$type    = '';
+
+	if ( $portrait === default_portrait_url() ) {
+		$webp = KOLOFON_DIR . 'assets/img/profile-359.webp';
+		if ( is_readable( $webp ) ) {
+			$preload = KOLOFON_URI . 'assets/img/profile-359.webp';
+			$type    = ' type="image/webp"';
+		}
+	}
+
 	printf(
-		'<link rel="preload" as="image" href="%s" fetchpriority="high" />' . "\n",
-		esc_url( $portrait )
+		'<link rel="preload" as="image" href="%s"%s fetchpriority="high" />' . "\n",
+		esc_url( $preload ),
+		$type // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- literal attribute built above.
 	);
 }
 
@@ -56,7 +94,7 @@ function enqueue_assets() {
 
 	wp_enqueue_style(
 		'kolofon-main',
-		KOLOFON_URI . 'assets/css/main.css',
+		asset_css( 'main.css' ),
 		array(),
 		KOLOFON_VERSION
 	);
@@ -82,4 +120,20 @@ function enqueue_assets() {
 		KOLOFON_VERSION,
 		true
 	);
+
+	/*
+	 * Promotes the per-row hover cards into one card that travels between rows.
+	 * Only loaded where previews can appear, and the script itself stands down
+	 * on touch-only devices and under prefers-reduced-motion. Without it the
+	 * CSS fade-in-place behaviour still works.
+	 */
+	if ( previews_enabled() ) {
+		wp_enqueue_script(
+			'kolofon-hover-preview',
+			KOLOFON_URI . 'assets/js/hover-preview.js',
+			array(),
+			KOLOFON_VERSION,
+			true
+		);
+	}
 }

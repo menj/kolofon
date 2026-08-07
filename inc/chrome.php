@@ -65,6 +65,14 @@ function keyboard_nav_enabled() {
  * @return string[]
  */
 function chrome_body_class( $classes ) {
+	/*
+	 * A single status has no title, so the stylesheet gives its content the
+	 * opening position instead of a heading.
+	 */
+	if ( function_exists( __NAMESPACE__ . '\\is_status' ) && is_singular() && is_status() ) {
+		$classes[] = 'single-status';
+	}
+
 	$classes[] = 'layout-' . chrome_layout();
 	$classes[] = 'font-' . sanitize_html_class( (string) opt( 'font_stack' ) );
 	return $classes;

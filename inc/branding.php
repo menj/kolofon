@@ -92,3 +92,52 @@ function emit_favicon_fallback() {
 		);
 	}
 }
+
+/**
+ * Markup for the hero portrait, serving WebP where the browser supports it.
+ *
+ * The bundled default ships as WebP at two widths plus the original PNG as a
+ * fallback, which takes the largest variant from 165 KiB to 21 KiB. A portrait
+ * uploaded through Theme Options is served as-is, since the theme has no
+ * derivatives for it.
+ *
+ * @param string $url  Portrait URL.
+ * @param int    $size Rendered width and height in CSS pixels.
+ * @param string $alt  Alternative text.
+ * @return string
+ */
+function portrait_markup( $url, $size, $alt ) {
+	$size = max( 1, intval( $size ) );
+	$img  = sprintf(
+		'<img class="u-photo" itemprop="image" src="%1$s" alt="%2$s" fetchpriority="high" decoding="async" width="%3$d" height="%3$d" />',
+		esc_url( $url ),
+		esc_attr( $alt ),
+		$size
+	);
+
+	// Derivatives exist only for the bundled default.
+	if ( $url !== default_portrait_url() ) {
+		return $img;
+	}
+
+	$base = KOLOFON_URI . 'assets/img/';
+	$dir  = KOLOFON_DIR . 'assets/img/';
+
+	$sources = array();
+	foreach ( array( 200, 359 ) as $width ) {
+		if ( is_readable( $dir . 'profile-' . $width . '.webp' ) ) {
+			$sources[] = esc_url( $base . 'profile-' . $width . '.webp' ) . ' ' . $width . 'w';
+		}
+	}
+
+	if ( empty( $sources ) ) {
+		return $img;
+	}
+
+	return sprintf(
+		'<picture><source type="image/webp" srcset="%1$s" sizes="%2$dpx" />%3$s</picture>',
+		esc_attr( implode( ', ', $sources ) ),
+		$size,
+		$img
+	);
+}

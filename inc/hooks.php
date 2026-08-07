@@ -290,6 +290,12 @@ function get_option_sanitizers() {
 		'hover_preview'          => $bool,
 		'preview_size'           => $int_between( 100, 240, $defaults['preview_size'] ),
 		'list_title_size'        => $int_between( 14, 30, $defaults['list_title_size'] ),
+		'microblog_enabled'      => $bool,
+		'fediverse_enabled'      => $bool,
+		'microblog_on_home'      => $bool,
+		'microblog_noindex'      => $bool,
+		'microblog_char_limit'   => $int_between( 50, 5000, $defaults['microblog_char_limit'] ),
+		'microblog_page_size'    => $int_between( 1, 100, $defaults['microblog_page_size'] ),
 		'show_recent'            => $bool,
 		'recent_count'           => $int_between( 1, 20, $defaults['recent_count'] ),
 	);

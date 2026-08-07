@@ -46,7 +46,7 @@ function enqueue_options_assets( $hook ) {
 
 	wp_enqueue_style(
 		'kolofon-admin-options',
-		KOLOFON_URI . 'assets/css/admin-options.css',
+		asset_css( 'admin-options.css' ),
 		array(),
 		KOLOFON_VERSION
 	);
@@ -451,6 +451,37 @@ function render_field( $args ) {
 			}
 			break;
 
+		case 'fediverse_identity':
+			$identity = \Kolofon\fediverse_identity();
+			echo '<div class="kolofon-fedi">';
+
+			echo '<p class="kolofon-fedi-lead">' . esc_html__( 'There is nothing to sign up for. With ActivityPub active this site is its own Fediverse server, and this is the handle people follow:', 'kolofon' ) . '</p>';
+			printf(
+				'<p class="kolofon-fedi-handle"><code>@%s</code></p>',
+				esc_html( $identity['handle'] )
+			);
+			echo '<p class="kolofon-fedi-lead">' . esc_html__( 'Someone on Mastodon pastes that into their search box and presses follow. New posts then reach them directly.', 'kolofon' ) . '</p>';
+
+			echo '<ul class="kolofon-fedi-checks">';
+			foreach ( $identity['checks'] as $check ) {
+				printf(
+					'<li class="%1$s"><span class="kolofon-fedi-dot" aria-hidden="true"></span><span class="kolofon-fedi-label">%2$s</span> <span class="kolofon-fedi-note">%3$s</span><span class="screen-reader-text">%4$s</span></li>',
+					$check['ok'] ? 'is-ok' : 'is-bad',
+					esc_html( $check['label'] ),
+					esc_html( $check['note'] ),
+					$check['ok'] ? esc_html__( 'Ready', 'kolofon' ) : esc_html__( 'Needs attention', 'kolofon' )
+				);
+			}
+			echo '</ul>';
+
+			printf(
+				'<p class="description"><a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a></p>',
+				esc_url( $identity['webfinger'] ),
+				esc_html__( 'Test discovery: this should return JSON describing you', 'kolofon' )
+			);
+			echo '</div>';
+			break;
+
 		case 'reset_button':
 			$reset_url = wp_nonce_url(
 				admin_url( 'admin-post.php?action=kolofon_reset' ),
@@ -502,7 +533,7 @@ function render_options_page() {
 	// no section and no fields.
 	$form_tabs = get_form_tabs();
 	?>
-	<div class="wrap kolofon-wrap">
+	<div class="wrap kolofon-wrap js-tabs">
 		<div class="kolofon-masthead">
 			<p class="kolofon-masthead-eyebrow"><?php esc_html_e( 'Theme Options', 'kolofon' ); ?></p>
 			<h1 class="kolofon-options-title">
@@ -577,9 +608,12 @@ function render_options_page() {
 			<?php foreach ( array_keys( $form_tabs ) as $slug ) : ?>
 				<div class="kolofon-panel" id="tab-<?php echo esc_attr( $slug ); ?>" role="tabpanel"
 					aria-labelledby="tabctl-<?php echo esc_attr( $slug ); ?>" tabindex="0">
-					<?php if ( 'appearance' === $slug ) : ?>
+					<?php if ( 'identity' === $slug ) : ?>
 						<?php render_appearance_preview(); ?>
 						<?php render_appearance_tab_intro(); ?>
+					<?php endif; ?>
+					<?php if ( 'fediverse' === $slug ) : ?>
+						<?php render_fediverse_tab_intro(); ?>
 					<?php endif; ?>
 					<table class="form-table" role="presentation">
 						<?php do_settings_fields( OPTION_PAGE, $slug ); ?>
@@ -673,3 +707,48 @@ function render_appearance_tab_intro() {
 	<?php
 }
 
+
+/**
+ * Intro card for the Fediverse tab.
+ *
+ * The two switches below it are independent and the order matters, so the steps
+ * are spelled out rather than left to be inferred. Both engines ship inside the
+ * theme, so no plugin is involved at any point.
+ */
+function render_fediverse_tab_intro() {
+	$microblog = 1 === intval( opt( 'microblog_enabled' ) );
+	$federate  = 1 === intval( opt( 'fediverse_enabled' ) );
+	?>
+	<div class="kolofon-intro">
+		<p>
+			<?php esc_html_e( 'Two independent switches. The microblog gives you short, title-less posts on this site. Federation publishes them to the Fediverse. You can run the microblog on its own; federating without it is possible but pointless, since there would be nothing to send.', 'kolofon' ); ?>
+		</p>
+		<ol class="kolofon-steps">
+			<li class="<?php echo $microblog ? 'is-done' : ''; ?>">
+				<?php esc_html_e( 'Switch on Microblog below and save. A Statuses item appears in the admin menu, a Post status button appears in the toolbar, and the [kolofon_microblog] shortcode starts working.', 'kolofon' ); ?>
+			</li>
+			<li class="<?php echo $microblog ? '' : 'is-waiting'; ?>">
+				<?php esc_html_e( 'Write a status. Statuses have no title on purpose: the text is the post.', 'kolofon' ); ?>
+			</li>
+			<li class="<?php echo $federate ? 'is-done' : ''; ?>">
+				<?php esc_html_e( 'Switch on Federate statuses and save. This loads the bundled ActivityPub engine, generates your keys and opens your Actor, inbox and WebFinger endpoints.', 'kolofon' ); ?>
+			</li>
+			<li class="<?php echo $federate ? '' : 'is-waiting'; ?>">
+				<?php esc_html_e( 'Check the discovery link under your address above returns JSON. If it does not, open Settings then Permalinks once to flush the rewrite rules.', 'kolofon' ); ?>
+			</li>
+		</ol>
+		<p>
+			<?php
+			printf(
+				/* translators: %s: the shortcode, already wrapped in a code element */
+				esc_html__( 'To show a timeline on a page, add %s to its content.', 'kolofon' ),
+				'<code>[kolofon_microblog]</code>'
+			);
+			?>
+		</p>
+		<p>
+			<?php esc_html_e( 'Where statuses appear on the front end is controlled by the settings below. By default they live on their own archive at /statuses/ and stay out of the blog, so switching the microblog on changes nothing about your existing pages until you say otherwise.', 'kolofon' ); ?>
+		</p>
+	</div>
+	<?php
+}

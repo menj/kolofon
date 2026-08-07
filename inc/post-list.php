@@ -321,7 +321,10 @@ function post_list_item( $args = array() ) {
 		}
 	}
 
-	$classes = 'post-item';
+	$classes = 'post-item h-entry';
+	if ( function_exists( __NAMESPACE__ . '\\is_status' ) && is_status() ) {
+		$classes .= ' is-status-row';
+	}
 	if ( '' !== $preview ) {
 		$classes .= ' has-preview';
 	}
@@ -346,17 +349,30 @@ function post_list_item( $args = array() ) {
 	?>
 	<li class="<?php echo esc_attr( $classes ); ?>" itemprop="itemListElement" itemscope="itemscope" itemtype="https://schema.org/ListItem">
 		<meta itemprop="position" content="<?php echo esc_attr( (string) ( ++$GLOBALS['kolofon_list_position'] ) ); ?>" />
-		<a href="<?php the_permalink(); ?>" itemprop="url">
+		<a class="u-url" href="<?php the_permalink(); ?>" itemprop="url">
 			<span itemprop="item" itemscope="itemscope" itemtype="https://schema.org/BlogPosting">
 			<meta itemprop="url" content="<?php the_permalink(); ?>" />
 			<?php if ( 'columns' === $style ) : ?>
-				<span class="post-col post-col-date"><time itemprop="datePublished" datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>"><?php echo esc_html( $date ); ?></time></span>
+				<span class="post-col post-col-date"><time class="dt-published" itemprop="datePublished" datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>"><?php echo esc_html( $date ); ?></time></span>
 				<span class="post-col post-col-section">
 					<?php echo $section ? esc_html( $section->name ) : ''; ?>
 				</span>
 			<?php endif; ?>
 			<span class="post-item-main">
-				<span class="post-title" itemprop="headline name"><?php the_title(); ?></span>
+				<?php if ( function_exists( __NAMESPACE__ . '\\is_status' ) && is_status() ) : ?>
+					<?php
+					// A status carries no title, so the row leads with its text.
+					// Without this the title span renders empty and the row
+					// shows nothing but a date.
+					$status_text = get_the_excerpt();
+					if ( '' === trim( (string) $status_text ) ) {
+						$status_text = wp_strip_all_tags( get_the_content() );
+					}
+					?>
+					<span class="post-title is-status p-name e-content" itemprop="headline name"><?php echo esc_html( wp_trim_words( $status_text, 28, '…' ) ); ?></span>
+				<?php else : ?>
+					<span class="post-title p-name" itemprop="headline name"><?php the_title(); ?></span>
+				<?php endif; ?>
 				<?php if ( $show_dek ) : ?>
 					<?php $dek = get_the_excerpt(); ?>
 					<?php if ( $dek ) : ?>
