@@ -4,6 +4,9 @@ Copyright (C) 2026 Mohd Elfie Nieshaem Juferi
 Portions Copyright (C) Chris Wiegman, from the Chris Wiegman Theme v12.7.0.
 See docs/reference/changelog.md for the fork history and delta.
 
+This theme bundles code from XFedi Microblog 1.0.0 (Copyright (C) MENJ),
+GPL-2.0-or-later, in inc/microblog/. See LICENSE.microblog.
+
 This theme vendors Parsedown 1.8.0 (Copyright (c) 2013-2018 Emanuil Rusev)
 under the MIT License. See vendor/parsedown/LICENSE.txt for the full text.
 Bundled fonts carry their own licenses alongside the font files in

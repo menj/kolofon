@@ -13,22 +13,33 @@ get_header();
 <main class="home" itemprop="mainEntity" itemscope="itemscope" itemtype="https://schema.org/Person">
 	<?php do_action( 'kolofon_before_hero' ); ?>
 
-	<section class="hero">
+	<?php
+	/*
+	 * The hero doubles as the representative h-card. Fediverse and IndieWeb
+	 * parsers use it to attribute posts on this domain to a person: without it
+	 * they can find the posts but cannot reliably say who wrote them, which is
+	 * what makes a site read as a blog that happens to federate rather than as
+	 * a native presence. u-url and u-uid on the home link mark it as
+	 * representative.
+	 */
+	?>
+	<section class="hero h-card">
 		<div class="container">
 			<div class="hero-inner">
+				<a class="u-url u-uid" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="me" hidden="hidden" aria-hidden="true"></a>
 				<div class="hero-copy">
 					<?php $kolofon_eyebrow = opt( 'hero_eyebrow' ); ?>
 					<?php if ( $kolofon_eyebrow ) : ?>
-						<p class="hero-eyebrow" itemprop="jobTitle"><?php echo esc_html( $kolofon_eyebrow ); ?></p>
+						<p class="hero-eyebrow p-job-title" itemprop="jobTitle"><?php echo esc_html( $kolofon_eyebrow ); ?></p>
 					<?php endif; ?>
 
-					<h1 class="hero-heading" itemprop="name">
+					<h1 class="hero-heading p-name" itemprop="name">
 						<?php echo wp_kses( opt( 'hero_heading' ), \Kolofon\allowed_heading_html() ); ?>
 					</h1>
 
 					<?php $kolofon_body = opt( 'hero_body' ); ?>
 					<?php if ( $kolofon_body ) : ?>
-						<div class="hero-body" itemprop="description"><?php echo wp_kses_post( wpautop( $kolofon_body ) ); ?></div>
+						<div class="hero-body p-note" itemprop="description"><?php echo wp_kses_post( wpautop( $kolofon_body ) ); ?></div>
 					<?php endif; ?>
 
 					<?php \Kolofon\render_social_icons(); ?>
@@ -46,7 +57,13 @@ get_header();
 				$kolofon_pstyle = sanitize_html_class( opt( 'portrait_style' ) );
 				?>
 				<div class="hero-portrait is-<?php echo esc_attr( $kolofon_pstyle ); ?>">
-					<img itemprop="image" src="<?php echo esc_url( $kolofon_portrait ); ?>" alt="<?php echo esc_attr( wp_strip_all_tags( opt( 'hero_heading' ) ) ); ?>" fetchpriority="high" decoding="async" width="<?php echo esc_attr( intval( opt( 'portrait_size' ) ) ); ?>" height="<?php echo esc_attr( intval( opt( 'portrait_size' ) ) ); ?>" />
+					<?php
+					echo \Kolofon\portrait_markup(
+						$kolofon_portrait,
+						intval( opt( 'portrait_size' ) ),
+						wp_strip_all_tags( opt( 'hero_heading' ) )
+					); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside the helper.
+					?>
 				</div>
 			</div>
 		</div>

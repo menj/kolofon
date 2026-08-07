@@ -46,7 +46,25 @@ while ( have_posts() ) :
 						</div>
 					<?php endif; ?>
 
-					<?php the_title( '<h1 class="post-title p-name" itemprop="name headline">', '</h1>' ); ?>
+					<?php
+					// A status has no title. Without a heading the page would have
+					// none at all, so it takes a dated one that reads sensibly and
+					// keeps the document outline intact.
+					if ( function_exists( 'Kolofon\\is_status' ) && \Kolofon\is_status() ) {
+						printf(
+							'<h1 class="post-title p-name is-status" itemprop="name headline">%s</h1>',
+							esc_html(
+								sprintf(
+									/* translators: %s: the status publication date */
+									__( 'Status, %s', 'kolofon' ),
+									get_the_date()
+								)
+							)
+						);
+					} else {
+						the_title( '<h1 class="post-title p-name" itemprop="name headline">', '</h1>' );
+					}
+					?>
 				</header>
 
 				<div class="content e-content" itemprop="articleBody">

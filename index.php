@@ -32,8 +32,22 @@ global $wp_query;
 						esc_html__( 'Posts tagged:', 'kolofon' ),
 						esc_html( single_tag_title( '', false ) )
 					);
+				} elseif ( is_post_type_archive( \Kolofon\status_post_type() ) ) {
+					printf(
+						'<h1 class="post-title" itemprop="name"><span class="term">%s</span></h1>',
+						esc_html__( 'Statuses', 'kolofon' )
+					);
 				} elseif ( is_archive() ) {
-					printf( '<h1 class="post-title" itemprop="name">%s</h1>', esc_html( get_the_archive_title() ) );
+					/*
+					 * get_the_archive_title() returns markup: WordPress wraps the
+					 * name in its own span. Escaping it printed the tags as
+					 * literal text, so the label is stripped and re-wrapped in the
+					 * theme's own span to match the category and tag headings.
+					 */
+					printf(
+						'<h1 class="post-title" itemprop="name"><span class="term">%s</span></h1>',
+						esc_html( wp_strip_all_tags( get_the_archive_title() ) )
+					);
 				} else {
 					printf( '<h1 class="post-title" itemprop="name">%s</h1>', esc_html__( 'Posts', 'kolofon' ) );
 				}

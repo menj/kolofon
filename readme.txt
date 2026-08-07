@@ -4,7 +4,7 @@ Contributors: menj
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 5.7.0
+Stable tag: 6.7.0
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: blog, one-column, custom-colors, custom-menu, editor-style, featured-images, translation-ready
@@ -80,7 +80,43 @@ Font licenses are included alongside the fonts in `assets/fonts/`.
 
 == Changelog ==
 
+= 6.7.0 =
+* The hover preview now travels between rows as a single card instead of fading in place.
+
 For the complete, detailed version history, see docs/reference/changelog.md in the theme folder.
+
+= 6.6.0 =
+* The hover preview now travels down the list with the pointer instead of staying pinned to the top.
+
+= 6.5.0 =
+* Fixed the status archive heading printing raw HTML. Statuses now read as a timeline rather than a list of long titles, and the site emits the microformats Fediverse and IndieWeb parsers need.
+
+= 6.4.0 =
+* Performance: fonts converted to WOFF2 (451 KiB saved), portrait served as WebP (140 KiB saved), CSS minified (20 KiB saved). Server rules provided for caching and compression.
+
+= 6.3.0 =
+* Tabs merged from 9 to 6, widened to 1200px, load instantly instead of after a 10-second delay. GamingTribe icon corrected. Four missing Fediverse front-end controls restored.
+
+= 6.2.0 =
+* Added Goodreads, LibraryThing and GamingTribe to the social profiles.
+
+= 6.1.1 =
+* Fixed a fatal error when the microblog was enabled, and added four settings controlling where statuses appear on the front end.
+
+= 6.1.0 =
+* Fediverse tab now gives step-by-step activation guidance, and the timeline shortcode is [kolofon_microblog].
+
+= 6.0.1 =
+* Fixed: switching federation on never ran the engine's activation, so WebFinger could not resolve and delivery was never scheduled.
+
+= 6.0.0 =
+* ActivityPub engine bundled into the theme. Federation is now one toggle with no plugins at all. Note: the theme is no longer suitable for WordPress.org submission.
+
+= 5.9.0 =
+* Fediverse tab now shows your handle and a readiness check, since joining the Fediverse involves no registration.
+
+= 5.8.0 =
+* Microblog merged into the theme with a Fediverse tab: statuses now work without a separate plugin, and federation is one toggle when ActivityPub is active.
 
 = 5.7.0 =
 * Added a design and standards audit that detects discarded CSS, conflicting rules, crowding and undersized controls automatically. Toggle hit target raised to meet WCAG 2.2.
