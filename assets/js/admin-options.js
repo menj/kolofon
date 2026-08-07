@@ -15,9 +15,8 @@
 		}
 
 		var wrap = document.querySelector( '.kolofon-wrap' );
-		if ( wrap ) {
-			wrap.classList.add( 'js-tabs' );
-		}
+		// js-tabs is rendered server-side so tabs show on first paint.
+		// The script handles switching between them.
 
 		function activate( slug, focusTab ) {
 			tabs.forEach( function ( tab ) {
