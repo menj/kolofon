@@ -1,5 +1,359 @@
 # Changelog
 
+## 6.7.0
+
+### Changed
+- **The hover preview now moves between rows.** Every row had its own card, so
+  the preview faded in wherever it sat and vanished again: it never travelled.
+  A single shared card is now promoted from that markup and animates to
+  whichever row is hovered, so the preview reads as one object following the
+  pointer rather than a series of separate cards.
+- The travel is a transform transition on the card's vertical offset, which the
+  browser can composite, so moving down a long list stays smooth.
+
+### Kept
+- **Progressive enhancement.** The per-row cards are still what the server
+  renders and what the CSS shows; `assets/js/hover-preview.js` adds
+  `.js-preview` to the list, and only then does the shared card take over. If
+  the script never runs, the previous behaviour stands.
+- The script stands down entirely on touch-only devices, where there is no
+  hover to follow, and under `prefers-reduced-motion`, where travel is the
+  thing being asked not to happen. It is only enqueued when hover previews are
+  switched on.
+- Keyboard parity: the card follows focus as well as the pointer.
+
+### Verified
+- The card resolves to four distinct positions across four rows, and sampling
+  the computed transform mid-flight shows intermediate values rather than a
+  jump, so the movement is genuinely animated.
+
+## 6.6.0
+
+### Changed
+- **The hover preview now follows the row being hovered.** It had been
+  positioned against the list itself with `top: 0`, so every preview appeared at
+  the top of the list no matter which row the pointer was on. The card read as a
+  static panel rather than a response to the row.
+- Each row is now the positioning context for its own preview, and the card is
+  centred on that row, so it appears to travel down the list as the pointer
+  moves. Short rows and wrapped two-line rows both centre cleanly.
+- The hover transition keeps the vertical centring: the reveal resolves only the
+  horizontal nudge, since resolving the whole transform would drop the card by
+  half its height as it faded in.
+
+### Verified
+- Measured across five rows in a browser: the card centre tracks each row
+  (75, 144, 213, 282, 351px) while its horizontal position stays fixed.
+- Checked at 1400, 1200 and 1024px that the card stays inside the viewport, and
+  that it correctly stands down below the breakpoint.
+
+## 6.5.0
+
+### Fixed
+- **The status archive printed raw HTML in its heading.** `index.php` passed
+  `get_the_archive_title()` through `esc_html()`, but that function returns
+  markup: WordPress wraps the name in its own `span`. The page rendered
+  `Archives: <span>Statuses</span>` as literal text. The status archive now gets
+  its own heading, and other archives strip the tags and re-wrap the label in
+  the theme's `.term` span so every archive header matches the category and tag
+  treatment.
+
+### Changed: statuses read as statuses
+- **A status row is no longer set as a title.** A status has no title, so the
+  row was rendering its whole text in the bold heading face, which is why the
+  archive looked like a list of very long headlines. Status text is now set in
+  the body face at reading size with a 62ch measure, so the archive reads the
+  way a timeline does and matches how a single status reads.
+- Single statuses get a `single-status` body class and a matching treatment: the
+  content takes the opening position, since there is no title to anchor it.
+
+### Added: microformats2
+The site federated but did not present itself as a Fediverse citizen. Parsers
+could find posts and not reliably attribute them.
+
+- **A representative `h-card` on the hero**, which already holds the name,
+  portrait, bio and profile links. Adds `p-name`, `p-note`, `u-photo`,
+  `p-job-title`, and a `u-url u-uid` home link so parsers can tie every post on
+  the domain to one identity.
+- **`h-entry` on every list row**, with `u-url` on the permalink,
+  `dt-published` on the date, `p-name` on titles and `p-name e-content` on
+  status text, which is both name and content for a title-less post.
+
+### Note
+- Caught during the change: a body-class edit was first applied to a function
+  that is not the registered `body_class` callback, which would have been a
+  silent no-op. Moved to `chrome_body_class()` in `inc/chrome.php` and verified
+  the class is actually emitted.
+
+## 6.4.0
+
+### Performance
+Measured against a PageSpeed Insights report scoring 79 desktop and 68 mobile.
+The theme-side opportunities are addressed here; the rest need server config,
+documented below.
+
+- **Fonts converted to WOFF2.** XCharter shipped as six OTF files and Special
+  Elite as a 147 KiB TTF. All are now WOFF2: 888 KiB down to 437 KiB, a 51 per
+  cent saving, with the originals removed. The `@font-face` builder already
+  derived its format hint from the file extension, so only the filenames in
+  `inc/defaults.php` changed. `font-display: swap` was already set.
+- **Portrait served as WebP.** The bundled default was a 165 KiB PNG rendered at
+  200px. It now ships as WebP at 200px and 359px (21 KiB at the larger size)
+  inside a `picture` element with the PNG as fallback, and the preload points at
+  the WebP rather than the PNG it would never paint. A portrait uploaded through
+  Theme Options is served unchanged, since the theme has no derivatives for it.
+- **CSS minified.** `tools/minify-css.js` emits `.min.css` beside each source;
+  `asset_css()` enqueues the minified build when present and the readable source
+  under `SCRIPT_DEBUG`. main.css goes from 51 KiB to 31 KiB.
+
+### Added
+- **`.htaccess.example`** with the server rules PageSpeed asked for and a theme
+  cannot set itself: compression, cache lifetimes, and the HSTS, COOP,
+  nosniff and referrer-policy headers flagged under Trust and Safety.
+
+### Not addressed here
+- Google Tag Manager (159 KiB, 66 KiB of it unused) and wikipedia-preview.js
+  (271 KiB, 59 KiB unused) are third-party and outside the theme.
+- Compression and cache headers must be applied at the server; see
+  `.htaccess.example`.
+
+## 6.3.0
+
+### Fixed (critical)
+- **Tabs loaded 10 seconds late.** The CSS hid tabs with
+  `.kolofon-wrap:not(.js-tabs)` and waited for footer JS to add the class. So
+  the entire page rendered as one long scrollable form, then snapped into tabs
+  when JS fired. The class is now rendered server-side in the PHP, so tabs show
+  on first paint. The JS handles switching between them.
+- **Four Fediverse front-end controls were missing from the options schema.**
+  They had defaults and sanitisers but no field registration, so they never
+  appeared on the tab. All four (show on blog, noindex, character limit, page
+  size) are now registered and visible.
+- **GamingTribe icon replaced.** It was a gamepad. Their actual identity is a
+  blocky angular G. Redrawn to match.
+
+### Changed
+- **Tabs merged from 9 to 6.** Appearance (4 fields) absorbed into Identity
+  (now 10). Sections (5) absorbed into Layout (now 17). System (0) absorbed
+  into Advanced (still 8). Social, Fediverse and Documentation are unchanged.
+  The tab bar now fits on one line.
+- **Options page widened from 900px to 1200px** so the form uses the available
+  space instead of leaving a third of the screen empty.
+
+### Note
+- 55 option keys unchanged; only the tab assignments and the schema moved.
+
+## 6.2.0
+
+### Added
+- **Three social platforms: Goodreads, LibraryThing and GamingTribe.** Each
+  gets a field on the Social tab, a `sameAs` entry in the Person schema, and an
+  icon in the header, footer and sidebar wherever social links are shown.
+- Placed after Pinterest and before Email and RSS, so the two reading services
+  sit together and the utility links stay last.
+- Icons are inline SVG on the same 24x24 grid as the existing set, using
+  `currentColor` so they take the scheme accent. GamingTribe uses a gamepad
+  rather than a borrowed brand mark, since it reads at 24px and carries no
+  trademark risk.
+
+### Note
+- 52 option keys to 55, 13 platforms to 16. Only the registry and the defaults
+  needed editing: the sanitiser map and the schema fields both iterate the
+  registry, so they picked the new entries up automatically.
+- Verified each icon actually paints rather than merely parsing as XML. A first
+  measurement reported GamingTribe as blank, which turned out to be wrong
+  sampling coordinates rather than a broken path; measuring the real element
+  positions showed all three render.
+
+## 6.1.1
+
+### Fixed (critical)
+- **Enabling the microblog caused a fatal error on the front page.** The merged
+  classes read their configuration through `Plugin::get_setting()`, but
+  `class-plugin.php` was not among the files carried over in 5.8.0. Eight call
+  sites across four classes referenced the missing class, including a
+  `pre_get_posts` filter that runs on every home-page and feed request.
+- A `Plugin` shim now provides that API, backed by Kolofon's own options rather
+  than the plugin's settings row, so everything stays configured in one place.
+  It is written for the theme rather than carried over, because the original
+  also owned the plugin bootstrap and its own settings screens.
+
+### Added: front-end controls for statuses
+Four settings on the Fediverse tab decide where statuses appear:
+
+- **Show statuses on the blog** (default off). Mixes statuses into the main post
+  list and the RSS feed. Left off, statuses stay on their own archive at
+  `/statuses/` and the existing blog is untouched.
+- **Hide statuses from search engines** (default off). Adds a noindex header to
+  the status archive. Statuses still federate.
+- **Status length limit** (default 500, the Mastodon convention).
+- **Statuses per timeline page** (default 20).
+
+The tab now states that switching the microblog on changes nothing about
+existing pages until one of these is changed.
+
+### Note
+- 48 option keys to 52. The values not surfaced, image support, colour scheme
+  and density, stay at the upstream defaults in the shim.
+
+## 6.1.0
+
+### Added
+- **Step-by-step guidance on the Fediverse tab.** The two switches were there
+  from 5.8.0 but nothing explained the order or what each one produces. An intro
+  card now lists the four steps, ticks off the ones already done, and greys out
+  the ones still waiting, so the state of the setup is readable at a glance.
+- The card states plainly that the switches are independent: the microblog runs
+  on its own, and federating without it sends nothing.
+
+### Changed
+- **The timeline shortcode is now `[kolofon_microblog]`.** It shipped as
+  `[xfedi_microblog]`, leaking the pre-merge plugin name into the theme's user
+  interface. The old name is retained as an alias, matching how
+  `[kolofon_tags]` keeps `[menj_tags]`, so any content already using it keeps
+  working.
+- `docs/guides/readme.md` documents both switches, the handle, and the
+  deferral to the standalone plugin when it is active.
+
+### Note
+- Step state uses a tick and weight as well as colour, so it survives a
+  colour-blind reader and forced-colors.
+
+## 6.0.1
+
+### Fixed (critical)
+- **Switching federation on never ran the engine's activation routine**, so the
+  bundled engine would have loaded and then quietly failed to federate.
+- The bundled copy maps upstream's activation hook to `after_switch_theme`, but
+  neither that nor plugin activation happens at the right moment: the theme is
+  normally activated with federation off, so `after_switch_theme` has long since
+  fired by the time the toggle is flipped. `Activitypub::activate()` was
+  therefore never called, which meant `flush_rewrite_rules()` never ran and the
+  Actor and WebFinger endpoints had no rewrite rules to resolve against, and
+  `Scheduler::register_schedules()` never ran so nothing was ever delivered.
+- Activation now runs on `init` the first time the engine loads after being
+  switched on, keyed on the engine version so it repeats after an engine update
+  changes the rules. Switching federation off clears the marker and flushes the
+  rules again, so toggling back on re-activates cleanly.
+
+### Note
+- Found by tracing the activation sequence rather than by testing, since the
+  failure is silent: everything loads, nothing federates.
+
+## 6.0.0
+
+### Added: the ActivityPub engine is bundled
+Federation now needs no plugins at all. Both the microblog (5.8.0) and the
+protocol engine ship inside the theme; one toggle on the Fediverse tab turns
+the whole thing on.
+
+- **ActivityPub 9.2.0 bundled** at `inc/activitypub/`, 275 files, providing
+  WebFinger, NodeInfo, the Actor endpoint, the inbox, HTTP signatures and key
+  management.
+- **Loaded only when switched on.** `fediverse_enabled` gates the require, so a
+  site not federating never touches any of those files.
+- **Defers to the standalone plugin.** If the ActivityPub plugin is active the
+  bundled copy stands down, so the namespace is never declared twice.
+
+### Three adaptations were needed, all in one file
+- **Paths.** The four `ACTIVITYPUB_PLUGIN_*` constants derive from the theme
+  directory. `ACTIVITYPUB_BUNDLED_IN_THEME` marks the context.
+- **Lifecycle.** `register_activation_hook` and `register_deactivation_hook`
+  become `after_switch_theme` and `switch_theme`. The uninstall hook is
+  deliberately not wired: removing a theme must not destroy actor keys or the
+  follower list.
+- **Load order, which was a hard blocker.** Upstream defers `plugin_init()` to
+  `plugins_loaded`, but a theme loads at `after_setup_theme`, after that hook
+  has already fired, so the callback would never have run and the engine would
+  have been silently inert. Verified: before the fix the engine registered 0
+  `init` actions, after it 25. It now calls `plugin_init()` directly when
+  bundled.
+
+### Fixed
+- Guarded the `wp-admin/includes/plugin.php` include behind a readability check
+  with an `active_plugins` fallback; it fataled `admin_init` in the boot
+  harness.
+
+### Trade-offs accepted
+- **The theme is no longer suitable for WordPress.org submission.** Plugin
+  territory in a theme is an explicit rejection criterion. This was accepted
+  deliberately; the readme.txt and tag compliance from 4.7.0 remain but are now
+  moot for the directory.
+- **Security patches must be hand-ported.** 21 of the bundled files handle keys,
+  signatures and inbox verification. `LICENSE.microblog` documents the three
+  adaptations and the update procedure. Only `activitypub.php` was modified, so
+  a future update is a diff of one file.
+- **Theme size grows to roughly 6.8 MB.**
+
+### Note
+- Boot passes, PHPCS clean on all theme code, every bundled file lints.
+
+## 5.9.0
+
+### Added: Fediverse identity panel
+- **There is no registration step, and the tab now says so.** A site running
+  ActivityPub is its own Fediverse server. The handle is the account name joined
+  to this site's own domain, confirmed against the plugin source, which builds
+  it as the preferred username plus the `home_url()` host. Nobody issues it and
+  there is no account to create.
+- The tab shows **the handle to share**, so a reader can paste it into Mastodon
+  and follow, and links to this site's own WebFinger endpoint as a live
+  discovery test.
+- **A readiness check** covers the five things that actually stop federation
+  working: the ActivityPub plugin being active, HTTPS, pretty permalinks (the
+  discovery endpoints need rewrite rules), search-engine visibility, and a
+  publicly reachable host. Each reports a state and a plain reason.
+- Status is carried by a dot plus wording rather than colour alone, and the dot
+  takes a border under forced-colors.
+
+### Fixed
+- Guarded `wp_get_current_user()` and `is_ssl()` behind `function_exists()`.
+  Both fataled the options render in the boot harness, the same defect class as
+  the `wp_get_theme()` fix in 5.6.0. The gate caught both before release.
+
+### Note
+- 48 option keys, unchanged: the panel is a read-only field type, not a setting.
+
+## 5.8.0
+
+### Added: microblog merged into the theme, with a Fediverse tab
+- **XFedi Microblog 1.0.0 is now part of the theme.** Its status post type,
+  composer, timeline, REST routes and ActivityPub bridge live in
+  `inc/microblog/`, so short statuses work with no microblog plugin installed.
+  The plugin's own settings screens and its companion-reader bridge were left
+  behind; configuration moved to a new **Fediverse** tab.
+- **Two toggles.** `microblog_enabled` turns the status post type on;
+  `fediverse_enabled` hands statuses to ActivityPub as Notes. Federation stands
+  down automatically when the ActivityPub plugin is absent, and the toggle's
+  help text says so rather than implying a connection that is not there.
+- The module stands down entirely if the standalone XFedi plugin is also
+  active, so the post type is never registered twice.
+
+### Fixed
+- **Statuses rendered as empty rows.** The status post type declares `supports`
+  without `title`, and Kolofon's list markup called `the_title()`
+  unconditionally, so a status produced `<span class="post-title"></span>` and
+  the row showed nothing but a date. List rows now lead with the status text
+  for title-less posts. Single status views take a dated heading, since
+  `the_title()` suppresses its own wrapper when empty and the page would
+  otherwise have no heading at all.
+
+### Deliberately not merged
+- **The ActivityPub protocol.** Federation needs WebFinger, NodeInfo, an Actor
+  endpoint, an inbox, RSA keys and HTTP signature verification: 275 files and
+  72,490 lines, 21 of them handling keys and signatures. Bundling it would mean
+  maintaining a private fork of security-critical code and hand-porting every
+  upstream patch, and would put plugin-territory functionality in a theme.
+  Kolofon detects the plugin and hands it the statuses instead.
+
+### Attribution
+- `LICENSE.microblog` records the bundled XFedi code and its GPL-2.0-or-later
+  licence; the root `LICENSE` references it. Carried-over files keep their
+  original headers and namespace.
+
+### Note
+- 46 option keys to 48. Boot passes, PHPCS clean on all changed theme files.
+
 ## 5.7.0
 
 ### Added: automated design and standards audit

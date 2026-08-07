@@ -274,6 +274,44 @@ the_content and hidden on screen, so they are real, styleable elements rather
 than fragile CSS-generated content. Nothing is added to the screen layout or the
 accessibility tree.
 
+### Microblog and the Fediverse
+
+Two switches on the **Fediverse** tab, both off by default and independent of
+each other.
+
+**Microblog** adds a Statuses post type for short, title-less posts, a Post
+status button in the toolbar, and the `[kolofon_microblog]` shortcode for
+showing a timeline on any page. Statuses carry no title by design, so list views
+lead with their text and single views take a dated heading. This is the XFedi
+Microblog codebase merged into the theme; no plugin is required.
+
+**Federate statuses** loads the bundled ActivityPub engine, generates your
+keypair and opens your Actor, inbox and WebFinger endpoints. Your handle is the
+account name joined to this site's domain. There is nothing to register: a site
+running ActivityPub is its own Fediverse server. The tab shows the handle and
+checks the five conditions that actually stop federation working, HTTPS and
+pretty permalinks among them.
+
+Turning federation on runs the engine's activation once, flushing rewrite rules
+and registering the delivery schedules. Left off, none of the engine's files are
+loaded.
+
+Where statuses appear on the front end is controlled from the same tab:
+
+| Setting | Default | Effect |
+| --- | --- | --- |
+| Show statuses on the blog | off | Mixes statuses into the main post list and the RSS feed. Off, they stay on their own archive at `/statuses/`. |
+| Hide statuses from search engines | off | Adds a noindex header to the status archive. They still federate. |
+| Status length limit | 500 | Characters allowed in the composer. |
+| Statuses per timeline page | 20 | How many the shortcode shows at a time. |
+
+Switching the microblog on therefore changes nothing about existing pages until
+one of these is changed. Individual statuses are always readable at their own
+permalink, and the archive at `/statuses/` always exists.
+
+If the standalone ActivityPub plugin is active, the theme defers to it and uses
+the plugin's engine rather than the bundled copy.
+
 ### Search
 
 Search works without any configuration: WordPress's native search, a results
