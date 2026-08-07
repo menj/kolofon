@@ -1,0 +1,115 @@
+/* XFedi Microblog admin */
+
+.xfedi-mb-wrap .nav-tab-wrapper {
+	margin-bottom: 20px;
+}
+
+.xfedi-mb-wrap .xfedi-mb-tab-body {
+	max-width: 900px;
+}
+
+.xfmb-status-card {
+	background: #ffffff;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	padding: 16px 20px;
+	margin-bottom: 20px;
+}
+
+.xfmb-status-card h3 {
+	margin-top: 0;
+	margin-bottom: 8px;
+	font-size: 14px;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: #50575e;
+}
+
+.xfmb-ok {
+	color: #2b7a2b;
+}
+
+.xfmb-warn {
+	color: #b26b00;
+}
+
+.xfmb-ok .dashicons,
+.xfmb-warn .dashicons {
+	vertical-align: text-bottom;
+	margin-right: 4px;
+}
+
+.xfmb-scheme-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+	gap: 12px;
+	max-width: 720px;
+}
+
+.xfmb-scheme-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 12px;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	cursor: pointer;
+	background: #ffffff;
+}
+
+.xfmb-scheme-card:has(input:checked) {
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1;
+}
+
+.xfmb-scheme-card input {
+	margin-bottom: 8px;
+}
+
+.xfmb-scheme-swatches {
+	display: flex;
+	gap: 4px;
+	margin-bottom: 8px;
+}
+
+.xfmb-scheme-swatches span {
+	width: 24px;
+	height: 24px;
+	border-radius: 4px;
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	display: block;
+}
+
+.xfmb-scheme-name {
+	font-size: 13px;
+	color: #1d2327;
+}
+
+.xfmb-about-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 16px;
+}
+
+.xfmb-companion-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.xfmb-companion-list li {
+	padding: 4px 0;
+}
+
+.xfmb-companion-list .dashicons {
+	vertical-align: text-bottom;
+	margin-right: 6px;
+}
+
+.xfmb-companion-list .dashicons-yes-alt {
+	color: #2b7a2b;
+}
+
+.xfmb-companion-list .dashicons-marker {
+	color: #999999;
+}

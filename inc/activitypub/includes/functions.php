@@ -1,0 +1,457 @@
+<?php
+/**
+ * Functions file.
+ *
+ * General utility functions for the ActivityPub plugin.
+ *
+ * @package Activitypub
+ */
+
+namespace Activitypub;
+
+/**
+ * Get the ActivityPub ID for a WordPress object.
+ *
+ * Returns the canonical ActivityPub URI for a WP_Post or WP_Comment.
+ *
+ * @param \WP_Post|\WP_Comment $wp_object The WordPress post or comment.
+ *
+ * @return string|null The ActivityPub ID (a URL), or null if unsupported type.
+ */
+function get_object_id( $wp_object ) {
+	if ( $wp_object instanceof \WP_Post ) {
+		return get_post_id( $wp_object->ID );
+	}
+
+	if ( $wp_object instanceof \WP_Comment ) {
+		return get_comment_id( $wp_object );
+	}
+
+	return null;
+}
+
+/**
+ * Convert a string from camelCase to snake_case.
+ *
+ * @param string $input The string to convert.
+ *
+ * @return string The converted string.
+ */
+function camel_to_snake_case( $input ) {
+	return \strtolower( \preg_replace( '/(?<!^)[A-Z]/', '_$0', $input ) );
+}
+
+/**
+ * Convert a string from snake_case to camelCase.
+ *
+ * @param string $input The string to convert.
+ *
+ * @return string The converted string.
+ */
+function snake_to_camel_case( $input ) {
+	return \lcfirst( \str_replace( '_', '', \ucwords( $input, '_' ) ) );
+}
+
+/**
+ * Convert seconds to ISO 8601 duration format.
+ *
+ * @param int $seconds The duration in seconds.
+ *
+ * @return string The duration in ISO 8601 format (e.g., "PT1H23M45S").
+ */
+function seconds_to_iso8601( $seconds ) {
+	$seconds = (int) $seconds;
+
+	if ( $seconds <= 0 ) {
+		return 'PT0S';
+	}
+
+	$hours   = \floor( $seconds / 3600 );
+	$minutes = \floor( ( $seconds % 3600 ) / 60 );
+	$secs    = $seconds % 60;
+
+	$duration = 'PT';
+
+	if ( $hours > 0 ) {
+		$duration .= $hours . 'H';
+	}
+
+	if ( $minutes > 0 ) {
+		$duration .= $minutes . 'M';
+	}
+
+	if ( $secs > 0 || ( 0 === $hours && 0 === $minutes ) ) {
+		$duration .= $secs . 'S';
+	}
+
+	return $duration;
+}
+
+/**
+ * Check if a site supports the block editor.
+ *
+ * @return boolean True if the site supports the block editor, false otherwise.
+ */
+function site_supports_blocks() {
+	/**
+	 * Allow plugins to disable block editor support,
+	 * thus disabling blocks registered by the ActivityPub plugin.
+	 *
+	 * @param boolean $supports_blocks True if the site supports the block editor, false otherwise.
+	 */
+	return \apply_filters( 'activitypub_site_supports_blocks', true );
+}
+
+/**
+ * Get the icon Image object for site-wide ActivityPub actors.
+ *
+ * Tries the site icon first, then the custom logo, and falls back to the
+ * bundled WordPress logo.
+ *
+ * @since 9.1.0
+ *
+ * @return array The icon array with 'type' and 'url'.
+ */
+function site_icon() {
+	// Try site icon first.
+	$icon_id = \get_option( 'site_icon' );
+
+	// Try custom logo second.
+	if ( ! $icon_id ) {
+		$icon_id = \get_theme_mod( 'custom_logo' );
+	}
+
+	$icon_url = false;
+
+	if ( $icon_id ) {
+		$icon = \wp_get_attachment_image_src( $icon_id, 'full' );
+		if ( $icon ) {
+			$icon_url = $icon[0];
+		}
+	}
+
+	if ( ! $icon_url ) {
+		// Fallback to default icon.
+		$icon_url = \plugins_url( '/assets/img/wp-logo.png', ACTIVITYPUB_PLUGIN_FILE );
+	}
+
+	return array(
+		'type' => 'Image',
+		'url'  => \esc_url_raw( $icon_url ),
+	);
+}
+
+/**
+ * Check whether a blog is public based on the `blog_public` option.
+ *
+ * @return bool True if public, false if not
+ */
+function is_blog_public() {
+	/**
+	 * Filter whether the blog is public.
+	 *
+	 * @param bool $public Whether the blog is public.
+	 */
+	return (bool) \apply_filters( 'activitypub_is_blog_public', \get_option( 'blog_public', 1 ) );
+}
+
+/**
+ * Get the masked WordPress version to only show the major and minor version.
+ *
+ * @return string The masked version.
+ */
+function get_masked_wp_version() {
+	// Only show the major and minor version.
+	$version = \get_bloginfo( 'version' );
+	// Strip the RC or beta part.
+	$version = \preg_replace( '/-.*$/', '', $version );
+	$version = \explode( '.', $version );
+	$version = \array_slice( $version, 0, 2 );
+
+	return \implode( '.', $version );
+}
+
+/**
+ * Check if a plugin is active, loading plugin.php if necessary.
+ *
+ * This is a wrapper around the core is_plugin_active() function that ensures
+ * the function is available by loading wp-admin/includes/plugin.php if needed.
+ * This is useful when checking plugin status outside of the admin context.
+ *
+ * @param string $plugin Plugin basename (e.g., 'plugin-folder/plugin-file.php').
+ *
+ * @return bool True if the plugin is active, false otherwise.
+ */
+function is_plugin_active( $plugin ) {
+	// Include plugin.php if not already loaded (needed for core is_plugin_active).
+	if ( ! \function_exists( 'is_plugin_active' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
+	return \is_plugin_active( $plugin );
+}
+
+/**
+ * Returns the website hosts allowed to credit this blog.
+ *
+ * @return array|null The attribution domains or null if not found.
+ */
+function get_attribution_domains() {
+	if ( '1' !== \get_option( 'activitypub_use_opengraph', '1' ) ) {
+		return null;
+	}
+
+	$domains = \get_option( 'activitypub_attribution_domains', home_host() );
+	$domains = \explode( PHP_EOL, $domains );
+
+	if ( ! $domains ) {
+		$domains = null;
+	}
+
+	return $domains;
+}
+
+/**
+ * Change the display of large numbers on the site.
+ *
+ * @author Jeremy Herve
+ *
+ * @see https://wordpress.org/support/topic/abbreviate-numbers-with-k/
+ *
+ * @param string $formatted Converted number in string format.
+ * @param float  $number    The number to convert based on locale.
+ *
+ * @return string Converted number in string format.
+ */
+function custom_large_numbers( $formatted, $number ) {
+	global $wp_locale;
+
+	$decimals      = 0;
+	$decimal_point = '.';
+	$thousands_sep = ',';
+
+	if ( isset( $wp_locale ) ) {
+		$decimals      = (int) $wp_locale->number_format['decimal_point'];
+		$decimal_point = $wp_locale->number_format['decimal_point'];
+		$thousands_sep = $wp_locale->number_format['thousands_sep'];
+	}
+
+	if ( $number < 1000 ) { // Any number less than a Thousand.
+		return \number_format( $number, $decimals, $decimal_point, $thousands_sep );
+	} elseif ( $number < 1000000 ) { // Any number less than a million.
+		return \number_format( $number / 1000, $decimals, $decimal_point, $thousands_sep ) . 'K';
+	} elseif ( $number < 1000000000 ) { // Any number less than a billion.
+		return \number_format( $number / 1000000, $decimals, $decimal_point, $thousands_sep ) . 'M';
+	} else { // At least a billion.
+		return \number_format( $number / 1000000000, $decimals, $decimal_point, $thousands_sep ) . 'B';
+	}
+}
+
+/**
+ * Escapes a Tag, to be used as a hashtag.
+ *
+ * @param string $input The string to escape.
+ *
+ * @return string The escaped hashtag.
+ */
+function esc_hashtag( $input ) {
+	$hashtag = \wp_specialchars_decode( $input, ENT_QUOTES );
+	// Remove all characters that are not letters, numbers, or hyphens.
+	$hashtag = \preg_replace( '/[^\p{L}\p{Nd}-]+/u', '-', $hashtag );
+
+	// Capitalize every letter that is preceded by a hyphen.
+	$hashtag = \preg_replace_callback(
+		'/-+(.)/',
+		static function ( $matches ) {
+			return \strtoupper( $matches[1] );
+		},
+		$hashtag
+	);
+
+	// Add a hashtag to the beginning of the string.
+	$hashtag = \ltrim( $hashtag, '#' );
+	$hashtag = \trim( $hashtag, '-' );
+	$hashtag = '#' . $hashtag;
+
+	/**
+	 * Allow defining your own custom hashtag generation rules.
+	 *
+	 * @param string $hashtag The hashtag to be returned.
+	 * @param string $input   The original string.
+	 */
+	$hashtag = \apply_filters( 'activitypub_esc_hashtag', $hashtag, $input );
+
+	return \esc_html( $hashtag );
+}
+
+/**
+ * Replace content with links, mentions or hashtags by Regex callback and not affect protected tags.
+ *
+ * @param string   $content        The content that should be changed.
+ * @param string   $regex          The regex to use.
+ * @param callable $regex_callback Callback for replacement logic.
+ *
+ * @return string The content with links, mentions, hashtags, etc.
+ */
+function enrich_content_data( $content, $regex, $regex_callback ) {
+	// Small protection against execution timeouts: limit to 1 MB.
+	if ( \mb_strlen( $content ) > MB_IN_BYTES ) {
+		return $content;
+	}
+	$tag_stack          = array();
+	$protected_tags     = array(
+		'pre',
+		'code',
+		'textarea',
+		'style',
+		'a',
+	);
+	$content_with_links = '';
+	$in_protected_tag   = false;
+	foreach ( \wp_html_split( $content ) as $chunk ) {
+		if ( \preg_match( '#^<!--[\s\S]*-->$#i', $chunk, $m ) ) {
+			$content_with_links .= $chunk;
+			continue;
+		}
+
+		if ( \preg_match( '#^<(/)?([a-z-]+)\b[^>]*>$#i', $chunk, $m ) ) {
+			$tag = \strtolower( $m[2] );
+			if ( '/' === $m[1] ) {
+				// Closing tag.
+				$i = \array_search( $tag, $tag_stack, true );
+				// We can only remove the tag from the stack if it is in the stack.
+				if ( false !== $i ) {
+					$tag_stack = \array_slice( $tag_stack, 0, $i );
+				}
+			} else {
+				// Opening tag, add it to the stack.
+				$tag_stack[] = $tag;
+			}
+
+			// If we're in a protected tag, the tag_stack contains at least one protected tag string.
+			// The protected tag state can only change when we encounter a start or end tag.
+			$in_protected_tag = \array_intersect( $tag_stack, $protected_tags );
+
+			// Never inspect tags.
+			$content_with_links .= $chunk;
+			continue;
+		}
+
+		if ( $in_protected_tag ) {
+			// Don't inspect a chunk inside an inspected tag.
+			$content_with_links .= $chunk;
+			continue;
+		}
+
+		// Only reachable when there is no protected tag in the stack.
+		$content_with_links .= \preg_replace_callback( $regex, $regex_callback, $chunk );
+	}
+
+	return $content_with_links;
+}
+
+/**
+ * Get an ActivityPub embed HTML for a URL.
+ *
+ * @param string  $url        The URL to get the embed for.
+ * @param boolean $inline_css Whether to inline CSS. Default true.
+ *
+ * @return string|false The embed HTML or false if not found.
+ */
+function get_embed_html( $url, $inline_css = true ) {
+	return Embed::get_html( $url, $inline_css );
+}
+
+/**
+ * Get the client IP address for rate-limiting purposes.
+ *
+ * Walks the ordered list of $_SERVER keys returned by the
+ * `activitypub_client_ip_sources` filter (default: `['REMOTE_ADDR']`) and
+ * returns the first value that parses as a valid IP literal, validated via
+ * `filter_var( ..., FILTER_VALIDATE_IP )`. The result can be overridden
+ * outright via the `activitypub_client_ip` filter; that filter's output is
+ * also validated and replaced with `''` when it isn't a valid IP, so a
+ * misbehaving filter can't collide all callers into the same rate-limit
+ * bucket.
+ *
+ * Trusting any source other than `REMOTE_ADDR` is only safe behind a
+ * reverse proxy that sets and overwrites the corresponding header — see
+ * the `activitypub_client_ip_sources` filter docblock for guidance.
+ *
+ * Callers using the return value as a rate-limit key should treat an
+ * empty return as "client unidentifiable" and fail closed rather than
+ * share a single bucket across every such request.
+ *
+ * @since 8.1.0
+ *
+ * @return string A valid IP address, or '' when no IP could be determined.
+ */
+function get_client_ip() {
+	// phpcs:disable WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders
+	$ip = '';
+
+	/**
+	 * Filter the ordered list of $_SERVER keys to consult as a source for the
+	 * client IP. The first key whose value parses as a valid IP wins.
+	 *
+	 * Default: array( 'REMOTE_ADDR' ) — the actual TCP peer, the only value
+	 * that an HTTP client cannot spoof. Trusting any other $_SERVER key is
+	 * only safe when a reverse proxy in front of the site sets that key and
+	 * overwrites any client-supplied version; otherwise an attacker can spoof
+	 * the value and bypass the per-IP rate limits that depend on it.
+	 *
+	 * Common operator overrides:
+	 *   array( 'HTTP_CF_CONNECTING_IP' )                      on Cloudflare.
+	 *   array( 'HTTP_TRUE_CLIENT_IP', 'REMOTE_ADDR' )         Akamai with a fallback.
+	 *   array( 'HTTP_X_REAL_IP' )                             nginx that strips the client copy.
+	 *
+	 * X-Forwarded-For pitfall: even with a trusted proxy, an attacker can
+	 * prepend their own value before the proxy appends the real client IP.
+	 * This helper takes the leftmost entry, which is correct only when the
+	 * trusted proxy fully overwrites the header. If you trust X-Forwarded-For
+	 * end-to-end, prefer to resolve from the right by your known proxy count
+	 * via the activitypub_client_ip filter.
+	 *
+	 * @since 8.2.0
+	 *
+	 * @param string[] $sources $_SERVER keys to consult, in priority order.
+	 */
+	$sources = \apply_filters( 'activitypub_client_ip_sources', array( 'REMOTE_ADDR' ) );
+
+	if ( ! \is_array( $sources ) ) {
+		$sources = array( 'REMOTE_ADDR' );
+	}
+
+	foreach ( $sources as $source ) {
+		if ( ! \is_string( $source ) || empty( $_SERVER[ $source ] ) ) {
+			continue;
+		}
+
+		// Some headers (e.g. X-Forwarded-For) may contain a comma-separated list; use the first IP.
+		$ip_list   = \sanitize_text_field( \wp_unslash( $_SERVER[ $source ] ) );
+		$candidate = \trim( \explode( ',', $ip_list )[0] );
+
+		if ( \filter_var( $candidate, FILTER_VALIDATE_IP ) ) {
+			$ip = $candidate;
+			break;
+		}
+	}
+	// phpcs:enable WordPressVIPMinimum.Variables.ServerVariables.UserControlledHeaders
+
+	/**
+	 * Filter the client IP address used for rate limiting.
+	 *
+	 * @since 8.1.0
+	 *
+	 * @param string $ip The detected client IP address (empty when none could be determined).
+	 */
+	$ip = \apply_filters( 'activitypub_client_ip', $ip );
+
+	// Tolerate surrounding whitespace from filter callbacks; FILTER_VALIDATE_IP would otherwise reject it.
+	if ( \is_string( $ip ) ) {
+		$ip = \trim( $ip );
+	}
+
+	// Re-validate so a misbehaving filter can't return a sentinel string that would collapse all callers into one bucket.
+	return \is_string( $ip ) && \filter_var( $ip, FILTER_VALIDATE_IP ) ? $ip : '';
+}

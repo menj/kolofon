@@ -1,0 +1,428 @@
+<?php
+/**
+ * Followers_Controller file.
+ *
+ * @package Activitypub
+ */
+
+namespace Activitypub\Rest;
+
+use Activitypub\Activity\Base_Object;
+use Activitypub\Collection\Followers;
+use Activitypub\Collection\Remote_Actors;
+use Activitypub\Signature;
+
+use function Activitypub\get_masked_wp_version;
+use function Activitypub\get_rest_url_by_path;
+use function Activitypub\is_unsafe_ipv6_literal;
+use function Activitypub\maybe_set_no_store;
+
+/**
+ * Followers_Controller class.
+ *
+ * @author Matthias Pfefferle
+ *
+ * @see https://www.w3.org/TR/activitypub/#followers
+ */
+class Followers_Controller extends Actors_Controller {
+	use Collection;
+
+	/**
+	 * Register routes.
+	 */
+	public function register_routes() {
+		\register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/followers',
+			array(
+				'args'   => array(
+					'user_id' => array(
+						'description'       => 'The ID of the actor.',
+						'type'              => 'integer',
+						'required'          => true,
+						'validate_callback' => array( $this, 'validate_user_id' ),
+					),
+				),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_items' ),
+					'permission_callback' => array( $this, 'verify_signature' ),
+					'args'                => array(
+						'page'     => array(
+							'description' => 'Current page of the collection.',
+							'type'        => 'integer',
+							'minimum'     => 1,
+							// No default so we can differentiate between Collection and CollectionPage requests.
+						),
+						'per_page' => array(
+							'description' => 'Maximum number of items to be returned in result set.',
+							'type'        => 'integer',
+							'default'     => 20,
+							'minimum'     => 1,
+						),
+						'order'    => array(
+							'description' => 'Order sort attribute ascending or descending.',
+							'type'        => 'string',
+							'default'     => 'desc',
+							'enum'        => array( 'asc', 'desc' ),
+						),
+						'context'  => array(
+							'description' => 'The context in which the request is made.',
+							'type'        => 'string',
+							'default'     => 'simple',
+							'enum'        => array( 'simple', 'full' ),
+						),
+					),
+				),
+				'schema' => array( $this, 'get_item_schema' ),
+			)
+		);
+
+		// FEP-8fcf: Partial followers collection for synchronization.
+		\register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/followers/sync',
+			array(
+				'args' => array(
+					'user_id' => array(
+						'description'       => 'The ID of the actor.',
+						'type'              => 'integer',
+						'required'          => true,
+						'validate_callback' => array( $this, 'validate_user_id' ),
+					),
+				),
+				array(
+					'methods'             => \WP_REST_Server::READABLE,
+					'callback'            => array( $this, 'get_partial_followers' ),
+
+					/*
+					 * FEP-8fcf requires that the partial followers collection only be
+					 * disclosed to an authenticated peer. Force signature verification
+					 * even when Authorized Fetch is globally disabled.
+					 */
+					'permission_callback' => function ( $request ) {
+						return $this->verify_signature( $request, true );
+					},
+					'args'                => array(
+						'authority' => array(
+							'description'       => 'The host to filter followers by.',
+							'type'              => 'string',
+							'format'            => 'uri',
+							'pattern'           => '^https?://[^/]+$',
+							'required'          => true,
+							'validate_callback' => static function ( $param ) {
+								/*
+								 * Reject internal-address shapes early. The signer-host check
+								 * downstream already enforces authority matching the verified
+								 * peer; this just keeps obviously-internal values from reaching
+								 * that code at all. Both places run the value through
+								 * self::normalize_host() so semantically equivalent hosts always
+								 * agree.
+								 *
+								 * Percent-decode the input first so encoded forms like
+								 * `https://%5B::1%5D` (bracketed IPv6 literal hidden inside
+								 * %5B/%5D) get checked against the same blocklist as the
+								 * unencoded equivalent. Use rawurldecode() rather than
+								 * urldecode() — the latter also turns `+` into a space, which
+								 * would corrupt otherwise-valid reg-name hosts.
+								 */
+								$decoded = \rawurldecode( (string) $param );
+								$host    = self::normalize_host( (string) \wp_parse_url( $decoded, PHP_URL_HOST ) );
+								if ( '' === $host ) {
+									return false;
+								}
+
+								if ( \filter_var( $host, FILTER_VALIDATE_IP ) ) {
+									if ( is_unsafe_ipv6_literal( $host ) ) {
+										return false;
+									}
+
+									return (bool) \filter_var( $host, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE );
+								}
+
+								if ( 'localhost' === $host ) {
+									return false;
+								}
+
+								return ! \str_ends_with( $host, '.localhost' )
+									&& ! \str_ends_with( $host, '.local' );
+							},
+						),
+						'page'      => array(
+							'description' => 'Current page of the collection.',
+							'type'        => 'integer',
+							'minimum'     => 1,
+							// No default so we can differentiate between Collection and CollectionPage requests.
+						),
+						'per_page'  => array(
+							'description' => 'Maximum number of items to be returned in result set.',
+							'type'        => 'integer',
+							'default'     => 20,
+							'minimum'     => 1,
+						),
+						'order'     => array(
+							'description' => 'Order sort attribute ascending or descending.',
+							'type'        => 'string',
+							'default'     => 'desc',
+							'enum'        => array( 'asc', 'desc' ),
+						),
+					),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Retrieves followers list.
+	 *
+	 * @param \WP_REST_Request $request Full details about the request.
+	 * @return \WP_REST_Response|\WP_Error Response object on success, or WP_Error object on failure.
+	 */
+	public function get_items( $request ) {
+		$user_id = $request->get_param( 'user_id' );
+
+		/**
+		 * Action triggered prior to the ActivityPub profile being created and sent to the client.
+		 */
+		\do_action( 'activitypub_rest_followers_pre' );
+
+		$order    = $request->get_param( 'order' );
+		$per_page = $request->get_param( 'per_page' );
+		$page     = $request->get_param( 'page' ) ?? 1;
+		$context  = $request->get_param( 'context' );
+
+		$data = Followers::query( $user_id, $per_page, $page, array( 'order' => \ucwords( $order ) ) );
+
+		$response = array(
+			'id'         => get_rest_url_by_path( \sprintf( 'actors/%d/followers', $user_id ) ),
+			'generator'  => 'https://wordpress.org/?v=' . get_masked_wp_version(),
+			'type'       => 'OrderedCollection',
+			'totalItems' => $data['total'],
+		);
+
+		if ( 'full' === $context ) {
+			// Ensure the context is the first element in the response.
+			$response = array( '@context' => Base_Object::JSON_LD_CONTEXT ) + $response;
+		}
+
+		if ( $this->show_social_graph( $request ) ) {
+			$response['orderedItems'] = \array_filter(
+				\array_map(
+					static function ( $item ) use ( $context ) {
+						if ( 'full' === $context ) {
+							$actor = Remote_Actors::get_actor( $item );
+							if ( \is_wp_error( $actor ) ) {
+								return false;
+							}
+							return $actor->to_array( false );
+						}
+						return $item->guid;
+					},
+					$data['followers']
+				)
+			);
+		}
+
+		$response = $this->prepare_collection_response( $response, $request );
+		if ( \is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$response = \rest_ensure_response( $response );
+		$response->header( 'Content-Type', 'application/activity+json; charset=' . \get_option( 'blog_charset' ) );
+
+		return $response;
+	}
+
+	/**
+	 * Retrieves partial followers list for FEP-8fcf synchronization.
+	 *
+	 * Returns only followers whose ID shares the specified URI authority.
+	 *
+	 * @param \WP_REST_Request $request Full details about the request.
+	 * @return \WP_REST_Response|\WP_Error Response object on success, or WP_Error object on failure.
+	 */
+	public function get_partial_followers( $request ) {
+		$user_id = $request->get_param( 'user_id' );
+
+		/*
+		 * Decode the percent-encoded authority once and use the canonical form
+		 * everywhere downstream. The route accepts authorities whose host has
+		 * percent-encoded octets (RFC 3986 reg-name), so the signer-host
+		 * check, the inbox LIKE query in Followers::get_by_authority(), and
+		 * the response `id` all need to agree on one canonical string. Mixing
+		 * raw and decoded forms would let a request pass the authority match
+		 * yet return an empty follower set, because stored inbox URLs are
+		 * unencoded.
+		 */
+		$authority = \rawurldecode( (string) $request->get_param( 'authority' ) );
+
+		/*
+		 * FEP-8fcf: the responding server MUST ensure the requested authority
+		 * matches the signing peer, so that instances cannot "get tricked
+		 * into requesting the followers list of a third-party individual".
+		 *
+		 * Derive the signer host from the keyId that the verifier actually
+		 * checked (Signature::get_key_id() mirrors the verifier's header
+		 * choice and returns null when several labels make the choice
+		 * ambiguous). Re-parsing the raw headers here would diverge from the
+		 * verified key: a request can carry an RFC 9421 Signature-Input plus a
+		 * Signature header padded with an unrelated keyId, letting an attacker
+		 * sign with their own key yet steer a naive parser at a third-party host.
+		 */
+		$key_id      = Signature::get_key_id( $request );
+		$signer_host = $key_id ? self::normalize_host( (string) \wp_parse_url( $key_id, \PHP_URL_HOST ) ) : '';
+		$asked_host  = self::normalize_host( (string) \wp_parse_url( $authority, \PHP_URL_HOST ) );
+
+		if ( ! $signer_host || ! $asked_host || $signer_host !== $asked_host ) {
+			return new \WP_Error(
+				'activitypub_authority_mismatch',
+				\__( 'The authority parameter must match the signing peer.', 'activitypub' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		$followers = Followers::get_by_authority( $user_id, $authority );
+		$followers = \wp_list_pluck( $followers, 'guid' );
+
+		$response = array(
+			'id'           => get_rest_url_by_path(
+				\sprintf(
+					'actors/%d/followers/sync?authority=%s',
+					$user_id,
+					\rawurlencode( $authority )
+				)
+			),
+			'type'         => 'OrderedCollection',
+			'totalItems'   => \count( $followers ),
+			'orderedItems' => $followers,
+		);
+
+		$response = $this->prepare_collection_response( $response, $request );
+
+		if ( \is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$response = \rest_ensure_response( $response );
+		$response->header( 'Content-Type', 'application/activity+json; charset=' . \get_option( 'blog_charset' ) );
+
+		/*
+		 * This partial collection is disclosed only to the signing peer, whatever the global Authorized
+		 * Fetch setting, so it must never be stored by a shared cache and served to another caller.
+		 */
+		maybe_set_no_store( $response );
+
+		return $response;
+	}
+
+	/**
+	 * Normalize a host so comparisons are consistent.
+	 *
+	 * Lowercases, strips IPv6 brackets, and trims a single FQDN trailing
+	 * dot. Used by both the validate_callback for the `authority` arg and
+	 * the signer-host comparison in get_partial_followers() so semantically
+	 * equivalent host strings always match.
+	 *
+	 * @param string $host Raw host string.
+	 * @return string Normalized host.
+	 */
+	private static function normalize_host( $host ) {
+		$host = \strtolower( (string) $host );
+		$host = \trim( $host, '[]' );
+		return \rtrim( $host, '.' );
+	}
+
+	/**
+	 * Retrieves the followers schema, conforming to JSON Schema.
+	 *
+	 * @return array Item schema data.
+	 */
+	public function get_item_schema() {
+		if ( $this->schema ) {
+			return $this->add_additional_fields_schema( $this->schema );
+		}
+
+		// Define the schema for items in the followers collection.
+		$item_schema = array(
+			'oneOf' => array(
+				array(
+					'type'   => 'string',
+					'format' => 'uri',
+				),
+				array(
+					'type'       => 'object',
+					'properties' => array(
+						'id'                => array(
+							'type'   => 'string',
+							'format' => 'uri',
+						),
+						'type'              => array(
+							'type' => 'string',
+						),
+						'name'              => array(
+							'type' => 'string',
+						),
+						'icon'              => array(
+							'type'       => 'object',
+							'properties' => array(
+								'type'      => array(
+									'type' => 'string',
+								),
+								'mediaType' => array(
+									'type' => 'string',
+								),
+								'url'       => array(
+									'type'   => 'string',
+									'format' => 'uri',
+								),
+							),
+						),
+						'published'         => array(
+							'type'   => 'string',
+							'format' => 'date-time',
+						),
+						'summary'           => array(
+							'type' => 'string',
+						),
+						'updated'           => array(
+							'type'   => 'string',
+							'format' => 'date-time',
+						),
+						'url'               => array(
+							'type'   => 'string',
+							'format' => 'uri',
+						),
+						'streams'           => array(
+							'type' => 'array',
+						),
+						'preferredUsername' => array(
+							'type' => 'string',
+						),
+					),
+				),
+			),
+		);
+
+		$schema = $this->get_collection_schema( $item_schema );
+
+		// Add followers-specific properties.
+		$schema['title']                   = 'followers';
+		$schema['properties']['actor']     = array(
+			'description' => 'The actor who owns the followers collection.',
+			'type'        => 'string',
+			'format'      => 'uri',
+			'readonly'    => true,
+		);
+		$schema['properties']['generator'] = array(
+			'description' => 'The generator of the followers collection.',
+			'type'        => 'string',
+			'format'      => 'uri',
+			'readonly'    => true,
+		);
+
+		$this->schema = $schema;
+
+		return $this->add_additional_fields_schema( $this->schema );
+	}
+}

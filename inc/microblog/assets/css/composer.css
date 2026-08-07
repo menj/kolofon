@@ -1,0 +1,109 @@
+/* XFedi Microblog composer */
+
+.xfmb-composer-panel {
+	position: fixed;
+	right: 24px;
+	bottom: 24px;
+	z-index: 99999;
+	width: min(420px, calc(100vw - 32px));
+	background: #ffffff;
+	color: #111111;
+	border: 1px solid #e6e6e2;
+	border-radius: 10px;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	display: none;
+}
+
+.xfmb-composer-panel.is-open {
+	display: block;
+}
+
+.xfmb-composer-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 16px;
+	border-bottom: 1px solid #e6e6e2;
+	font-weight: 600;
+}
+
+.xfmb-composer-close {
+	background: none;
+	border: 0;
+	cursor: pointer;
+	font-size: 20px;
+	color: #6b6b68;
+	line-height: 1;
+}
+
+.xfmb-composer-body {
+	padding: 14px 16px;
+}
+
+.xfmb-composer-textarea {
+	width: 100%;
+	min-height: 96px;
+	padding: 10px;
+	border: 1px solid #d8d8d3;
+	border-radius: 6px;
+	font: inherit;
+	resize: vertical;
+	box-sizing: border-box;
+}
+
+.xfmb-composer-foot {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 16px 14px;
+}
+
+.xfmb-composer-counter {
+	font-size: 12px;
+	color: #6b6b68;
+}
+
+.xfmb-composer-counter.is-over {
+	color: #b3261e;
+	font-weight: 600;
+}
+
+.xfmb-composer-submit {
+	background: #111111;
+	color: #ffffff;
+	border: 0;
+	padding: 8px 18px;
+	border-radius: 999px;
+	cursor: pointer;
+	font-weight: 600;
+	font-size: 14px;
+}
+
+.xfmb-composer-submit:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.xfmb-composer-message {
+	padding: 8px 16px;
+	font-size: 13px;
+	border-top: 1px solid #f2f2ee;
+}
+
+.xfmb-composer-message.is-error {
+	color: #b3261e;
+}
+
+.xfmb-composer-message.is-success {
+	color: #2b7a2b;
+}
+
+@media (max-width: 600px) {
+	.xfmb-composer-panel {
+		right: 12px;
+		left: 12px;
+		bottom: 12px;
+		width: auto;
+	}
+}
