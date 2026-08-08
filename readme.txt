@@ -5,7 +5,7 @@ Theme URI: https://github.com/menj/kolofon
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 7.2.3
+Stable tag: 7.3.0
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: blog, one-column, custom-colors, custom-menu, editor-style, featured-images, translation-ready
@@ -80,6 +80,9 @@ Special Elite font, (C) Astigmatic, Apache License 2.0.
 Font licenses are included alongside the fonts in `assets/fonts/`.
 
 == Changelog ==
+
+= 7.3.0 =
+* Ships a SHA-256 manifest and a verifier, so a security scanner's \"possible backdoor\" warning can be answered in one command.
 
 = 7.2.3 =
 * Author URI set to https://menj.blog, and stale menj.bio references updated.
