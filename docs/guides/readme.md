@@ -1,7 +1,7 @@
 # Kolofon
 
 Modernist, minimalist WordPress theme for the personal writer's microsite at
-[menj.bio](https://menj.bio/). Source: [github.com/menj/kolofon](https://github.com/menj/kolofon).
+[menj.blog](https://menj.blog/). Source: [github.com/menj/kolofon](https://github.com/menj/kolofon).
 
 - Classic PHP templates with hybrid block-editor support (`theme.json`, block
   patterns, block styles)

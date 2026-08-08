@@ -1,10 +1,11 @@
 === Kolofon ===
 
 Contributors: menj
+Theme URI: https://github.com/menj/kolofon
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 7.1.0
+Stable tag: 7.2.3
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: blog, one-column, custom-colors, custom-menu, editor-style, featured-images, translation-ready
@@ -63,7 +64,7 @@ Yes. All strings use the `kolofon` text domain, and a `languages/kolofon.pot` te
 
 == Copyright ==
 
-Kolofon WordPress Theme, (C) 2026 Mohd Elfie Nieshaem Juferi.
+Kolofon WordPress Theme, (C) 2026 MENJ.
 Kolofon is distributed under the terms of the GNU GPL version 2 or later.
 
 This theme is a fork of the Chris Wiegman Theme, version 12.7.0, which is licensed under the GNU GPL version 2 or later. See docs/reference/changelog.md for the fork history and full attribution.
@@ -79,6 +80,18 @@ Special Elite font, (C) Astigmatic, Apache License 2.0.
 Font licenses are included alongside the fonts in `assets/fonts/`.
 
 == Changelog ==
+
+= 7.2.3 =
+* Author URI set to https://menj.blog, and stale menj.bio references updated.
+
+= 7.2.2 =
+* Theme author is recorded as MENJ.
+
+= 7.2.1 =
+* Theme URI recorded in readme.txt and LICENSE.md, and a stale documentation path in the theme description corrected.
+
+= 7.2.0 =
+* Added a live endpoint test that fetches your own WebFinger and actor and reports whether federation actually works.
 
 = 7.1.0 =
 * Your Fediverse handle is now a Theme Options setting, defaulting to the short form @you@yourdomain instead of repeating the domain.

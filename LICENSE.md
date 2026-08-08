@@ -4,7 +4,8 @@ Kolofon is free software released under the **GNU General Public License,
 version 2 or later**.
 
     Kolofon WordPress Theme
-    Copyright (C) 2026 Mohd Elfie Nieshaem Juferi
+    https://github.com/menj/kolofon
+    Copyright (C) 2026 MENJ
 
     This program is free software; you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by the Free
@@ -23,8 +24,7 @@ The full text of the GPL version 2 is reproduced at the end of this file.
 Portions are derived from the Chris Wiegman Theme v12.7.0, copyright Chris
 Wiegman. See `docs/reference/changelog.md` for the fork history and delta.
 
-The microblog is derived from **XFedi Microblog 1.0.0**, copyright MENJ,
-GPL-2.0-or-later. Its status post type, composer, timeline, REST routes and
+The microblog is derived from **XFedi Microblog 1.0.0**, copyright MENJ, GPL-2.0-or-later. Its status post type, composer, timeline, REST routes and
 ActivityPub bridge were carried into `inc/microblog/`; the plugin's own
 settings screens and its companion-reader bridge were not. Configuration lives
 on the Fediverse tab of Theme Options instead. As of 7.0.0 the code is

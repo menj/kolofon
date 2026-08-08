@@ -209,7 +209,7 @@ portrait. Not the post-oriented apparatus Rodolfo carries.
 
 **Non-negotiable.** Port `rodolfo_seo_plugin_active()` alongside it. It detects
 Yoast, Rank Math, AIOSEO, SEOPress, and The SEO Framework and stands down.
-menj.bio runs Rank Math, so shipping without the guard means duplicate tags on
+menj.blog runs Rank Math, so shipping without the guard means duplicate tags on
 day one.
 
 *Effort: medium. Blast radius: front-end head output only.*
@@ -524,7 +524,7 @@ modules load in order, all 70 hook callbacks are callable, the activation hook
 fires clean, every field type renders, and the 50-key sanitiser round-trips
 with none lost. What the harness cannot prove is behaviour against a real
 database, a real query, and a real REST server, because it fakes all three.
-These need a live install on menj.bio, activated against WordPress 6.7.
+These need a live install on menj.blog, activated against WordPress 6.7.
 
 1. **Confirm the core pages render on a live install.** Home, blog index,
    a single post, a single page, a category archive, a tag archive, search

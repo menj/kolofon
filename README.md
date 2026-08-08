@@ -1,7 +1,7 @@
 # Kolofon
 
 Modernist, minimalist WordPress theme for the personal writer's microsite at
-[menj.bio](https://menj.bio/).
+[menj.blog](https://menj.blog/).
 
 - Classic PHP templates with hybrid block-editor support
 - Tabbed Theme Options with eight tabs (Identity, Sections, Social,

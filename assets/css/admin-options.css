@@ -690,3 +690,12 @@
 	line-height: 1.55;
 	color: var(--kolofon-muted);
 }
+
+.kolofon-fedi-livetitle {
+	margin: 1.5rem 0 0.5rem;
+	font-size: 0.75rem;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--kolofon-accent-deep);
+}

@@ -567,3 +567,120 @@ function sync_fediverse_profile_mode() {
 	}
 }
 add_action( 'init', __NAMESPACE__ . '\\sync_fediverse_profile_mode', 26 );
+
+/**
+ * Fetch this site's own Fediverse endpoints and validate the responses.
+ *
+ * Everything else on the tab is inferred from options, which proves only that
+ * the settings look right. This makes real HTTP requests to the endpoints a
+ * remote server would use and checks the payloads, so a pass means discovery
+ * genuinely works rather than that it ought to.
+ *
+ * Runs on demand, never on page load, because it costs three network round
+ * trips against the site itself.
+ *
+ * @return array<int, array{label:string,ok:bool,note:string}>
+ */
+function fediverse_live_test() {
+	$identity = fediverse_identity();
+	$handle   = isset( $identity['handle'] ) ? $identity['handle'] : '';
+	$results  = array();
+
+	if ( '' === $handle ) {
+		return array(
+			array(
+				'label' => __( 'Handle', 'kolofon' ),
+				'ok'    => false,
+				'note'  => __( 'No profile is published. Switch on "Federate statuses" first.', 'kolofon' ),
+			),
+		);
+	}
+
+	$args = array(
+		'timeout'     => 10,
+		'redirection' => 3,
+		'headers'     => array( 'Accept' => 'application/activity+json, application/ld+json, application/json' ),
+	);
+
+	// 1. WebFinger: how every remote server turns a handle into an actor URL.
+	$wf_url  = home_url( '/.well-known/webfinger?resource=acct:' . rawurlencode( $handle ) );
+	$wf      = wp_remote_get( $wf_url, $args );
+	$actor   = '';
+
+	if ( is_wp_error( $wf ) ) {
+		$results[] = array(
+			'label' => __( 'WebFinger', 'kolofon' ),
+			'ok'    => false,
+			/* translators: %s: error message */
+			'note'  => sprintf( __( 'Request failed: %s', 'kolofon' ), $wf->get_error_message() ),
+		);
+	} else {
+		$code = (int) wp_remote_retrieve_response_code( $wf );
+		$body = json_decode( wp_remote_retrieve_body( $wf ), true );
+
+		if ( 200 !== $code ) {
+			$results[] = array(
+				'label' => __( 'WebFinger', 'kolofon' ),
+				'ok'    => false,
+				/* translators: %d: HTTP status code */
+				'note'  => sprintf( __( 'Returned HTTP %d. Visit Settings then Permalinks once to rebuild the rewrite rules.', 'kolofon' ), $code ),
+			);
+		} elseif ( ! is_array( $body ) || empty( $body['links'] ) ) {
+			$results[] = array(
+				'label' => __( 'WebFinger', 'kolofon' ),
+				'ok'    => false,
+				'note'  => __( 'Responded, but not with the expected JSON. Something else is answering this URL.', 'kolofon' ),
+			);
+		} else {
+			foreach ( (array) $body['links'] as $link ) {
+				if ( isset( $link['rel'], $link['href'] ) && 'self' === $link['rel'] ) {
+					$actor = (string) $link['href'];
+					break;
+				}
+			}
+			$results[] = array(
+				'label' => __( 'WebFinger', 'kolofon' ),
+				'ok'    => '' !== $actor,
+				'note'  => '' !== $actor
+					? __( 'Resolves, and points at an actor. This is the lookup Mastodon performs when someone searches your handle.', 'kolofon' )
+					: __( 'Resolves, but carries no self link, so no actor can be found.', 'kolofon' ),
+			);
+		}
+	}
+
+	// 2. The actor document itself.
+	if ( '' !== $actor ) {
+		$res = wp_remote_get( $actor, $args );
+
+		if ( is_wp_error( $res ) ) {
+			$results[] = array(
+				'label' => __( 'Actor', 'kolofon' ),
+				'ok'    => false,
+				/* translators: %s: error message */
+				'note'  => sprintf( __( 'Request failed: %s', 'kolofon' ), $res->get_error_message() ),
+			);
+		} else {
+			$body  = json_decode( wp_remote_retrieve_body( $res ), true );
+			$inbox = is_array( $body ) && ! empty( $body['inbox'] ) ? $body['inbox'] : '';
+			$key   = is_array( $body ) && ! empty( $body['publicKey']['publicKeyPem'] );
+
+			$results[] = array(
+				'label' => __( 'Actor document', 'kolofon' ),
+				'ok'    => '' !== $inbox,
+				'note'  => '' !== $inbox
+					? __( 'Serves a profile with an inbox, which is where replies and follows arrive.', 'kolofon' )
+					: __( 'Served, but without an inbox, so nothing can be delivered to you.', 'kolofon' ),
+			);
+
+			$results[] = array(
+				'label' => __( 'Signing key', 'kolofon' ),
+				'ok'    => $key,
+				'note'  => $key
+					? __( 'A public key is published, so remote servers can verify what you send.', 'kolofon' )
+					: __( 'No public key found. Deliveries will be rejected as unverifiable.', 'kolofon' ),
+			);
+		}
+	}
+
+	return $results;
+}

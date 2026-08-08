@@ -493,6 +493,31 @@ function render_field( $args ) {
 			}
 			echo '</ul>';
 
+			// The live test runs only when asked, since it costs three network
+			// round trips. Everything above it is inferred from settings; this
+			// is the part that proves a remote server can actually reach you.
+			$run_live = isset( $_GET['kolofon_fedi_test'] ) && check_admin_referer( 'kolofon_fedi_test' );
+
+			if ( $run_live ) {
+				echo '<h3 class="kolofon-fedi-livetitle">' . esc_html__( 'Live endpoint test', 'kolofon' ) . '</h3>';
+				echo '<ul class="kolofon-fedi-checks">';
+				foreach ( \Kolofon\fediverse_live_test() as $check ) {
+					printf(
+						'<li class="%1$s"><span class="kolofon-fedi-dot" aria-hidden="true"></span><span class="kolofon-fedi-label">%2$s</span> <span class="kolofon-fedi-note">%3$s</span></li>',
+						$check['ok'] ? 'is-ok' : 'is-bad',
+						esc_html( $check['label'] ),
+						esc_html( $check['note'] )
+					);
+				}
+				echo '</ul>';
+			} else {
+				printf(
+					'<p><a class="button button-secondary" href="%1$s">%2$s</a></p>',
+					esc_url( wp_nonce_url( add_query_arg( 'kolofon_fedi_test', '1' ), 'kolofon_fedi_test' ) ),
+					esc_html__( 'Run live endpoint test', 'kolofon' )
+				);
+			}
+
 			if ( '' !== $identity['handle'] ) {
 				printf(
 					'<p class="description"><a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a></p>',

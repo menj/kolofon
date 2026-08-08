@@ -1,5 +1,84 @@
 # Changelog
 
+## 7.2.3
+
+### Changed
+- **`Author URI` is now `https://menj.blog`.** It pointed at the GitHub profile,
+  which is the source repository rather than the author's own site. `Theme URI`
+  and `Update URI` still point at the repository, which is correct: they are
+  where the theme lives, while `Author URI` is where the author does.
+- **Stale `menj.bio` references updated.** The site moved to `menj.blog`, but
+  `README.md`, `docs/guides/readme.md`, `docs/guides/upgrading.md` and the e2e
+  test README still named the old domain. All now point at `menj.blog`.
+  Historical changelog entries keep the old domain, since they record what was
+  true at the time.
+
+### Note
+- Metadata and documentation only.
+
+## 7.2.2
+
+### Changed
+- **The theme author is MENJ.** The `Author` header in `style.css`, the
+  copyright line in `readme.txt`, and the copyright notice in `LICENSE.md` all
+  record it. `Author URI` already pointed at `github.com/menj`, and `readme.txt`
+  already listed `menj` as the contributor, so the metadata is now consistent.
+
+### Deliberately unchanged
+- `hero_heading` and `footer_text` in `inc/defaults.php` still carry the full
+  name. Those are the site's default content, the name shown in the hero and the
+  copyright line printed on the front end, rather than theme authorship.
+  Changing them would rename the site owner on their own front end, which is a
+  different thing from crediting the theme.
+
+## 7.2.1
+
+### Changed
+- **The theme URI is now recorded everywhere it is read.** `style.css` already
+  carried `Theme URI` and `Update URI`; `readme.txt` had no `Theme URI` header
+  at all, and `LICENSE.md` identified the theme without naming its source. Both
+  now point at `https://github.com/menj/kolofon`.
+- **Corrected a stale path in the theme description.** It pointed at
+  `docs/changelog.md`, which moved to `docs/reference/changelog.md` in the 4.9.2
+  documentation reorganisation, and now also names `LICENSE.md` for attribution.
+  That description is what WordPress shows on the Themes screen, so the broken
+  reference was visible to anyone reading it.
+
+### Verified
+- Every occurrence of the repository URL across `style.css`, `readme.txt`,
+  `LICENSE.md`, `README.md`, `inc/docs.php` and `docs/reference/ssot.md` uses
+  the same form with no trailing-slash or scheme variants. The only other
+  variants are `/releases` links, which are correct.
+- Both paths named in the description exist in the built package.
+
+## 7.2.0
+
+### Added: a live endpoint test
+Every check on the Fediverse tab until now was inferred from options: HTTPS is
+on, permalinks are set, the engine is loaded. All of that proves the settings
+look right and none of it proves a remote server can reach you. This closes
+that gap.
+
+- **"Run live endpoint test"** makes real HTTP requests to the site's own
+  endpoints and validates the payloads:
+  1. **WebFinger** for the published handle, checking it returns 200 with a
+     `self` link, which is the exact lookup Mastodon performs on a search.
+  2. **The actor document** at that link, checking it carries an `inbox`, which
+     is where follows and replies are delivered.
+  3. **The signing key**, checking a `publicKeyPem` is published, without which
+     remote servers reject deliveries as unverifiable.
+- Failures name the cause and the fix rather than reporting a bare error: a 404
+  on WebFinger says to visit Settings then Permalinks to rebuild the rewrite
+  rules, which is the usual reason.
+- Runs only when the button is pressed, since it costs three network round
+  trips, and is nonce-protected.
+- Verified against simulated healthy, 404 and missing-key responses; each is
+  distinguished correctly.
+
+### Note
+- This is diagnosis, not proof of delivery. A remote server following you and
+  receiving a post is the only complete test, and the tab now says so.
+
 ## 7.1.0
 
 ### Added: choose your Fediverse handle from Theme Options
