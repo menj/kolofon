@@ -15,6 +15,18 @@ Two steps, both quick.
 1. **Load any admin page once.** Migrations run on `init` and are each gated on
    their own one-shot flag, so this is all they need. As of 7.0.0 that includes
    moving statuses to the renamed post type.
+2. **Verify the files match the release:**
+
+   ```
+   cd wp-content/themes/kolofon
+   php tools/verify-checksums.php
+   ```
+
+   A clean result exits 0. Anything else names the files involved. This is also
+   the answer to a security scanner reporting theme files as "modified more
+   recently than wp-config.php", which it will do after every update and which
+   says nothing about tampering either way. See the Verifying file integrity
+   section in `readme.md`.
 
 If the Fediverse is switched on, visit Settings then Permalinks once after an
 update that changes rewrite rules, then use the live endpoint test on the

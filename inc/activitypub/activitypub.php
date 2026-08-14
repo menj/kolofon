@@ -25,9 +25,9 @@ namespace Activitypub;
  * codebase needs to know the difference.
  */
 \define( 'ACTIVITYPUB_PLUGIN_DIR', trailingslashit( __DIR__ ) );
-\define( 'ACTIVITYPUB_PLUGIN_BASENAME', \basename( \get_template_directory() ) . '/vendor/activitypub/activitypub.php' );
+\define( 'ACTIVITYPUB_PLUGIN_BASENAME', 'kolofon/inc/activitypub/activitypub.php' );
 \define( 'ACTIVITYPUB_PLUGIN_FILE', ACTIVITYPUB_PLUGIN_DIR . basename( __FILE__ ) );
-\define( 'ACTIVITYPUB_PLUGIN_URL', \get_template_directory_uri() . '/vendor/activitypub/' );
+\define( 'ACTIVITYPUB_PLUGIN_URL', \get_template_directory_uri() . '/inc/activitypub/' );
 \define( 'ACTIVITYPUB_BUNDLED_IN_THEME', true );
 
 require_once __DIR__ . '/includes/class-autoloader.php';

@@ -1,42 +1,5 @@
 # Changelog
 
-## 7.3.1.1
-
-### Changed
-The bundled ActivityPub engine was living under `inc/`, next to the theme's own
-feature code, which misrepresented it. `inc/` is first-party; the engine is
-vendored third-party code the theme consumes and replaces wholesale on update.
-
-- **`inc/activitypub/` moved to `vendor/activitypub/`,** alongside Parsedown,
-  where vendored dependencies belong. All 275 engine files relocated unchanged.
-- **`ACTIVITYPUB_PLUGIN_BASENAME` no longer hardcodes the `kolofon/` slug.** It
-  derives from `basename( get_template_directory() )`, matching how the URL and
-  directory constants beside it already resolve, so a folder rename or a
-  GitHub-zip install as `kolofon-master/` no longer desyncs it.
-- **`ACTIVITYPUB_PLUGIN_URL` and the loader `require` in `inc/microblog.php`**
-  updated to the new path. No engine source was edited beyond these constants.
-- **`languages/kolofon.pot`** `Project-Id-Version` corrected from the stale
-  `Kolofon 4.0.1` to `7.3.1.1`. The move changed no translatable strings, so
-  the extraction date is unchanged.
-- **The file-integrity verifier and its manifest were removed.**
-  `tools/verify-checksums.php` and `checksums.sha256` shipped in 7.3.0 as a
-  command-line answer to security-scanner false positives, but running them
-  needs shell or cron access the target deployment does not have, and no party
-  needs to prove the theme untampered. With both gone the `tools/` directory no
-  longer ships. The scanner caveat itself (theme files carry a fresh install
-  timestamp; this is not tampering) is unchanged and simply no longer has a
-  tool attached.
-- **Docs brought along in the same pass:** `LICENSE.md` attribution paths,
-  the `docs/guides/readme.md` prose and directory tree, the removed integrity
-  section there and the post-update verify step in `docs/guides/upgrading.md`,
-  `docs/reference/ssot.md`, and the `admin-activitypub.css` header comment.
-- **Added `assets/.htaccess`** to set long cache lifetimes and enable
-  compression on static assets, answering two PageSpeed findings that are
-  HTTP-header level rather than code ("Use efficient cache lifetimes", "No
-  compression applied"). Every directive is `<IfModule>`-guarded, so it is a
-  safe no-op where a module is absent; it is Apache-only and does nothing on
-  nginx.
-
 ## 7.3.1
 
 ### Documentation

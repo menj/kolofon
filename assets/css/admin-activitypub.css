@@ -6,7 +6,7 @@
  * Only the pieces unique to these screens are here, so the two admin surfaces
  * cannot drift apart.
  *
- * Not one file under vendor/activitypub/ is touched: the plugin's own markup is
+ * Not one file under inc/activitypub/ is touched: the plugin's own markup is
  * restyled from the outside, so updating the engine stays a one-file diff.
  */
 
