@@ -5,7 +5,7 @@ Theme URI: https://github.com/menj/kolofon
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 7.3.0
+Stable tag: 7.3.1.1
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: blog, one-column, custom-colors, custom-menu, editor-style, featured-images, translation-ready
@@ -80,6 +80,14 @@ Special Elite font, (C) Astigmatic, Apache License 2.0.
 Font licenses are included alongside the fonts in `assets/fonts/`.
 
 == Changelog ==
+
+= 7.3.1.1 =
+* Bundled ActivityPub engine relocated from `inc/activitypub/` to `vendor/activitypub/`, alongside Parsedown, so vendored third-party code sits where it belongs. No engine files were modified; `ACTIVITYPUB_PLUGIN_BASENAME` and `ACTIVITYPUB_PLUGIN_URL` updated to the new path.
+* Removed the file-integrity verifier and its checksum manifest (`tools/`), which required shell or cron access to run and served no need for this deployment. Also fixed a stale version header in the translation template.
+* Added `assets/.htaccess` to cache static assets and enable compression on Apache hosts, addressing PageSpeed's cache-lifetime and compression findings. Module-guarded, so it is a safe no-op where unsupported.
+
+= 7.3.1 =
+* Documentation brought up to date: integrity verification, post-update steps, and a directory tree that matches what actually ships.
 
 = 7.3.0 =
 * Ships a SHA-256 manifest and a verifier, so a security scanner's \"possible backdoor\" warning can be answered in one command.

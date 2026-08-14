@@ -36,6 +36,7 @@ kolofon/
 ├── index.php                 Archive and search fallback
 ├── 404.php
 ├── searchform.php
+├── archive-kolofon_status.php  Status archive, matching the blog page layout
 ├── screenshot.png
 ├── inc/
 │   ├── defaults.php       Single source of truth for defaults and presets
@@ -63,17 +64,26 @@ kolofon/
 │   ├── syndication.php    RSS feed featured images, fediverse:creator meta
 │   ├── migration-notice.php  Post-rename admin notice, one-shot
 │   ├── dynamic-css.php    Emits :root custom properties, dark-mode block
+│   ├── print-branding.php Print letterhead and MLA citation colophon
+│   ├── microblog.php      Microblog and Fediverse loader, identity panel, migrations
+│   ├── microblog/         Status post type, composer, timeline, REST, AP bridge
 │   └── blocks.php         Pattern category and block styles
 ├── assets/
+│   ├── .htaccess              Apache cache + compression headers for static assets
 │   ├── css/
-│   │   ├── main.css          Front end
-│   │   ├── editor.css        Block editor
-│   │   └── admin-options.css Options page
+│   │   ├── main.css             Front end
+│   │   ├── editor.css           Block editor
+│   │   ├── admin-base.css       Shared admin tokens and components
+│   │   ├── admin-options.css    Options page
+│   │   ├── admin-activitypub.css Bundled engine screens
+│   │   └── *.min.css            Built by tools/minify-css.js, served in preference
 │   ├── js/
 │   │   ├── nav-toggle.js     Collapsing navigation
 │   │   ├── keyboard-nav.js   Digit shortcuts for sidebar navigation
 │   │   ├── email-guard.js    Rebuilds obfuscated mailto links
 │   │   ├── single-section.js Single-choice categories in the block editor
+│   │   ├── hover-preview.js  Shared preview card that travels between rows
+│   │   ├── search-overlay.js Full-screen search
 │   │   └── admin-options.js  Tab widget, colour picker, media picker
 │   ├── img/
 │   │   ├── profile.png       Portrait, hero fallback
@@ -83,8 +93,6 @@ kolofon/
 │   └── fonts/
 │       ├── xcharter/         Bitstream Charter extended, 4 weights, opt-in via stack
 │       └── special-elite/    Typewriter face, 1 weight, opt-in via stack
-├── tests/
-│   └── e2e/                  Playwright smoke tests
 ├── languages/
 │   └── kolofon.pot          Translation template
 ├── patterns/
@@ -94,7 +102,8 @@ kolofon/
 │   ├── callout.php
 │   └── contact-block.php
 ├── vendor/
-│   └── parsedown/            Runtime dependency, MIT
+│   ├── parsedown/            Runtime dependency, MIT
+│   └── activitypub/          Bundled ActivityPub 9.2.0 engine, loaded only when enabled
 ├── docs/
 │   ├── guides/
 │   │   ├── readme.md
@@ -435,6 +444,6 @@ GNU General Public License v2 or later. See `LICENSE.md` in the theme root,
 which also records attribution and every bundled third-party component.
 
 Bundled components keep their own licence files where they sit
-(`vendor/parsedown/`, `assets/fonts/*/`, `inc/activitypub/`). Those must stay:
+(`vendor/parsedown/`, `assets/fonts/*/`, `vendor/activitypub/`). Those must stay:
 retaining the licence text is a condition of each grant, so removing them would
 put the theme outside the terms it is distributed under.

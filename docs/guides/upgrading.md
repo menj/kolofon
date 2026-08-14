@@ -8,6 +8,18 @@ Two rules govern everything below. `inc/defaults.php` stays the single source
 of truth, and existing option keys survive across versions. See `ssot.md` for
 the full contract.
 
+## After installing an update
+
+Two steps, both quick.
+
+1. **Load any admin page once.** Migrations run on `init` and are each gated on
+   their own one-shot flag, so this is all they need. As of 7.0.0 that includes
+   moving statuses to the renamed post type.
+
+If the Fediverse is switched on, visit Settings then Permalinks once after an
+update that changes rewrite rules, then use the live endpoint test on the
+Fediverse tab to confirm discovery still resolves.
+
 ## Status at a glance
 
 | Phase | Theme | State |
