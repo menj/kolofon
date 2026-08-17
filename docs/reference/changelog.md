@@ -1,5 +1,166 @@
 # Changelog
 
+## 7.3.7
+
+### Fixed
+`docs/guides/readme.md`'s directory tree was missing `inc/resilience.php`,
+added in 7.3.2. Added, next to `defaults.php` to match load order.
+
+## 7.3.6
+
+### Changed
+Resilience notice text shortened — both the classifier phrases and the
+summary sentence. Now reads e.g. "A footer script failed to load: a missing
+file. Not a theme issue — rest of the page is fine." Full message/file/line
+still available behind the technical-details toggle.
+
+## 7.3.5
+
+### Changed
+The resilience notice's plain-language summary previously varied only by
+which hook failed (`wp_head` vs `wp_footer`), not by what actually broke —
+a missing file and a broken function call read identically.
+
+- **Added `classify_guarded_hook_error( $class, $message )`,** which
+  pattern-matches the caught exception's class and message against known
+  failure shapes: missing/moved file (`failed opening required`, `failed to
+  open stream`), undefined function, undefined method or call on null,
+  missing dependency class, `TypeError`, `DivisionByZeroError` /
+  `ArithmeticError`, memory limit, and execution-time limit. Each gets its
+  own plain-language phrase; anything unmatched falls back to naming the
+  exception class rather than a fully generic sentence.
+- **`plain_language_guarded_hook_summary()`** now combines *where* (which
+  hook) with *what* (the classified failure) into one sentence, e.g. "a
+  script that was supposed to load near the bottom of the page didn't load
+  — a file it needed was missing or moved (a broken install or a failed
+  update)."
+- The exception's class name is now stored alongside hook/message/file/line
+  in the per-request failure record, so the classifier has it available at
+  render time without needing the original `\Throwable` object.
+- Documented in `ssot.md` invariant 10: a new failure pattern worth naming
+  gets a new branch in the classifier, not a rewrite of the fallback text.
+
+## 7.3.4
+
+### Changed
+The resilience notice was still styled with inline `style=""` attributes and
+arbitrary hex colours, unrelated to the theme's actual palette.
+
+- **Moved to `.kolofon-resilience-notice` in `assets/css/main.css`**, built
+  from the real front-end tokens (`--k-bg`, `--k-text`, `--k-accent`,
+  `--k-font-body`) instead of hardcoded `#1d1d1d` / `#f2c14e`.
+- **Every token carries a static CSS fallback**
+  (`var(--k-accent, #b8823c)` etc.) for a real edge case: `run_guarded_hook()`
+  wraps the *entire* `do_action()` call in a `try`/`catch`, so a fatal caught
+  inside `wp_head` aborts every callback still queued in that hook for the
+  rest of the request — including WordPress's own stylesheet printing and
+  Kolofon's own colour-token injection in `dynamic-css.php`. The notice has
+  to render correctly even when those tokens were never defined; the fallback
+  values make that true regardless of which hook failed.
+
+## 7.3.3
+
+### Changed
+The 7.3.2 resilience notice was still fundamentally a developer message —
+hook name, raw PHP exception text — shown to whichever admin happened to be
+logged in, technical or not.
+
+- **Leads with a plain-language sentence.** `wp_head` and `wp_footer` are
+  translated to "a script that was supposed to load near the top/bottom of
+  the page" so the summary reads as "heads up: [thing] failed to load
+  (likely a plugin problem, not this theme); the rest of the page loaded
+  fine and visitors won't notice — but it's worth fixing soon."
+- **Technical detail moved behind a `<details>`/`<summary>` toggle** labelled
+  "Technical details (visible only to admins)." No JavaScript required to
+  expand it; still gated on `manage_options` same as the rest of the notice.
+- Still visitor-invisible, still request-scoped, still logged to the PHP
+  error log in full regardless of whether anyone expands the toggle.
+
+## 7.3.2
+
+### Added
+A resilience module, `inc/resilience.php`, prompted directly by a real
+outage: a WP-Piwik / matomo-php-tracker missing-file fatal thrown inside a
+`wp_footer` callback took the whole front end down mid-render, since
+WordPress runs `wp_head` and `wp_footer` as a flat list of every active
+plugin's callbacks with no isolation between them.
+
+- **`\Kolofon\run_guarded_hook( $hook )`** replaces bare `wp_head()` /
+  `wp_footer()` calls in `header.php` and `footer.php`. It wraps `do_action()`
+  in a `try`/`catch` for `\Throwable` — since PHP 7, a missing-file fatal
+  throws an `\Error`, which implements `\Throwable` and is genuinely
+  catchable, unlike the older un-catchable fatals.
+- **On a caught failure:** the real error is written to the PHP error log
+  with the hook name, message, file, and line; the page continues rendering
+  normally for every visitor; and a small, dismissible-by-navigation notice
+  appears in the footer, visible only to logged-in `manage_options` users,
+  naming the hook and pointing at the error log.
+- **This is a safety net, not a fix.** The underlying plugin bug still needs
+  fixing; the module only stops one broken plugin from turning into a
+  site-wide critical error. Documented as hard invariant 10 in `ssot.md`.
+
+## 7.3.1.2
+
+### Changed
+Documentation only, no code changed. The Roadmap's Now-page entry in
+`docs/guides/upgrading.md` was written before the Microblog module existed
+and still described a compose-form-and-REST posting layer as open work.
+
+- **Entry retitled** from "The Now feature, second attempt" to "The Now page,
+  second attempt," since the feature was never one thing and only part of it
+  is still open.
+- **The inline-microblogging layer marked superseded.** The original design's
+  third layer — a front-end compose form posting through REST with a no-JS
+  fallback, publishing into a `now` category under a repurposed `status`
+  post-format — is now covered, better, by the Microblog module shipped
+  since: a dedicated status CPT, an admin-bar/front-end composer backed by
+  REST, a timeline view, and ActivityPub federation the old design never had.
+- **Remaining scope narrowed** to the two layers Microblog doesn't touch: the
+  free-form "Working on" prose block and the RSS-aggregated external activity
+  feed (Goodreads, a Threads bridge, one open slot) with manual entries for
+  feed-less platforms. The rebuild variants and lessons-inherited list were
+  trimmed to match — a rebuild reuses Microblog's composer and CPT rather
+  than re-implementing posting.
+- **`../specs/now-feature-spec.yml`** is now flagged as a historical record of
+  the original three-layer scope rather than the spec to build from.
+
+## 7.3.1.1
+
+### Changed
+The bundled ActivityPub engine was living under `inc/`, next to the theme's own
+feature code, which misrepresented it. `inc/` is first-party; the engine is
+vendored third-party code the theme consumes and replaces wholesale on update.
+
+- **`inc/activitypub/` moved to `vendor/activitypub/`,** alongside Parsedown,
+  where vendored dependencies belong. All 275 engine files relocated unchanged.
+- **`ACTIVITYPUB_PLUGIN_BASENAME` no longer hardcodes the `kolofon/` slug.** It
+  derives from `basename( get_template_directory() )`, matching how the URL and
+  directory constants beside it already resolve, so a folder rename or a
+  GitHub-zip install as `kolofon-master/` no longer desyncs it.
+- **`ACTIVITYPUB_PLUGIN_URL` and the loader `require` in `inc/microblog.php`**
+  updated to the new path. No engine source was edited beyond these constants.
+- **`languages/kolofon.pot`** `Project-Id-Version` corrected from the stale
+  `Kolofon 4.0.1` to `7.3.1.1`. The move changed no translatable strings, so
+  the extraction date is unchanged.
+- **The file-integrity verifier and its manifest were removed.**
+  `tools/verify-checksums.php` and `checksums.sha256` shipped in 7.3.0 as a
+  command-line answer to security-scanner false positives, but running them
+  needs shell or cron access the target deployment does not have, and no party
+  needs to prove the theme untampered. With both gone the `tools/` directory no
+  longer ships. The scanner caveat itself (theme files carry a fresh install
+  timestamp; this is not tampering) is unchanged and simply no longer has a
+  tool attached.
+- **Docs brought along in the same pass:** `LICENSE.md` attribution paths,
+  the `docs/guides/readme.md` prose and directory tree, the removed integrity
+  section there and the post-update verify step in `docs/guides/upgrading.md`,
+  `docs/reference/ssot.md`, and the `admin-activitypub.css` header comment.
+- **Added `assets/.htaccess`** to set long cache lifetimes and enable
+  compression on static assets, answering two PageSpeed findings that are
+  HTTP-header level rather than code ("Use efficient cache lifetimes", "No
+  compression applied"). Every directive is `<IfModule>`-guarded, so it is a
+  safe no-op where a module is absent; it is Apache-only and does nothing on
+  nginx.
+
 ## 7.3.1
 
 ### Documentation

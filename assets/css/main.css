@@ -1943,3 +1943,49 @@ a.k-email.is-resolved { cursor: auto; }
 		transition: opacity 0.18s ease;
 	}
 }
+
+/* Resilience notice (inc/resilience.php). Admin-only; uses the theme's own
+   colour tokens and body font so it reads as part of Kolofon, not a foreign
+   popup. Deliberately high z-index and fixed position — it must stay
+   visible even if the page that triggered it is otherwise broken. */
+.kolofon-resilience-notice {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 99999;
+	padding: 12px 16px;
+	background: color-mix( in srgb, var(--k-text, #1d1d1d) 92%, var(--k-bg, #fff) );
+	color: var(--k-bg, #fff);
+	border-top: 2px solid var(--k-accent, #b8823c);
+	font-family: var(--k-font-body, -apple-system, sans-serif);
+	font-size: 0.85rem;
+	line-height: 1.5;
+}
+
+.kolofon-resilience-notice p {
+	margin: 0 0 4px;
+}
+
+.kolofon-resilience-notice details {
+	margin: 0;
+}
+
+.kolofon-resilience-notice summary {
+	cursor: pointer;
+	color: var(--k-accent, #b8823c);
+	opacity: 0.9;
+}
+
+.kolofon-resilience-notice summary:hover {
+	opacity: 1;
+}
+
+.kolofon-resilience-notice details p {
+	margin: 6px 0 0;
+	opacity: 0.75;
+}
+
+.kolofon-resilience-notice code {
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}

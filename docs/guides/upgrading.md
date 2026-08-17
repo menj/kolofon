@@ -15,18 +15,6 @@ Two steps, both quick.
 1. **Load any admin page once.** Migrations run on `init` and are each gated on
    their own one-shot flag, so this is all they need. As of 7.0.0 that includes
    moving statuses to the renamed post type.
-2. **Verify the files match the release:**
-
-   ```
-   cd wp-content/themes/kolofon
-   php tools/verify-checksums.php
-   ```
-
-   A clean result exits 0. Anything else names the files involved. This is also
-   the answer to a security scanner reporting theme files as "modified more
-   recently than wp-config.php", which it will do after every update and which
-   says nothing about tampering either way. See the Verifying file integrity
-   section in `readme.md`.
 
 If the Fediverse is switched on, visit Settings then Permalinks once after an
 update that changes rewrite rules, then use the live endpoint test on the
@@ -623,7 +611,7 @@ These need a live install on menj.blog, activated against WordPress 6.7.
 - **The Now feature was removed entirely (was Priority 2).** The planned split
   of `inc/now.php` into four modules is moot: the feature is gone rather than
   reorganised. The removal is a sequencing decision, and the feature returns as
-  a planned enhancement: see **Roadmap, The Now feature, second attempt** for
+  a planned enhancement: see **Roadmap, The Now page, second attempt** for
   the rebuild variants and the lessons the next implementation inherits. At
   1,308 lines carrying five concerns it was the largest module
   in the theme and the only part that had never worked against a real database,
@@ -688,44 +676,59 @@ records what would be built, in which shape, and what the earlier attempt
 already settled, so a future implementation starts from lessons rather than
 from scratch.
 
-### The Now feature, second attempt
+### The Now page, second attempt
 
 Removed in 4.0.0 as a sequencing decision, not a verdict on the idea. The
-core features come first; a "what I'm doing now" surface remains a planned
-enhancement, and everything learned from the 3.4 to 3.11 implementation is
-recorded here so the next attempt inherits it. The full implementation
-contract (data model, entry schema, REST surface, caching strategy, CSS
-class inventory, lifecycle rules, porting notes) lives in machine-readable
-form at `../specs/now-feature-spec.yml`, written so the feature can be carried
-into a Kolofon rebuild, a companion plugin, or another theme entirely.
+core features came first; the free-form "working on" surface remains a
+planned enhancement, and everything learned from the 3.4 to 3.11
+implementation is recorded here so the next attempt inherits it. The full
+implementation contract for the original three-layer design (data model,
+entry schema, REST surface, caching strategy, CSS class inventory, lifecycle
+rules, porting notes) lives in machine-readable form at
+`../specs/now-feature-spec.yml`. Treat that file as a historical record of
+the full original scope, not as the spec to build from — see below.
 
-**What the feature was.** A `/now` page combining three layers: a free-form
-"Working on" section written as ordinary page content; an aggregated activity
-feed fetched from RSS sources (Goodreads, Threads through a bridge service,
-and one open slot) with an hourly transient cache backed by a thirty-day
-fallback copy; and manual entries, stored as page meta, for platforms without
-RSS (X, Instagram, Facebook). On top of that sat P2-style inline
-microblogging: a front-end compose form for the site owner, posting through a
-REST endpoint with a no-JavaScript form fallback, able to log an external
-link as a manual entry or publish a real post into a `now` category carrying
-the `status` format and excluded from the main blog. A stale-content noindex
-fired when the page went ninety days without an update.
+**Superseded since the removal: the microblogging layer.** The original
+design's third layer was P2-style inline microblogging: a front-end compose
+form for the site owner, posting through a REST endpoint with a
+no-JavaScript fallback, publishing a real post into a `now` category carrying
+a repurposed `status` post-format. The Microblog module (`inc/microblog.php`
+and `inc/microblog/`) shipped since and already covers this ground, better: a
+dedicated status post type instead of a category-plus-format workaround, an
+admin-bar and front-end composer backed by REST (`class-composer.php`), a
+timeline view (`class-timeline.php`), and — beyond anything the Now design
+had — ActivityPub federation (`class-activitypub-bridge.php`). Any rebuild
+that wants inline posting reuses Microblog's composer and CPT rather than
+re-implementing them; the microblogging variants in the old spec file are
+retired.
+
+**What remains open.** Two layers Microblog does not touch: the free-form
+"Working on" prose section written as ordinary page content, and an
+aggregated activity feed pulled from RSS sources (Goodreads, Threads through
+a bridge service, and one open slot) with an hourly transient cache backed by
+a thirty-day fallback copy, plus manual entries for platforms without RSS (X,
+Instagram, Facebook). This is a curation-of-external-activity concern, not a
+posting concern, and it's the entire remaining scope of a rebuild. A
+stale-content noindex fired when the page went ninety days without an
+update; that rule still applies to whatever rebuilds this.
 
 **Variants for the rebuild, in order of preference.**
 
 1. **A companion plugin, `kolofon-now`.** The strongest option and the one
-   the 3.11.0 structural review already recommended. The feature is behaviour
-   (fetching, caching, a REST API, query rules), and behaviour in a plugin
-   survives a theme switch, versions independently, and cannot bloat the
-   theme again. The theme's contribution reduces to a template and styles.
+   the 3.11.0 structural review already recommended. The remaining feature is
+   still behaviour (fetching, caching, a REST-or-cron pipeline), and
+   behaviour in a plugin survives a theme switch, versions independently, and
+   cannot bloat the theme again. The theme's contribution reduces to a
+   template and styles; the plugin's contribution reduces further now that
+   posting is Microblog's job, not this feature's.
 2. **Manual entries only.** The smallest useful slice: the page, the
    "Working on" prose, and hand-curated entries. No fetching, no cron, no
    external dependency. Could ship in-theme without repeating the 3.x
    sprawl, and the aggregation layer can arrive later as the plugin.
-3. **Full in-theme rebuild.** Only with the module split (`now-feed`,
-   `now-rest`, `now-meta`, `now-render`) from the first commit, and only
-   after the core theme is proven live. The 3.x attempt showed what happens
-   otherwise.
+3. **Full in-theme rebuild.** Only with a real module split for what's left
+   (feed fetch, meta storage, rendering — no REST or CPT layer needed, since
+   Microblog owns that now) from the first commit, and only after the core
+   theme is proven live. The 3.x attempt showed what happens otherwise.
 
 **Lessons the next attempt inherits.**
 

@@ -105,7 +105,7 @@ function boot_fediverse_engine() {
 		return;
 	}
 
-	$entry = KOLOFON_DIR . 'inc/activitypub/activitypub.php';
+	$entry = KOLOFON_DIR . 'vendor/activitypub/activitypub.php';
 	if ( ! is_readable( $entry ) ) {
 		return;
 	}
@@ -401,8 +401,8 @@ function fediverse_identity() {
  *
  * The engine ships inside the theme, so its settings pages should not look like
  * a separate product. This is done entirely from the outside with a stylesheet
- * and a body class: no file under inc/activitypub/ is touched, so updating the
- * engine stays a diff of a single file.
+ * and a body class: no file under vendor/activitypub/ is touched, so updating
+ * the engine stays a diff of a single file.
  *
  * @param string $hook Current admin page hook.
  */

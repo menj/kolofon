@@ -5,7 +5,7 @@ Theme URI: https://github.com/menj/kolofon
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 7.3.1
+Stable tag: 7.3.7
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: blog, one-column, custom-colors, custom-menu, editor-style, featured-images, translation-ready
@@ -80,6 +80,32 @@ Special Elite font, (C) Astigmatic, Apache License 2.0.
 Font licenses are included alongside the fonts in `assets/fonts/`.
 
 == Changelog ==
+
+= 7.3.7 =
+* `docs/guides/readme.md` directory tree was missing `inc/resilience.php`, added in 7.3.2. Added.
+
+= 7.3.6 =
+* Resilience notice shortened. Was a multi-clause sentence; now "A footer script failed to load: a missing file. Not a theme issue — rest of the page is fine." Technical details still behind the toggle.
+
+= 7.3.5 =
+* The resilience notice now names the actual failure instead of a generic sentence. `classify_guarded_hook_error()` pattern-matches the caught exception's class and message to identify a missing file, an undefined function or method, a missing dependency class, a `TypeError`, a memory or time limit — each with its own plain-language phrase — and falls back to naming the exception class for anything unmatched, rather than one catch-all message.
+
+= 7.3.4 =
+* Resilience notice moved out of inline styles into `.kolofon-resilience-notice` in `assets/css/main.css`, using the theme's actual colour tokens (`--k-bg`, `--k-text`, `--k-accent`, `--k-font-body`) instead of hardcoded hex values, so it looks like part of Kolofon rather than a foreign popup. Every token has a static fallback (e.g. `var(--k-accent, #b8823c)`), because a fatal caught inside `wp_head` itself skips every remaining `wp_head` callback in that request — including the colour-token injection in `dynamic-css.php` — so the notice must render correctly even when those tokens never got defined.
+
+= 7.3.3 =
+* The resilience notice from 7.3.2 now leads with a plain-language sentence ("a script that was supposed to load near the bottom of the page failed to load...") instead of the raw hook name and PHP error message. Still admin-only. The technical detail (hook, message, file, line) moved behind a native, no-JS `<details>` toggle labelled "Technical details" for anyone who wants it.
+
+= 7.3.2 =
+* Added a resilience module (`inc/resilience.php`). `wp_head` and `wp_footer` now run through `\Kolofon\run_guarded_hook()`, which catches any `\Throwable` a plugin's callback throws, logs it via `error_log()`, and lets the rest of the page finish rendering instead of dying with a site-wide critical error. Logged-in administrators see a small footer notice naming the failed hook; visitors see nothing but a normally-finished page. Prompted by a WP-Piwik / matomo-php-tracker missing-file fatal thrown during `wp_footer`.
+
+= 7.3.1.2 =
+* Documentation: the Now-page roadmap entry corrected. Its inline-microblogging layer (compose form, REST posting, status-format posts in a `now` category) is superseded by the Microblog module shipped since — a status CPT with its own composer, timeline, REST surface, and ActivityPub federation. The roadmap entry is retitled "The Now page, second attempt" and narrowed to the layers Microblog doesn't cover: the free-form working-on prose and the RSS-aggregated activity feed with manual entries. No code changed.
+
+= 7.3.1.1 =
+* Bundled ActivityPub engine relocated from `inc/activitypub/` to `vendor/activitypub/`, alongside Parsedown, so vendored third-party code sits where it belongs. No engine files were modified; `ACTIVITYPUB_PLUGIN_BASENAME` and `ACTIVITYPUB_PLUGIN_URL` updated to the new path.
+* Removed the file-integrity verifier and its checksum manifest (`tools/`), which required shell or cron access to run and served no need for this deployment. Also fixed a stale version header in the translation template.
+* Added `assets/.htaccess` to cache static assets and enable compression on Apache hosts, addressing PageSpeed's cache-lifetime and compression findings. Module-guarded, so it is a safe no-op where unsupported.
 
 = 7.3.1 =
 * Documentation brought up to date: integrity verification, post-update steps, and a directory tree that matches what actually ships.

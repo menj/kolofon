@@ -38,7 +38,7 @@ grants, not an administrative nicety.
 
 | Component | Licence | Licence file |
 | --- | --- | --- |
-| ActivityPub 9.2.0, by Matthias Pfefferle & Automattic | MIT | `inc/activitypub/LICENSE` |
+| ActivityPub 9.2.0, by Matthias Pfefferle & Automattic | MIT | `vendor/activitypub/LICENSE` |
 | Parsedown 1.8.0, by Emanuil Rusev | MIT | `vendor/parsedown/LICENSE.txt` |
 | XCharter, by Michael Sharpe, extending Bitstream Charter | Bitstream Charter free licence | `assets/fonts/xcharter/LICENSE.txt` |
 | Special Elite, by Astigmatic | Apache 2.0 | `assets/fonts/special-elite/LICENSE-Apache-2.0.txt` |
@@ -49,7 +49,7 @@ BITSTREAM CHARTER is a registered trademark of Bitstream Inc.
 
 The engine provides WebFinger, NodeInfo, the Actor endpoint, the inbox, HTTP
 signatures and key management. Three adaptations were made for theme context,
-all in `inc/activitypub/activitypub.php` and each marked in the source:
+all in `vendor/activitypub/activitypub.php` and each marked in the source:
 
 1. `ACTIVITYPUB_PLUGIN_DIR`, `_BASENAME`, `_FILE` and `_URL` derive from the
    theme directory rather than a plugin directory, and
