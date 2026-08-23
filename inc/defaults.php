@@ -89,6 +89,7 @@ function get_raw_defaults() {
 		'preview_size'           => 140,
 		'show_recent'            => 1,
 		'recent_count'           => 5,
+		'blog_per_page'          => 20,
 	);
 }
 

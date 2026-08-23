@@ -766,6 +766,89 @@ pre {
 }
 .page-index .year-group:first-child .year-heading { margin-top: 0; }
 
+/* ------- Blog Index ("ledger") -------
+   Distinct from the plain `.year-group`/`.year-heading` list above, which the
+   status archive still uses. This is a year-anchored numbered archive: a
+   sticky year numeral in a left rail, posts to the right as an indexed list.
+   All colours from the palette so it inherits scheme changes correctly. The
+   printed index number and the schema.org ItemList position are the same
+   integer (set in page-blog.php), so they cannot drift apart. */
+.ledger .year-block {
+	display: grid;
+	grid-template-columns: 140px 1fr;
+	align-items: start;
+	gap: 2rem;
+	padding: 2.5rem 0;
+	border-bottom: 1px solid var(--k-rule);
+}
+.ledger .year-block:first-child { padding-top: 0; }
+.ledger .year-block:last-child { border-bottom: 0; }
+.ledger .year-rail { margin: 0; }
+.ledger .year-num {
+	margin: 0;
+	font-family: var(--k-font-heading);
+	font-weight: 700;
+	font-size: 2.6rem;
+	line-height: 1;
+	color: var(--k-text);
+	letter-spacing: -0.01em;
+}
+.ledger .year-count {
+	display: block;
+	margin-top: 0.5rem;
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.72rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--k-muted);
+}
+.ledger .index-list { list-style: none; margin: 0; padding: 0; }
+.ledger .entry {
+	display: grid;
+	grid-template-columns: 2.2rem 1fr;
+	gap: 0.25rem 1rem;
+	padding: 1rem 0;
+	border-top: 1px solid var(--k-rule);
+}
+.ledger .entry:first-child { border-top: 0; padding-top: 0; }
+.ledger .entry-index {
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.8rem;
+	color: var(--k-muted);
+	padding-top: 0.2rem;
+}
+.ledger .entry-link { display: block; color: var(--k-text); border-bottom: 0; }
+.ledger .entry-meta {
+	display: flex;
+	align-items: baseline;
+	gap: 0.6rem;
+	margin-bottom: 0.2rem;
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+	font-size: 0.72rem;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: var(--k-muted);
+}
+.ledger .entry-section { color: var(--k-accent); }
+.ledger .entry-title {
+	display: block;
+	font-family: var(--k-font-heading);
+	font-size: 1.2rem;
+	line-height: 1.3;
+	color: var(--k-text);
+}
+.ledger .entry-link:hover .entry-title,
+.ledger .entry-link:focus-visible .entry-title { color: var(--k-accent); }
+
+@media (min-width: 769px) {
+	.ledger .year-rail { position: sticky; top: 1.5rem; }
+}
+
+@media (max-width: 768px) {
+	.ledger .year-block { grid-template-columns: 1fr; gap: 0.75rem; }
+	.ledger .year-num { font-size: 1.9rem; }
+}
+
 /* ------- 404 page -------
    Structured, not a fallback. Large numeric backdrop in the heading font sets
    the scene; content stack overlays it. All colours from the palette so it
@@ -1942,50 +2025,4 @@ a.k-email.is-resolved { cursor: auto; }
 	.post-preview-shared {
 		transition: opacity 0.18s ease;
 	}
-}
-
-/* Resilience notice (inc/resilience.php). Admin-only; uses the theme's own
-   colour tokens and body font so it reads as part of Kolofon, not a foreign
-   popup. Deliberately high z-index and fixed position — it must stay
-   visible even if the page that triggered it is otherwise broken. */
-.kolofon-resilience-notice {
-	position: fixed;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	z-index: 99999;
-	padding: 12px 16px;
-	background: color-mix( in srgb, var(--k-text, #1d1d1d) 92%, var(--k-bg, #fff) );
-	color: var(--k-bg, #fff);
-	border-top: 2px solid var(--k-accent, #b8823c);
-	font-family: var(--k-font-body, -apple-system, sans-serif);
-	font-size: 0.85rem;
-	line-height: 1.5;
-}
-
-.kolofon-resilience-notice p {
-	margin: 0 0 4px;
-}
-
-.kolofon-resilience-notice details {
-	margin: 0;
-}
-
-.kolofon-resilience-notice summary {
-	cursor: pointer;
-	color: var(--k-accent, #b8823c);
-	opacity: 0.9;
-}
-
-.kolofon-resilience-notice summary:hover {
-	opacity: 1;
-}
-
-.kolofon-resilience-notice details p {
-	margin: 6px 0 0;
-	opacity: 0.75;
-}
-
-.kolofon-resilience-notice code {
-	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }

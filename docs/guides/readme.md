@@ -32,7 +32,7 @@ kolofon/
 ├── footer.php                Footer navigation and text
 ├── home.php                  Front page: hero, social row, recent posts
 ├── singular.php              Post and page
-├── page-blog.php             Blog Index page template, grouped by year
+├── page-blog.php             Blog Index page template: paginated, year-ledger layout
 ├── index.php                 Archive and search fallback
 ├── 404.php
 ├── searchform.php
@@ -40,7 +40,6 @@ kolofon/
 ├── screenshot.png
 ├── inc/
 │   ├── defaults.php       Single source of truth for defaults and presets
-│   ├── resilience.php     Catches plugin fatals in wp_head/wp_footer, admin notice
 │   ├── hooks.php          Extension surface, filtered sanitiser registry, migration
 │   ├── options.php        Tabbed Settings API options page
 │   ├── options-schema.php Declarative tabs and fields
@@ -344,14 +343,14 @@ respects reduced-motion.
 Hovering or keyboard-focusing a post row reveals a peek at a fixed anchor at
 the top of the list. The list stays compact by default and expands its right
 gutter smoothly on hover, so the peek lands in dedicated space rather than
-overlapping row text. Moving between rows swaps the peek content but the
-anchor stays put — no cursor-chasing layout.
+overlapping row text. Moving between rows swaps the peek content, but the
+anchor stays put: no cursor-chasing layout.
 
 Every row gets a peek. Posts with a featured image show it as a photographic
 tile, enforced to a 3:2 landscape aspect regardless of source dimensions.
-Posts without a featured image show a typographic tile — the post title
-clamped to three lines in the theme's heading font, over a subtle
-palette-tinted background — sharing the same anchor and shape. No dead space
+Posts without a featured image show a typographic tile instead: the post
+title, clamped to three lines in the theme's heading font, over a subtle
+palette-tinted background, sharing the same anchor and shape. No dead space
 for image-less posts, no per-row jitter from mixed behaviour.
 
 Pure CSS, gated on pointer capability and screen width, honours reduced-motion.
@@ -423,7 +422,13 @@ Five options. Slug-to-label map, in radio order on the Appearance tab:
 
 The webfont stacks are independent: choosing Charter, but loud loads XCharter; choosing Typed loads Special Elite. Adding a stack means registering it through `kolofon_font_stacks`, optionally with a `webfont` key.
 
-Typewriter and monospace stacks (`typed`, `office-memo`, `plaintext`) get typewriter-accurate leading — 1.9 line-height with 1rem paragraph spacing — because monospace type has taller x-height relative to em and reads crowded at proportional-serif rhythm. Post body copy is fully justified with no CSS hyphenation, since that's how a print manuscript wears its ragged word-spacing. Both details apply through the `font-<slug>` body class so future stacks that identify as monospace-family inherit them.
+Typewriter and monospace stacks (`typed`, `office-memo`, `plaintext`) get
+typewriter-accurate leading: 1.9 line-height with 1rem paragraph spacing,
+because monospace type has taller x-height relative to em and reads crowded
+at proportional-serif rhythm. Post body copy is fully justified with no CSS
+hyphenation, since that's how a print manuscript wears its ragged
+word-spacing. Both details apply through the `font-<slug>` body class so
+future stacks that identify as monospace-family inherit them.
 
 ## Attribution
 

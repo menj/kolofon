@@ -437,6 +437,17 @@ function get_option_fields() {
 			'step' => 1,
 		),
 	);
+	$fields['blog_per_page']          = array(
+		'label' => __( 'Blog page posts per page', 'kolofon' ),
+		'tab'   => 'layout',
+		'type'  => 'number',
+		'args'  => array(
+			'min'  => 5,
+			'max'  => 100,
+			'step' => 5,
+			'help' => __( 'How many posts appear on each page of the Blog Index template before pagination kicks in. A year of posts can split across two pages once it runs past this count.', 'kolofon' ),
+		),
+	);
 
 	// Advanced. Help text here depends on runtime state, so it is deferred.
 	$fields['csp_mode']            = array(

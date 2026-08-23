@@ -31,7 +31,6 @@
 	</div>
 </footer>
 
-<?php \Kolofon\run_guarded_hook( 'wp_footer' ); ?>
-<?php \Kolofon\render_guarded_hook_admin_notice(); ?>
+<?php wp_footer(); ?>
 </body>
 </html>

@@ -68,6 +68,91 @@ function palette_vars( $c ) {
 }
 
 /**
+ * WCAG 2.x contrast ratio between two `#rrggbb` or `#rgb` colours, 1.0 to 21.0.
+ *
+ * Used only by the development-time palette check below.
+ *
+ * @param string $a Hex colour.
+ * @param string $b Hex colour.
+ * @return float
+ */
+function contrast_ratio( $a, $b ) {
+	$lum = static function ( $hex ) {
+		$hex = ltrim( $hex, '#' );
+		if ( 3 === strlen( $hex ) ) {
+			$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+		}
+		$chan = static function ( $c ) {
+			$c = $c / 255;
+			return $c <= 0.03928 ? $c / 12.92 : pow( ( $c + 0.055 ) / 1.055, 2.4 );
+		};
+		return 0.2126 * $chan( hexdec( substr( $hex, 0, 2 ) ) )
+			+ 0.7152 * $chan( hexdec( substr( $hex, 2, 2 ) ) )
+			+ 0.0722 * $chan( hexdec( substr( $hex, 4, 2 ) ) );
+	};
+
+	$la = $lum( $a );
+	$lb = $lum( $b );
+	$hi = max( $la, $lb );
+	$lo = min( $la, $lb );
+
+	return ( $hi + 0.05 ) / ( $lo + 0.05 );
+}
+
+/**
+ * Warn, in development only, when a resolved palette places text, muted, or
+ * accent below the WCAG AA ratio for normal text (4.5:1) against its own
+ * background.
+ *
+ * This is the runtime companion to the shipped-preset contrast test: the test
+ * covers the presets in defaults.php, this covers a palette introduced at
+ * runtime through the `kolofon_colour_presets` filter, which a test on the
+ * shipped presets cannot see. It runs only under WP_DEBUG and emits nothing in
+ * production. Non-hex colours (rgb(), keywords) are skipped rather than
+ * guessed at.
+ *
+ * @param array  $palette Resolved palette with bg/text/accent/muted keys.
+ * @param string $label   Scheme label for the notice.
+ */
+function assert_palette_contrast( $palette, $label ) {
+	if ( ! ( defined( 'WP_DEBUG' ) && WP_DEBUG ) || ! function_exists( '_doing_it_wrong' ) ) {
+		return;
+	}
+
+	$hex = '/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/';
+	$bg  = isset( $palette['bg'] ) ? $palette['bg'] : '';
+
+	if ( ! preg_match( $hex, $bg ) ) {
+		return;
+	}
+
+	foreach ( array( 'text', 'muted', 'accent' ) as $role ) {
+		if ( empty( $palette[ $role ] ) || ! preg_match( $hex, $palette[ $role ] ) ) {
+			continue;
+		}
+
+		$ratio = contrast_ratio( $palette[ $role ], $bg );
+
+		if ( $ratio < 4.5 ) {
+			_doing_it_wrong(
+				__FUNCTION__,
+				esc_html(
+					sprintf(
+						'Colour scheme "%1$s" fails WCAG AA: %2$s %3$s on %4$s is %5$.2f:1, below 4.5:1.',
+						$label,
+						$role,
+						$palette[ $role ],
+						$bg,
+						$ratio
+					)
+				),
+				'7.3.1.1'
+			);
+		}
+	}
+}
+
+/**
  * Build the `:root` custom-property block for the active palette and fonts.
  *
  * Emitted inline on the front end and again on the editor sheet, so the editor
@@ -87,6 +172,13 @@ function build_root_css() {
 	} else {
 		$light = resolve_palette( $scheme );
 		$dark  = null;
+	}
+
+	// Development-time only: warn if a resolved palette is unreadable. No-op in
+	// production and for the shipped presets, which the contrast test covers.
+	assert_palette_contrast( $light, 'auto' === $scheme ? 'auto (light)' : $scheme );
+	if ( null !== $dark ) {
+		assert_palette_contrast( $dark, 'auto (dark)' );
 	}
 
 	$bg     = $light['bg'];

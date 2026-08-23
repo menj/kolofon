@@ -249,6 +249,35 @@ function render_pagination( $query = null ) {
 }
 
 /**
+ * Query arguments for the Blog Index's ledger.
+ *
+ * The single source both page-blog.php and the schema.org ItemList in
+ * inc/meta.php build from, so the structured data describing the page always
+ * matches exactly what the page renders, rather than the two independently
+ * computing "the current page" and drifting apart.
+ *
+ * @return array WP_Query args: post_type, posts_per_page, paged.
+ */
+function blog_index_query_args() {
+	// A static Page paginates on the `page` query var, not `paged` — that one
+	// is for archives and the home page. Reading both and taking the larger
+	// is defensive: correct in the normal case, harmless if a filter or an
+	// unusual rewrite setup ever populates the other one instead.
+	$page = max( 1, (int) get_query_var( 'page' ), (int) get_query_var( 'paged' ) );
+
+	$per_page = intval( opt( 'blog_per_page' ) );
+	if ( $per_page < 1 ) {
+		$per_page = 20;
+	}
+
+	return array(
+		'post_type'      => 'post',
+		'posts_per_page' => $per_page,
+		'paged'          => $page,
+	);
+}
+
+/**
  * Render one post list item for the current post in the loop.
  *
  * @param array $args {

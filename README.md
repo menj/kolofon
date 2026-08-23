@@ -32,13 +32,13 @@ auto-provisions a Blog Index page at `/blog` on activation.
 
 Full documentation lives at [`docs/`](./docs/):
 
-- [`readme.md`](./docs/guides/readme.md) — overview, directory layout, theme options,
+- [`readme.md`](./docs/guides/readme.md): overview, directory layout, theme options,
   font stacks, extension surface
-- [`upgrading.md`](./docs/guides/upgrading.md) — roadmap, phase status, versioning
+- [`upgrading.md`](./docs/guides/upgrading.md): roadmap, phase status, versioning
   policy, historical decisions
-- [`ssot.md`](./docs/reference/ssot.md) — single source of truth: hard invariants,
+- [`ssot.md`](./docs/reference/ssot.md): single source of truth, hard invariants,
   authority map, option keys
-- [`changelog.md`](./docs/reference/changelog.md) — full release history
+- [`changelog.md`](./docs/reference/changelog.md): full release history
 
 All four render inline on the theme's own Documentation tab under **Appearance
 > Theme Options** once installed.

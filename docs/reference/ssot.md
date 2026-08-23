@@ -60,19 +60,6 @@ can weigh the trade honestly.
    checks by template (not slug) for an existing Blog Index page and does
    nothing if one is present. Failure mode: reactivating the theme would
    create a `blog-2`, `blog-3`, ... every time the user cycled themes.
-10. **`wp_head` and `wp_footer` are called through `\Kolofon\run_guarded_hook()`
-    (`inc/resilience.php`), never as a bare `wp_head()` / `wp_footer()`
-    call.** Both hooks run every active plugin's callbacks as a flat list;
-    an uncaught `\Throwable` from any one of them otherwise takes the whole
-    page down. Failure mode: a single broken plugin (the WP-Piwik /
-    matomo-php-tracker missing-file fatal that prompted this) turns into a
-    site-wide critical error instead of a caught, logged, skipped hook. The
-    admin-only notice this produces names the failure type
-    (`classify_guarded_hook_error()`, pattern-matched on exception class and
-    message — missing file, undefined function/method, missing class,
-    `TypeError`, memory/time limits) rather than a single generic sentence;
-    a new failure pattern worth naming gets a new branch there, not a
-    rewrite of the fallback text.
 
 ## File-of-record map
 
@@ -129,7 +116,8 @@ For quick lookup: when two files disagree, the file named here wins.
 | Bundled brand assets | `assets/img/` via `brand_asset_url()` in `inc/branding.php` | Hero portrait fallback, favicon, apple-touch-icon, Android icon |
 | Runtime colour and typography | `:root` custom properties from `build_root_css()` | `assets/css/main.css`, `assets/css/editor.css`, `theme.json` |
 | Documentation list and order | `list_docs()` in `inc/docs.php` | Documentation tab sub-nav |
-| Post list markup | `post_list_item()` and `post_list_classes()` in `inc/post-list.php` | `home.php`, `index.php`, `page-blog.php` |
+| Post list markup | `post_list_item()` and `post_list_classes()` in `inc/post-list.php` | `home.php`, `index.php`. `page-blog.php` renders its own year-ledger markup inline instead (distinct layout by design; see the template's docblock) |
+| Blog Index query | `blog_index_query_args()` in `inc/post-list.php` | `page-blog.php`'s ledger and `build_collection_schema()` in `inc/meta.php` both build their `WP_Query` from this, so the rendered posts and the JSON-LD `ItemList` describing them cannot drift apart |
 | Hover preview content | `post_list_item()`, emits `<img>` for posts with featured images and `<span class="post-preview-title">` for those without | Every row gets a peek regardless of thumbnail state |
 
 ## Option keys
@@ -268,6 +256,7 @@ typing context (input, textarea, select, contenteditable) or under a modifier,
 and the option is the documented way to disable them.
 | `show_recent` | bool | `1` | 0 or 1 |
 | `recent_count` | int | `5` | 1 to 20 |
+| `blog_per_page` | int | `20` | 5 to 100, step 5 |
 
 ## CSS custom properties
 

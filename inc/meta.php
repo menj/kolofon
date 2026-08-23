@@ -182,7 +182,17 @@ function meta_title() {
  */
 function meta_canonical() {
 	if ( is_singular() ) {
-		return (string) get_permalink();
+		// A singular view can itself be paginated — native <!--nextpage-->
+		// content, or a template like the Blog Index that runs its own
+		// WP_Query with `paged`. Either way WordPress reflects the current
+		// page in the `page` (or, less commonly, `paged`) query var, and the
+		// bare permalink is only correct on page 1: on page 2+ it would
+		// canonicalise every page back to page 1, telling crawlers not to
+		// index the rest. get_pagenum_link() builds the right `/page/N/` URL
+		// for the current request regardless of which mechanism is paginating
+		// it, so this stays correct without knowing which one is in play.
+		$view_page = max( 1, (int) get_query_var( 'page' ), (int) get_query_var( 'paged' ) );
+		return 1 === $view_page ? (string) get_permalink() : (string) get_pagenum_link( $view_page );
 	}
 
 	if ( is_category() || is_tag() || is_tax() ) {
@@ -485,16 +495,29 @@ function emit_schema() {
 function build_collection_schema( $site_id, $person_id ) {
 	unset( $person_id ); // Reserved; collection authorship is site-level.
 
-	global $wp_query;
+	// The Blog Index template runs its own paginated WP_Query for the posts
+	// it lists (see page-blog.php); the global main query for that view is
+	// the static Page itself, a single-item array containing the Page post,
+	// not the ledger's posts. Reading global $wp_query here would build an
+	// ItemList of one item — the "Blog" page — never the posts actually
+	// shown. blog_index_query_args() is the same source page-blog.php builds
+	// its query from, so this always describes exactly what the page renders.
+	if ( is_page() && get_page_template_slug() === 'page-blog.php' ) {
+		$blog_query = new WP_Query( blog_index_query_args() );
+		$posts      = $blog_query->posts;
+	} else {
+		global $wp_query;
+		$posts = $wp_query->posts;
+	}
 
-	if ( empty( $wp_query->posts ) || ! is_array( $wp_query->posts ) ) {
+	if ( empty( $posts ) || ! is_array( $posts ) ) {
 		return null;
 	}
 
 	$items    = array();
 	$position = 0;
 
-	foreach ( $wp_query->posts as $post_object ) {
+	foreach ( $posts as $post_object ) {
 		if ( ! isset( $post_object->ID ) ) {
 			continue;
 		}
