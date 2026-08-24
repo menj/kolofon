@@ -45,6 +45,35 @@ grants, not an administrative nicety.
 
 BITSTREAM CHARTER is a registered trademark of Bitstream Inc.
 
+### Icon marks
+
+The social platform icons in `inc/social.php` are not a bundled library —
+each is a single inline SVG path, hand-copied into the registry array rather
+than loaded from a vendored file, so there is no accompanying licence file to
+list above. Their sourcing:
+
+- **31 of 38** are from the [Simple Icons](https://simpleicons.org) project,
+  released under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)
+  — public domain, no attribution required.
+- **LinkedIn and Scribd** are from [Font Awesome
+  Free](https://fontawesome.com), licensed
+  [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), which does
+  require attribution. `uses_attributed_icon()` in `inc/social.php` checks
+  whether either is actively filled in on the Social tab and, if so, prints
+  an "Icons by Font Awesome" credit in the site footer — satisfying the
+  requirement only when it actually applies, rather than crediting a mark
+  sitting unused in the registry.
+- **Academia.edu, ORCID, Goodreads, LibraryThing, and GamingTribe** are
+  hand-drawn for this theme specifically: none of the five have a Simple
+  Icons or Font Awesome mark that could be used without either copying a
+  registered trademark too closely or (for GamingTribe) not existing in
+  either catalogue at all.
+
+Using any of these to link to the site owner's own official profile — the
+Social tab's purpose — is standard, low-risk practice. The brand names and
+logos remain trademarks of their respective companies regardless of the
+glyph's licence.
+
 ### On the bundled ActivityPub engine
 
 The engine provides WebFinger, NodeInfo, the Actor endpoint, the inbox, HTTP

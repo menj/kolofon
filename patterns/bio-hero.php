@@ -14,7 +14,7 @@
 	<!-- wp:column {"verticalAlignment":"top","width":"66.66%"} -->
 	<div class="wp-block-column is-vertically-aligned-top" style="flex-basis:66.66%">
 		<!-- wp:heading {"level":1,"fontSize":"x-large"} -->
-		<h1 class="wp-block-heading has-x-large-font-size"><?php echo esc_html__( "Hi, I'm Mohd Elfie", 'kolofon' ); ?></h1>
+		<h1 class="wp-block-heading has-x-large-font-size"><?php echo esc_html__( "Hi, I'm your name here", 'kolofon' ); ?></h1>
 		<!-- /wp:heading -->
 
 		<!-- wp:paragraph {"fontSize":"large"} -->

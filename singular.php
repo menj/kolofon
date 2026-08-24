@@ -92,6 +92,14 @@ while ( have_posts() ) :
 					// content rather than framing it. Uses the shared renderer
 					// from inc/tags.php for a single source of truth on markup.
 					\Kolofon\render_post_tags();
+
+					// Sharing follows tags, at the very foot of the content.
+					// Posts only — a static Page doesn't carry the same
+					// "share this" framing, and a microblog status uses its
+					// own post type, so this check already excludes it.
+					if ( 'post' === get_post_type() ) {
+						\Kolofon\render_post_share();
+					}
 					?>
 				</div>
 			</div>

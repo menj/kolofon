@@ -292,6 +292,48 @@ function social_handle_from_url( $url ) {
 }
 
 /**
+ * Split the "Additional profile pages" field into a clean list of URLs.
+ *
+ * Deliberately splits on newlines only, never commas: unlike a slug list, a
+ * URL can legitimately contain a comma in its query string, so the pattern
+ * `parse_section_slugs()` uses would corrupt it.
+ *
+ * @param string $raw Raw option value, one URL per line.
+ * @return string[] Cleaned, deduplicated, in the order entered.
+ */
+function parse_same_as_urls( $raw ) {
+	$lines = preg_split( '/\r\n|\r|\n/', (string) $raw );
+	$urls  = array();
+
+	foreach ( $lines as $line ) {
+		$line = trim( $line );
+		if ( '' === $line ) {
+			continue;
+		}
+
+		$clean = esc_url_raw( $line );
+		if ( '' !== $clean ) {
+			$urls[] = $clean;
+		}
+	}
+
+	return array_values( array_unique( $urls ) );
+}
+
+/**
+ * The site owner's additional sameAs URLs: pages about them that are not
+ * social media (a Gravatar profile, Wikipedia, Crunchbase, IMDb, a personal
+ * wiki) and so are deliberately kept out of `get_social_platforms()` — that
+ * registry also drives an icon and a profile-row link, which none of these
+ * should have.
+ *
+ * @return string[]
+ */
+function get_same_as_urls() {
+	return parse_same_as_urls( opt( 'same_as_urls' ) );
+}
+
+/**
  * Emit a JSON-LD graph describing the person and the site.
  */
 function emit_schema() {
@@ -315,6 +357,12 @@ function emit_schema() {
 			$same_as[] = $url;
 		}
 	}
+
+	// Non-social pages about the site owner — Gravatar, Wikipedia, and the
+	// like — belong in sameAs too, but deliberately have no icon or profile
+	// link of their own, so they come from a separate field rather than the
+	// social platform registry.
+	$same_as = array_values( array_unique( array_merge( $same_as, get_same_as_urls() ) ) );
 
 	$person = array(
 		'@type' => 'Person',

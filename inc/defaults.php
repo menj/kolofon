@@ -20,13 +20,21 @@ defined( 'ABSPATH' ) || exit;
  */
 function get_raw_defaults() {
 	return array(
-		// Identity tab.
-		'hero_heading'           => 'Mohd Elfie Nieshaem Juferi',
-		'citation_author'        => 'Juferi, Mohd Elfie Nieshaem',
+		// Identity tab. Defaults are site-derived, not personal: a fresh
+		// install shows the site's own name and tagline until the owner
+		// fills these in, rather than shipping someone else's identity.
+		'hero_heading'           => get_bloginfo( 'name', 'display' ),
+		'citation_author'        => '',
 		'hero_eyebrow'           => '',
-		'hero_body'              => 'I am a writer, apologist, and developer working on scholarly resources for Islamic apologetics and building tools that keep the web open and honest. Over two decades I have built WordPress themes and plugins, custom link directories, and pixel-art games in equal measure.',
+		'hero_body'              => get_bloginfo( 'description', 'display' ),
 		'hero_portrait'          => '',
-		'footer_text'            => sprintf( '&copy; %s Mohd Elfie Nieshaem Juferi. All rights reserved.', gmdate( 'Y' ) ),
+		'footer_text'            => sprintf(
+			/* translators: 1: current year, 2: site name. */
+			'&copy; %1$s %2$s. All rights reserved.',
+			gmdate( 'Y' ),
+			get_bloginfo( 'name', 'display' )
+		),
+		'same_as_urls'           => '',
 
 		// Social tab (one URL per platform, empty means "hide").
 		'social_mastodon'        => '',
@@ -34,7 +42,7 @@ function get_raw_defaults() {
 		'social_linkedin'        => '',
 		'social_academia'        => '',
 		'social_orcid'           => '',
-		'social_github'          => 'https://github.com/menj',
+		'social_github'          => '',
 		'social_youtube'         => '',
 		'social_instagram'       => '',
 		'social_facebook'        => '',
@@ -43,6 +51,30 @@ function get_raw_defaults() {
 		'social_goodreads'       => '',
 		'social_librarything'    => '',
 		'social_gamingtribe'     => '',
+		'social_tiktok'          => '',
+		'social_snapchat'        => '',
+		'social_whatsapp'        => '',
+		'social_telegram'        => '',
+		'social_discord'         => '',
+		'social_reddit'          => '',
+		'social_bluesky'         => '',
+		'social_tumblr'          => '',
+		'social_wechat'          => '',
+		'social_twitch'          => '',
+		'social_vimeo'           => '',
+		'social_medium'          => '',
+		'social_behance'         => '',
+		'social_dribbble'        => '',
+		'social_line'            => '',
+		'social_signal'          => '',
+		'social_spotify'         => '',
+		'social_wikipedia'       => '',
+		'social_wikidata'        => '',
+		'social_quora'           => '',
+		'social_issuu'           => '',
+		'social_substack'        => '',
+		'social_flickr'          => '',
+		'social_scribd'          => '',
 		'social_email'           => '',
 		'social_rss'             => '',
 
@@ -56,13 +88,13 @@ function get_raw_defaults() {
 		'planned_badge_label'    => 'Soon',
 		'planned_notice_text'    => 'This page is planned and not yet written.',
 
-		// Appearance tab.
+		// Identity tab (was Appearance until 6.3.0).
 		'colour_scheme'          => 'charcoal',
 		'font_stack'             => 'editorial',
 		'hero_heading_size'      => 56,
 		'hero_body_size'         => 18,
 
-		// Sections tab.
+		// Layout tab (was Sections until 6.3.0).
 		'section_slugs'          => '',
 		'section_all_label'      => 'All',
 		'enforce_single_section' => 1,
@@ -90,6 +122,7 @@ function get_raw_defaults() {
 		'show_recent'            => 1,
 		'recent_count'           => 5,
 		'blog_per_page'          => 20,
+		'post_sharing_enabled'   => 1,
 	);
 }
 

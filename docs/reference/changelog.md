@@ -1,5 +1,337 @@
 # Changelog
 
+## 7.4.0
+
+### Added
+**24 new social platforms and a per-post sharing row**, built from a
+user-supplied icon pack (33 CC0 Simple Icons marks, 2 Font Awesome Free CC BY
+4.0 marks, both openly licensed). `get_social_platforms()` in `inc/social.php`
+grew from 16 entries to 40: TikTok, Snapchat, WhatsApp, Telegram, Discord,
+Reddit, Bluesky, Tumblr, WeChat, Twitch, Vimeo, Medium, Behance, Dribbble,
+LINE, Signal, Spotify, Wikipedia, Wikidata, Quora, Issuu, Substack, Flickr,
+and Scribd join the existing roster. Because the registry is the single
+source for the Social tab's fields, their sanitisers, and the `sameAs` array
+in the Person JSON-LD, every one of the 24 is immediately a fillable option
+and an immediate `sameAs` candidate with no further wiring — verified by
+filling test values and confirming they flow through to both.
+
+A new **Layout tab** option, **Show sharing icons on posts** (on by default),
+adds a share row to the foot of every post: X, Facebook, LinkedIn, Bluesky,
+Reddit, Telegram, WhatsApp, email, and a copy-link button. New module
+`inc/share.php` keeps this as a separate, smaller, filterable registry
+(`get_share_targets()`) from the profile one, so profile icons and share
+targets can evolve independently while still drawing the same glyph data —
+`platform_icon_svg()` was factored out of `inc/social.php`'s renderer
+specifically so both consumers share it rather than duplicate SVG markup.
+Renders for posts only, not Pages or microblog statuses. The copy-link button
+is the only part needing JavaScript (`assets/js/post-share.js`, enqueued only
+where the row can appear); the platform links are plain anchors.
+
+Two of the registry's icons — LinkedIn (pre-existing) and Scribd (new) — are
+Font Awesome Free marks under CC BY 4.0, which requires a credit line.
+`uses_attributed_icon()` checks whether either is actively in use and, if so,
+the footer prints "Icons by Font Awesome." This closes a **pre-existing gap**:
+the theme's LinkedIn icon has been a Font Awesome mark since before this
+release with no attribution anywhere. An icon sitting unused in the registry
+carries no obligation, so the credit only appears when it applies.
+
+**A second, separate sameAs field for non-social pages.** The social platform
+registry above is the wrong place for a Gravatar profile, a Wikipedia page,
+or a Crunchbase or IMDb entry: registering one there would give it an icon
+and a link in the "Find me on:" row, neither of which makes sense for a page
+that isn't a social platform. New Identity-tab field **Additional profile
+pages (sameAs)** takes one URL per line, feeding a second small module
+(`get_same_as_urls()` / `parse_same_as_urls()` in `inc/meta.php`) that merges
+into the same `sameAs` array `emit_schema()` already builds from the social
+registry, deduplicated, but renders nowhere on the front end. The parser
+splits on newlines only — a URL's query string can legitimately contain a
+comma, which the `parse_section_slugs()` comma-or-whitespace pattern would
+have corrupted, so this is intentionally its own function rather than a
+reuse. Verified with a URL containing `?query=a,b,c` surviving intact.
+
+### Fixed
+Another stale reference to the removed `tools/minify-css.js` build script,
+this time in `inc/enqueue.php`'s docblock rather than the guides (already
+fixed in the documentation pass above).
+
+**Mobile-first audit.** Two touch-usability gaps, both CSS-only:
+
+- `.post-share-link` / `.post-share-copy` (the per-post share row added this
+  release) were left out of the existing `pointer: coarse` 44px touch-target
+  rule, so they'd render below the Apple/WCAG 2.2 minimum on a touch device.
+  Added to the same rule as `.hero-social-link`.
+- The sidebar chrome layout's social links (`.sidebar-social`) were flatly
+  hidden at `max-width: 1024px` with no mobile equivalent — a site owner
+  using that layout lost their social links entirely on every page except
+  the homepage. Reflowed into a horizontal wrap of pill links at that width
+  instead of removed, reusing the `.tags`/`.section-list` visual language
+  already established elsewhere rather than a new component. Labels stay
+  visible; only the decorative, already-`aria-hidden` arrow icon is dropped.
+
+### Merged
+Reunited the two 7.3.x lines. `7.3.2`–`7.3.7` built the resilience module
+(guarded `wp_head`/`wp_footer`, admin-only failure notices) on a base that
+predated `7.3.1.1`'s Blog Index work, so `7.3.7` shipped without it despite
+the higher version number. This release carries both forward together.
+
+- **Restored from `7.3.1.1`:** Blog Index pagination (`blog_per_page` Theme
+  Option), the year-anchored ledger layout for `page-blog.php` and its
+  `.ledger` CSS in `main.css`, the canonical/`og:url` fix for paginated
+  singular views in `meta_canonical()`, the fix so the Blog Index's JSON-LD
+  `ItemList` (`build_collection_schema()`) matches the posts actually shown —
+  both now build from the shared `blog_index_query_args()` in
+  `inc/post-list.php` — and the `WP_DEBUG`-gated WCAG AA contrast guard
+  (`assert_palette_contrast()`) in `inc/dynamic-css.php`.
+- **Kept from `7.3.7`:** the resilience module in full —
+  `\Kolofon\run_guarded_hook()` wrapping `wp_head`/`wp_footer` in
+  `header.php`/`footer.php`, `inc/resilience.php`'s failure classifier, and
+  the admin-only notice.
+- `main.min.css` was regenerated from the merged `main.css`. It's functionally
+  equivalent to the hand-verified minification from the `7.3.1.1` ledger work,
+  but not necessarily byte-identical, since this environment used a different
+  minifier toolchain than the one noted in that entry below.
+- All PHP files in this release pass `php -l` with no syntax errors.
+
+### Removed
+Two shipped-but-unreferenced font files, `XCharter-Slanted.woff2` and
+`XCharter-BoldSlanted.woff2` (136 KB combined). Both were present in `7.3.1.1`
+and `7.3.7` but named by no entry in `get_font_stacks()` — the XCharter stack
+loads Roman, Italic, Bold, and BoldItalic. The set of shipped `.woff2` files
+and the set `get_font_stacks()` references are now an exact 1:1 match, verified
+programmatically in both directions.
+
+An audit of every other non-vendor asset confirmed the rest are all reachable,
+including several a naive filename grep reports as orphaned because their names
+are built at runtime: `profile-200.webp` (assembled in `branding.php`'s
+`foreach ( array( 200, 359 ) as $width )` srcset loop) and all four `*.min.css`
+files (derived in `enqueue.php` by `str_replace( '.css', '.min.css', $file )`).
+Every `assets/js/` file is enqueued by a named module, and all five block
+patterns are auto-registered by WordPress from `patterns/`.
+
+### Changed
+**Defaults are now site-derived rather than personal.** `get_raw_defaults()`
+shipped the author's own name in `hero_heading`, an inverted-name citation in
+`citation_author`, a full personal biography in `hero_body`, a copyright line
+naming him in `footer_text`, and his profile URL in `social_github`. Any fresh
+install by anyone else showed all of it until manually overwritten, and the
+Person JSON-LD in `inc/meta.php` published it as structured data.
+
+`hero_heading` and `footer_text` now build from `get_bloginfo( 'name' )`,
+`hero_body` from the site tagline, and `citation_author` and `social_github`
+default to empty. Example strings in the citation field's help text and in the
+`bio-hero` pattern are generic.
+
+### Removed
+**Every occurrence of the pre-rename domain string.** Thirteen references
+across `readme.txt`, `docs/specs/now-feature-spec.yml`, and this file were
+reworded to describe what happened without the literal string; no history was
+lost, only rephrased.
+
+Deliberately kept, because they are compatibility shims rather than defaults:
+the `[menj_email]` and `[menj_tags]` shortcode aliases (pre-3.0.0 post content
+still contains them), the `menj_bio_options` and `menj_bio_typewriter_reset`
+option lookups that drive the 3.0.0 migration, the `.menj-callout` CSS class,
+and the migration notice's wording. Removing any of these would break existing
+sites on upgrade.
+
+### Documentation
+**Theme header URIs verified.** `Author URI` (`https://menj.blog`) and
+`Theme URI` / `Update URI` (`https://github.com/menj/kolofon`) were already
+correct in `style.css`. Two gaps around them were closed: `readme.txt`
+declared `Theme URI` but no `Author URI`, so the two files could drift without
+anything noticing, and neither value appeared in the authority map. Both are
+now recorded in `ssot.md` with their consumers listed, giving a future edit to
+one file a stated obligation to the other. Prose links to the author site in
+`README.md` and `guides/readme.md` used a trailing slash where the headers do
+not; normalised to one form.
+
+A full pass over the guides, which had drifted from the code independently of
+the branch split. Historical changelog entries were left alone — they record
+what was true when written — but every current-state document now matches the
+code.
+
+- **The Theme Options tab table listed tabs that no longer exist.**
+  `guides/readme.md` still described eight tabs including Sections, Appearance,
+  and System, consolidated away in 6.3.0, and omitted Fediverse entirely.
+  Rebuilt from `get_option_tabs()` and the schema's real field-to-tab mapping.
+- **"The theme exposes one filter so far."** It exposes thirteen. Phase 4.1 of
+  the roadmap ("Filter and action surface") shipped in 1.2.0 and the sentence
+  was never updated. Replaced with a table of all thirteen.
+- **"No asset build step."** Contradicted by the four `*.min.css` files that
+  ship and that `enqueue.php` serves in preference. Reworded in both
+  `guides/readme.md` and `README.md`.
+- **"After installing an update: two steps"** listed only one, the second
+  having been the file-integrity verify step removed in 7.3.1.1.
+- **The Blog Index and the resilience module had no user-facing documentation
+  at all** — the ledger, the pagination setting, and the guarded hooks existed
+  only in changelog entries. Both now have sections in `guides/readme.md`.
+- **Stale tab names in a user-visible string and in comments.** The system
+  report told the user to check "the Sections tab"; comments in
+  `branding.php`, `options.php`, `defaults.php`, and `sections.php` named
+  Appearance and Sections. All updated to tabs that exist.
+- The monospace font paragraph listed labels (`typed`, `office-memo`,
+  `plaintext`) formatted as slugs, then referred to the `font-<slug>` body
+  class. Corrected to the real slugs (`special-elite`, `typewriter`, `mono`),
+  which are what the CSS matches on.
+- The vendored ActivityPub engine was credited in `LICENSE.md` but missing
+  from the guide's Third-party list. Added.
+- `README.md` gained the Blog Index and resilience features, the corrected tab
+  list, and the fifth documentation file the Documentation tab has always
+  rendered.
+
+### Fixed
+Three inconsistencies surfaced while reconciling the branches. All three
+predate the split and were present in *both* `7.3.1.1` and `7.3.7`.
+
+- **`blog_per_page` had no sanitiser.** The options schema declares it a
+  number field with `min => 5, max => 100`, but the key never appeared in
+  `get_option_sanitizers()`, so it fell through to the default
+  `sanitize_text_field` and was stored unclamped — unlike `recent_count` and
+  `preview_size`, which both use `$int_between()`. A pasted `9999` or `-5`
+  was written to the database as-is; only the defensive `< 1` guard inside
+  `blog_index_query_args()` kept it from producing a broken query. Now
+  registered as `$int_between( 5, 100, $defaults['blog_per_page'] )`, matching
+  its siblings and satisfying hard invariant 2 (every option key appears in
+  defaults, schema, *and* sanitiser).
+- **`languages/kolofon.pot` regenerated.** It was dated `2026-07-25` with a
+  `Project-Id-Version` of `7.3.1.1` and held 249 strings against 366 in the
+  source. It predated both branches, so it was missing every string from the
+  Blog Index work *and* every string from the resilience module — the admin
+  notice, the failure classifier's phrases, the `blog_per_page` label and
+  help text, and the `_n( '%d entry', '%d entries' )` plural. Regenerated with
+  file:line references, preserved `translators:` comments, and correct
+  `Plural-Forms`; validated with `msgfmt --check`. The eight msgids that
+  dropped out were verified as genuinely retired (the removed tag-row options)
+  or reworded, not lost.
+- **`docs/guides/readme.md` credited `*.min.css` to `tools/minify-css.js`.**
+  The `tools/` directory stopped shipping in `7.3.1.1`; the tree entry was
+  never updated. Reworded to describe the files rather than a build script
+  that is no longer part of the distribution.
+
+## 7.3.7
+
+### Fixed
+`docs/guides/readme.md`'s directory tree was missing `inc/resilience.php`,
+added in 7.3.2. Added, next to `defaults.php` to match load order.
+
+## 7.3.6
+
+### Changed
+Resilience notice text shortened — both the classifier phrases and the
+summary sentence. Now reads e.g. "A footer script failed to load: a missing
+file. Not a theme issue — rest of the page is fine." Full message/file/line
+still available behind the technical-details toggle.
+
+## 7.3.5
+
+### Changed
+The resilience notice's plain-language summary previously varied only by
+which hook failed (`wp_head` vs `wp_footer`), not by what actually broke —
+a missing file and a broken function call read identically.
+
+- **Added `classify_guarded_hook_error( $class, $message )`,** which
+  pattern-matches the caught exception's class and message against known
+  failure shapes: missing/moved file (`failed opening required`, `failed to
+  open stream`), undefined function, undefined method or call on null,
+  missing dependency class, `TypeError`, `DivisionByZeroError` /
+  `ArithmeticError`, memory limit, and execution-time limit. Each gets its
+  own plain-language phrase; anything unmatched falls back to naming the
+  exception class rather than a fully generic sentence.
+- **`plain_language_guarded_hook_summary()`** now combines *where* (which
+  hook) with *what* (the classified failure) into one sentence, e.g. "a
+  script that was supposed to load near the bottom of the page didn't load
+  — a file it needed was missing or moved (a broken install or a failed
+  update)."
+- The exception's class name is now stored alongside hook/message/file/line
+  in the per-request failure record, so the classifier has it available at
+  render time without needing the original `\Throwable` object.
+- Documented in `ssot.md` invariant 10: a new failure pattern worth naming
+  gets a new branch in the classifier, not a rewrite of the fallback text.
+
+## 7.3.4
+
+### Changed
+The resilience notice was still styled with inline `style=""` attributes and
+arbitrary hex colours, unrelated to the theme's actual palette.
+
+- **Moved to `.kolofon-resilience-notice` in `assets/css/main.css`**, built
+  from the real front-end tokens (`--k-bg`, `--k-text`, `--k-accent`,
+  `--k-font-body`) instead of hardcoded `#1d1d1d` / `#f2c14e`.
+- **Every token carries a static CSS fallback**
+  (`var(--k-accent, #b8823c)` etc.) for a real edge case: `run_guarded_hook()`
+  wraps the *entire* `do_action()` call in a `try`/`catch`, so a fatal caught
+  inside `wp_head` aborts every callback still queued in that hook for the
+  rest of the request — including WordPress's own stylesheet printing and
+  Kolofon's own colour-token injection in `dynamic-css.php`. The notice has
+  to render correctly even when those tokens were never defined; the fallback
+  values make that true regardless of which hook failed.
+
+## 7.3.3
+
+### Changed
+The 7.3.2 resilience notice was still fundamentally a developer message —
+hook name, raw PHP exception text — shown to whichever admin happened to be
+logged in, technical or not.
+
+- **Leads with a plain-language sentence.** `wp_head` and `wp_footer` are
+  translated to "a script that was supposed to load near the top/bottom of
+  the page" so the summary reads as "heads up: [thing] failed to load
+  (likely a plugin problem, not this theme); the rest of the page loaded
+  fine and visitors won't notice — but it's worth fixing soon."
+- **Technical detail moved behind a `<details>`/`<summary>` toggle** labelled
+  "Technical details (visible only to admins)." No JavaScript required to
+  expand it; still gated on `manage_options` same as the rest of the notice.
+- Still visitor-invisible, still request-scoped, still logged to the PHP
+  error log in full regardless of whether anyone expands the toggle.
+
+## 7.3.2
+
+### Added
+A resilience module, `inc/resilience.php`, prompted directly by a real
+outage: a WP-Piwik / matomo-php-tracker missing-file fatal thrown inside a
+`wp_footer` callback took the whole front end down mid-render, since
+WordPress runs `wp_head` and `wp_footer` as a flat list of every active
+plugin's callbacks with no isolation between them.
+
+- **`\Kolofon\run_guarded_hook( $hook )`** replaces bare `wp_head()` /
+  `wp_footer()` calls in `header.php` and `footer.php`. It wraps `do_action()`
+  in a `try`/`catch` for `\Throwable` — since PHP 7, a missing-file fatal
+  throws an `\Error`, which implements `\Throwable` and is genuinely
+  catchable, unlike the older un-catchable fatals.
+- **On a caught failure:** the real error is written to the PHP error log
+  with the hook name, message, file, and line; the page continues rendering
+  normally for every visitor; and a small, dismissible-by-navigation notice
+  appears in the footer, visible only to logged-in `manage_options` users,
+  naming the hook and pointing at the error log.
+- **This is a safety net, not a fix.** The underlying plugin bug still needs
+  fixing; the module only stops one broken plugin from turning into a
+  site-wide critical error. Documented as hard invariant 10 in `ssot.md`.
+
+## 7.3.1.2
+
+### Changed
+Documentation only, no code changed. The Roadmap's Now-page entry in
+`docs/guides/upgrading.md` was written before the Microblog module existed
+and still described a compose-form-and-REST posting layer as open work.
+
+- **Entry retitled** from "The Now feature, second attempt" to "The Now page,
+  second attempt," since the feature was never one thing and only part of it
+  is still open.
+- **The inline-microblogging layer marked superseded.** The original design's
+  third layer — a front-end compose form posting through REST with a no-JS
+  fallback, publishing into a `now` category under a repurposed `status`
+  post-format — is now covered, better, by the Microblog module shipped
+  since: a dedicated status CPT, an admin-bar/front-end composer backed by
+  REST, a timeline view, and ActivityPub federation the old design never had.
+- **Remaining scope narrowed** to the two layers Microblog doesn't touch: the
+  free-form "Working on" prose block and the RSS-aggregated external activity
+  feed (Goodreads, a Threads bridge, one open slot) with manual entries for
+  feed-less platforms. The rebuild variants and lessons-inherited list were
+  trimmed to match — a rebuild reuses Microblog's composer and CPT rather
+  than re-implementing posting.
+- **`../specs/now-feature-spec.yml`** is now flagged as a historical record of
+  the original three-layer scope rather than the spec to build from.
+
 ## 7.3.1.1
 
 ### Changed
@@ -7,108 +339,35 @@ The bundled ActivityPub engine was living under `inc/`, next to the theme's own
 feature code, which misrepresented it. `inc/` is first-party; the engine is
 vendored third-party code the theme consumes and replaces wholesale on update.
 
-- `inc/activitypub/` moved to `vendor/activitypub/`, alongside Parsedown,
+- **`inc/activitypub/` moved to `vendor/activitypub/`,** alongside Parsedown,
   where vendored dependencies belong. All 275 engine files relocated unchanged.
-- `ACTIVITYPUB_PLUGIN_BASENAME` no longer hardcodes the `kolofon/` slug. It
-  derives from `basename( get_template_directory() )`, matching how the URL
-  and directory constants beside it already resolve. A folder rename, or a
-  GitHub-zip install as `kolofon-master/`, no longer desyncs it.
-- `ACTIVITYPUB_PLUGIN_URL` and the loader `require` in `inc/microblog.php`
+- **`ACTIVITYPUB_PLUGIN_BASENAME` no longer hardcodes the `kolofon/` slug.** It
+  derives from `basename( get_template_directory() )`, matching how the URL and
+  directory constants beside it already resolve, so a folder rename or a
+  GitHub-zip install as `kolofon-master/` no longer desyncs it.
+- **`ACTIVITYPUB_PLUGIN_URL` and the loader `require` in `inc/microblog.php`**
   updated to the new path. No engine source was edited beyond these constants.
-- `languages/kolofon.pot`: `Project-Id-Version` corrected from the stale
+- **`languages/kolofon.pot`** `Project-Id-Version` corrected from the stale
   `Kolofon 4.0.1` to `7.3.1.1`. The move changed no translatable strings, so
   the extraction date is unchanged.
-- The file-integrity verifier and its manifest are removed.
+- **The file-integrity verifier and its manifest were removed.**
   `tools/verify-checksums.php` and `checksums.sha256` shipped in 7.3.0 as a
-  command-line answer to security-scanner false positives. Running them needs
-  shell or cron access the target deployment doesn't have, and no party needs
-  to prove the theme untampered. With both gone, `tools/` no longer ships. The
-  scanner caveat itself (a fresh install timestamp isn't tampering) still
-  holds; it just has no tool attached to it now.
-- Docs updated in the same pass: `LICENSE.md` attribution paths, the
-  `docs/guides/readme.md` prose and directory tree (including the removed
-  integrity section), the post-update verify step in
-  `docs/guides/upgrading.md`, `docs/reference/ssot.md`, and the
-  `admin-activitypub.css` header comment.
-- Added `assets/.htaccess` to set long cache lifetimes and enable compression
-  on static assets. It answers two PageSpeed findings that are HTTP-header
-  level, not code: "Use efficient cache lifetimes" and "No compression
-  applied." Every directive is `<IfModule>`-guarded, so it's a safe no-op
-  where a module is absent. Apache-only; it does nothing on nginx.
-- Added a development-time colour-contrast guard in `inc/dynamic-css.php`.
-  Under `WP_DEBUG`, a resolved palette whose text, muted, or accent colour
-  falls below WCAG AA (4.5:1) against its own background raises
-  `_doing_it_wrong()` naming the scheme and the ratio. It's inert in
-  production and skips non-hex colours. This catches a palette added at
-  runtime through the `kolofon_colour_presets` filter, which a test on the
-  shipped presets can't see. The shipped presets themselves are covered by a
-  contrast test in `tests/`.
-
-### Added
-The Blog Index (`page-blog.php`) loaded every post on one unbounded page and
-rendered rows identically to the Main Index's "Recent Posts" list. Both
-called the same `post_list_item()` renderer, so the two pages looked
-interchangeable.
-
-- Pagination. The template now queries `blog_per_page` posts at a time
-  instead of `-1`. A static Page paginates on the `page` query var, not
-  `paged` (that one is for archives and the home page), so the current page
-  is read as `max( 1, page, paged )` and fed into a scoped `WP_Query`.
-  Prev/next links are built directly with `get_pagenum_link()`, not the
-  shared `render_pagination()` helper: that helper's links come from
-  `get_next_posts_page_link()`/`get_previous_posts_page_link()`, which read
-  the *global* main query's pagination state. That's correct for
-  `render_pagination()`'s one existing caller (`index.php`, where the main
-  query really is the thing being paginated), but wrong for a secondary query
-  on a Page. Reusing it here would print plausible-looking links that don't
-  point at the right page. `index.php`'s own pagination is untouched.
-- New Theme Option, "Blog page posts per page" (`blog_per_page`, Appearance →
-  Theme Options → Layout, default 20). Same field shape as the existing
-  "Recent posts count."
-- `meta_canonical()` now accounts for a paginated singular view. Before this,
-  the canonical and `og:url` tags on any singular template were always the
-  bare permalink, which was correct only because nothing on a singular
-  template paginated. The Blog Index now does. Without this fix, page 2+
-  would canonicalise back to page 1, telling crawlers not to index the rest
-  of the archive. Fixed generically via `get_pagenum_link()` off the
-  `page`/`paged` query var, so it's correct for the Blog Index and for native
-  `<!--nextpage-->` content pagination on any singular post or page. It
-  isn't special-cased to one template.
-- A distinct layout for the archive. Each year renders as a numeral in a
-  left rail, sticky on wide viewports, staying in step with its posts, with
-  the year's posts to the right as a numbered index (`01`, `02`, …) instead
-  of the plain row list the Main Index also uses. The printed number and the
-  schema.org `ItemList` position are the same integer, set once, so they
-  can't drift apart. New CSS lives under a `.ledger` scope in `main.css` and
-  `main.min.css` (hand-verified byte-length match against the source block;
-  the local minify toolchain isn't available in this environment). The
-  existing `.year-group`/`.year-heading` classes are untouched, since the
-  status archive (`archive-kolofon_status.php`) still uses them.
-- Out-of-range pagination (`/blog/page/99/` on a 3-page archive) renders the
-  existing "No posts yet." empty state, not a dedicated message or a 404.
-  That's a deliberate simplification: this should be a rare, manually-typed
-  URL, not a normal path through the site.
-- Fixed a pre-existing structured-data bug this work exposed.
-  `build_collection_schema()` (the JSON-LD `ItemList` a crawler reads for a
-  listing page) read `global $wp_query->posts` unconditionally. For the Blog
-  Index, that's the *main* query, which for any static Page is just the Page
-  object itself: one item, the page titled "Blog," never the posts the
-  ledger actually lists. This predates this session's changes. The old
-  `posts_per_page => -1` query was already a *separate* `WP_Query`, so the
-  JSON-LD never matched what the template rendered. `docs/guides/readme.md`
-  had documented the intended behaviour ("Blog Index page | CollectionPage
-  with its ItemList") without it actually holding. Fixed by extracting the
-  query construction into `blog_index_query_args()` in `inc/post-list.php`, a
-  single source `page-blog.php` and `build_collection_schema()` both build
-  from now, so the schema and the rendered page can't drift apart by
-  construction, not just by convention.
-- Fixed a markup fragility in the year and count line. The year numeral and
-  its entry count sat with no space between them in the raw HTML, relying
-  entirely on `.year-count`'s `display: block` to separate them visually. If
-  the ledger CSS ever fails to load for any reason, that reads as a single
-  run-on string, for example "202614 entries" for a year with 14 entries.
-  Added a literal space and a middot separator in the markup itself, so the
-  text reads sensibly with or without the stylesheet.
+  command-line answer to security-scanner false positives, but running them
+  needs shell or cron access the target deployment does not have, and no party
+  needs to prove the theme untampered. With both gone the `tools/` directory no
+  longer ships. The scanner caveat itself (theme files carry a fresh install
+  timestamp; this is not tampering) is unchanged and simply no longer has a
+  tool attached.
+- **Docs brought along in the same pass:** `LICENSE.md` attribution paths,
+  the `docs/guides/readme.md` prose and directory tree, the removed integrity
+  section there and the post-update verify step in `docs/guides/upgrading.md`,
+  `docs/reference/ssot.md`, and the `admin-activitypub.css` header comment.
+- **Added `assets/.htaccess`** to set long cache lifetimes and enable
+  compression on static assets, answering two PageSpeed findings that are
+  HTTP-header level rather than code ("Use efficient cache lifetimes", "No
+  compression applied"). Every directive is `<IfModule>`-guarded, so it is a
+  safe no-op where a module is absent; it is Apache-only and does nothing on
+  nginx.
 
 ## 7.3.1
 
@@ -178,7 +437,7 @@ answer it.
   which is the source repository rather than the author's own site. `Theme URI`
   and `Update URI` still point at the repository, which is correct: they are
   where the theme lives, while `Author URI` is where the author does.
-- **Stale `menj.bio` references updated.** The site moved to `menj.blog`, but
+- **Stale references to the pre-rename domain updated.** The site moved to `menj.blog`, but
   `README.md`, `docs/guides/readme.md`, `docs/guides/upgrading.md` and the e2e
   test README still named the old domain. All now point at `menj.blog`.
   Historical changelog entries keep the old domain, since they record what was
@@ -1165,7 +1424,7 @@ Two classes of genuine defect were found and corrected.
 
 ### Fixed
 - **The root LICENSE file corrected on three counts.** It still opened with the
-  pre-rebrand name "menj.bio theme" (a leftover the 4.0.1 name sweep missed);
+  the pre-rebrand theme name (a leftover the 4.0.1 name sweep missed);
   it pointed at `docs/changelog.md`, which moved in 4.9.2; and its grant said
   GPL "version 2" only while `style.css` and `readme.txt` declare "v2 or
   later". The notice now names Kolofon, points at
@@ -1652,12 +1911,12 @@ Two classes of genuine defect were found and corrected.
   the `now` category, micro-posts) is deliberately untouched; manual steps are
   documented in `upgrading.md`.
 - **Theme identity is Kolofon everywhere it speaks for itself.** The block
-  pattern category in the editor read "menj.bio"; it now reads "Kolofon". The
-  HTML comment the meta module prints on every page said `menj.bio meta`; now
+  pattern category in the editor read the pre-rename name; it now reads "Kolofon". The
+  HTML comment the meta module prints on every page carried the pre-rename name; now
   `Kolofon meta`. Headers in `functions.php`, both stylesheets, and four JS
   files, plus both readme titles and the composer description, updated. The old
   name legitimately survives only in the 3.0.0 migration code, the migration
-  notice wording, changelog history, and references to menj.bio as the site the
+  notice wording, changelog history, and references to the pre-rename domain as the site the
   theme runs on.
 - **Shortcodes renamed with back-compat.** `[kolofon_email]` and
   `[kolofon_tags]` are the canonical names; `[menj_email]` and `[menj_tags]`
@@ -1667,7 +1926,7 @@ Two classes of genuine defect were found and corrected.
   callout pattern carry `kolofon-callout`; the stylesheet keeps `.menj-callout`
   alongside it so content saved under the old class stays styled.
 - **Translation template regenerated.** `languages/kolofon.pot` still carried
-  the 1.1.0-era catalogue with a menj.bio project header and long-gone strings.
+  the 1.1.0-era catalogue with a pre-rename project header and long-gone strings.
   Rebuilt from source: 244 strings, zero stale entries, Kolofon headers.
 
 ### Note
@@ -2278,7 +2537,7 @@ Major bump per invariant 5: the text domain and option row key both change, whic
 
 ### Renamed
 
-- Theme name: `menj.bio` → **Kolofon** (Malay spelling of "colophon" — the printer's mark at the end of a manuscript recording who set the type).
+- Theme name: the original domain-derived name → **Kolofon** (Malay spelling of "colophon" — the printer's mark at the end of a manuscript recording who set the type).
 - Directory: `menj-bio/` → `kolofon/`.
 - Text domain: `menj-bio` → `kolofon`. All 372 user-facing gettext strings retranslated in the .pot file.
 - PHP namespace: `MENJ\Bio` → `Kolofon`. All 26 namespace declarations and 87 fully-qualified references updated.
@@ -2305,7 +2564,7 @@ Idempotent: on subsequent loads the legacy rows are gone, so the migration is a 
 
 - Author: `Mohd Elfie Nieshaem Juferi` (still MENJ, still your name).
 - GitHub username: `menj` in URLs. The *repo* moves from `menj/menj-bio` to `menj/kolofon`.
-- Domain: `menj.bio` stays the site URL. Kolofon is the theme running on it.
+- Domain: the site URL is unchanged. Kolofon is the theme running on it.
 
 ### Why the name
 
@@ -2313,7 +2572,7 @@ A colophon is the printer's mark at the end of a manuscript — historically con
 
 ### Sceptical note
 
-Renaming a theme in-place is unusual and creates one durable trap: search engines and RSS readers may have cached "menj.bio Theme" as the name. If Kolofon shows up anywhere with a mixed identity, it's a caching artefact, not a bug in the theme itself.
+Renaming a theme in-place is unusual and creates one durable trap: search engines and RSS readers may have cached the old domain-derived name. If Kolofon shows up anywhere with a mixed identity, it's a caching artefact, not a bug in the theme itself.
 
 
 ## 2.10.2
@@ -2536,7 +2795,7 @@ would look striking in a screenshot.
 ## 2.5.1
 
 ### Fixed
-- "View all" on the home page pointed at `/blog` through a coincidental fallback. `get_post_type_archive_link( 'post' )` returns false, since WordPress does not register an archive for the built-in `post` type, so `home_url( '/blog' )` always fired. That worked on menj.bio because a page exists at that slug, but silently 404s anywhere else.
+- "View all" on the home page pointed at `/blog` through a coincidental fallback. `get_post_type_archive_link( 'post' )` returns false, since WordPress does not register an archive for the built-in `post` type, so `home_url( '/blog' )` always fired. That worked on the author's own site because a page exists at that slug, but silently 404s anywhere else.
 - New helper `get_blog_index_url()` in `inc/sections.php` resolves the blog listing through three fallbacks: the "Posts page" set under Settings > Reading, then a page carrying the Blog Index template, then `/blog` as convention. The section chooser now shares this helper, so the site-wide "all sections" link and the "View all" link on the home page agree on where the blog lives.
 
 
@@ -2700,7 +2959,7 @@ All 45 fields, 42 options plus 3 action buttons, verified present after the refa
 
 ## 1.0.0 — 2026-07-24
 
-Initial release of the **menj.bio** theme, forked from the
+Initial release of the theme under its original domain-derived name, forked from the
 [Chris Wiegman Theme](https://github.com/ChrisWiegman/chriswiegman-theme) v12.7.0
 by Chris Wiegman (GPL v2).
 

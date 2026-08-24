@@ -14,7 +14,7 @@
  * someone does.
  *
  * Which categories count as sections, and in what order, is configured on the
- * Sections tab as a list of slugs. Nothing here hard-codes a taxonomy term.
+ * Layout tab as a list of slugs. Nothing here hard-codes a taxonomy term.
  *
  * Known coupling: taxonomy terms are content and survive a theme switch, but
  * this enforcement does not. Strictly it belongs in a companion plugin. For a

@@ -60,6 +60,19 @@ can weigh the trade honestly.
    checks by template (not slug) for an existing Blog Index page and does
    nothing if one is present. Failure mode: reactivating the theme would
    create a `blog-2`, `blog-3`, ... every time the user cycled themes.
+10. **`wp_head` and `wp_footer` are called through `\Kolofon\run_guarded_hook()`
+    (`inc/resilience.php`), never as a bare `wp_head()` / `wp_footer()`
+    call.** Both hooks run every active plugin's callbacks as a flat list;
+    an uncaught `\Throwable` from any one of them otherwise takes the whole
+    page down. Failure mode: a single broken plugin (the WP-Piwik /
+    matomo-php-tracker missing-file fatal that prompted this) turns into a
+    site-wide critical error instead of a caught, logged, skipped hook. The
+    admin-only notice this produces names the failure type
+    (`classify_guarded_hook_error()`, pattern-matched on exception class and
+    message — missing file, undefined function/method, missing class,
+    `TypeError`, memory/time limits) rather than a single generic sentence;
+    a new failure pattern worth naming gets a new branch there, not a
+    rewrite of the fallback text.
 
 ## File-of-record map
 
@@ -73,7 +86,8 @@ For quick lookup: when two files disagree, the file named here wins.
 | Stored option payload | `kolofon_options` (single row) | Everything, through `opt()`. |
 | Migration state | Discrete options like `kolofon_typewriter_reset` | Not inside the main payload, so migration rules can gate on them without lookup overhead. |
 | Documentation set | `docs/` subfolders (`guides/`, `reference/`, `specs/`), lowercase filenames | CI (`.github/workflows/lint.yml`) checks the expected set exists and fails on uppercase. |
-| Repository | [github.com/menj/kolofon](https://github.com/menj/kolofon) | Mirror of `Theme URI` and `Update URI` in `style.css`. |
+| Repository | [github.com/menj/kolofon](https://github.com/menj/kolofon) | Mirror of `Theme URI` and `Update URI` in `style.css`, and of `Theme URI` in `readme.txt`. All three must agree. |
+| Author site | [menj.blog](https://menj.blog) | `Author URI` in `style.css` and in `readme.txt`. Both must agree. |
 | Release archives | [github.com/menj/kolofon/releases](https://github.com/menj/kolofon/releases) | Built by `.github/workflows/release.yml` on tag push; tag must match `Version:` in `style.css`. |
 
 ## Authority map
@@ -83,8 +97,8 @@ For quick lookup: when two files disagree, the file named here wins.
 | Options page tabs | `get_option_tabs()` in `inc/options-schema.php` | Settings sections, rendered tab strip |
 | Options page fields | `get_option_fields()` in `inc/options-schema.php` | `register_settings()` loop |
 | Default option values | `get_raw_defaults()` in `inc/defaults.php`, filtered through `get_defaults()` | `opt()`, `sanitize()`, `handle_reset()`, `build_root_css()` |
-| Colour scheme presets | `get_colour_presets()` in `inc/defaults.php` | Appearance tab radio list, `build_root_css()`, `sanitize()` |
-| Font stacks | `get_font_stacks()` in `inc/defaults.php` | Appearance tab radio list, `build_root_css()`, `sanitize()` |
+| Colour scheme presets | `get_colour_presets()` in `inc/defaults.php` | Identity tab radio list, `build_root_css()`, `sanitize()` |
+| Font stacks | `get_font_stacks()` in `inc/defaults.php` | Identity tab radio list, `build_root_css()`, `sanitize()` |
 | Portrait styles | `get_portrait_styles()` in `inc/defaults.php` | Layout tab select, `home.php` modifier class, `sanitize()` |
 | Social platform list, order, icons | `get_social_platforms()` in `inc/social.php` | Social tab field loop, `sanitize()` loop, `render_social_icons()` |
 | Email obfuscation modes | `get_email_modes()` in `inc/email-guard.php` | Social tab select, `sanitize()`, `protected_mailto()` |
@@ -94,7 +108,7 @@ For quick lookup: when two files disagree, the file named here wins.
 | Markdown parser instance | `docs_parser()` in `inc/docs.php` | `render_doc()` |
 | Section registry and order | `get_sections()` in `inc/sections.php`, resolved from the `section_slugs` option | Chooser, enforcement, adjacent links |
 | Primary-section resolution | `get_primary_section()` in `inc/sections.php` | Section eyebrow on single posts; any future callers wanting a stable "which section is this post in" answer |
-| Blog index URL | `get_blog_index_url()` in `inc/sections.php` | Home page "View all"; section chooser; blog auto-provisioning; System tab diagnostic; smoke test |
+| Blog index URL | `get_blog_index_url()` in `inc/sections.php` | Home page "View all"; section chooser; blog auto-provisioning; Advanced tab diagnostic; smoke test |
 | Blog page auto-provisioning | `ensure_blog_index_page()` in `inc/activation.php` on `after_switch_theme` | Fresh installs get `/blog` without site owner intervention. Idempotent by template check, not slug. |
 | Test suite | `tests/e2e/specs/*.spec.js` (Playwright) | CI; local sanity check before release |
 | RSS feed enclosures and content thumbnails | `inc/syndication.php` | Feed reader compatibility |
@@ -103,7 +117,7 @@ For quick lookup: when two files disagree, the file named here wins.
 | Tag rendering | `render_post_tags()`, `render_tag_index()` in `inc/tags.php` | Post lists, single posts, `[menj_tags]` |
 | Page states | `get_page_states()` in `inc/page-states.php`, meta key `_kolofon_page_state` | Editor meta box, nav badge, content notice |
 | Palette resolution | `resolve_palette()` in `inc/dynamic-css.php` | `build_root_css()`, both light and dark blocks |
-| System report rows | `get_system_report()` in `inc/system-report.php` | System tab |
+| System report rows | `get_system_report()` in `inc/system-report.php` | System report block on the Advanced tab |
 | Chrome layout | `chrome_layout()` in `inc/chrome.php` | Header branch, body class, numbering, shortcuts |
 | Body class for font stack | `chrome_body_class()` in `inc/chrome.php` emits `font-<slug>` | Pairings' typographic adjustments |
 | Active social links | `get_active_social_links()` in `inc/social.php` | Hero icon row, sidebar stay-in-touch block |
@@ -118,6 +132,9 @@ For quick lookup: when two files disagree, the file named here wins.
 | Documentation list and order | `list_docs()` in `inc/docs.php` | Documentation tab sub-nav |
 | Post list markup | `post_list_item()` and `post_list_classes()` in `inc/post-list.php` | `home.php`, `index.php`. `page-blog.php` renders its own year-ledger markup inline instead (distinct layout by design; see the template's docblock) |
 | Blog Index query | `blog_index_query_args()` in `inc/post-list.php` | `page-blog.php`'s ledger and `build_collection_schema()` in `inc/meta.php` both build their `WP_Query` from this, so the rendered posts and the JSON-LD `ItemList` describing them cannot drift apart |
+| Social platform registry | `get_social_platforms()` in `inc/social.php` | Social tab fields, `get_active_social_links()`, `render_social_icons()`, `sameAs` in `inc/meta.php`, icon lookups from `render_post_share()` |
+| Additional sameAs URLs | `get_same_as_urls()` / `parse_same_as_urls()` in `inc/meta.php` | `sameAs` in `emit_schema()`, merged with the social platform URLs above. No icon, no profile-row link — deliberately outside the social registry |
+| Share targets | `get_share_targets()` in `inc/share.php` | `render_post_share()`. Each slug's icon comes from the social platform registry above, not duplicated here |
 | Hover preview content | `post_list_item()`, emits `<img>` for posts with featured images and `<span class="post-preview-title">` for those without | Every row gets a peek regardless of thumbnail state |
 
 ## Option keys
@@ -257,6 +274,8 @@ and the option is the documented way to disable them.
 | `show_recent` | bool | `1` | 0 or 1 |
 | `recent_count` | int | `5` | 1 to 20 |
 | `blog_per_page` | int | `20` | 5 to 100, step 5 |
+| `post_sharing_enabled` | bool | `1` | — |
+| `same_as_urls` | string | `''` | Newline-separated URL list |
 
 ## CSS custom properties
 

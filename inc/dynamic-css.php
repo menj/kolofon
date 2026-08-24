@@ -146,7 +146,7 @@ function assert_palette_contrast( $palette, $label ) {
 						$ratio
 					)
 				),
-				'7.3.1.1'
+				'7.4.0'
 			);
 		}
 	}
@@ -172,13 +172,6 @@ function build_root_css() {
 	} else {
 		$light = resolve_palette( $scheme );
 		$dark  = null;
-	}
-
-	// Development-time only: warn if a resolved palette is unreadable. No-op in
-	// production and for the shipped presets, which the contrast test covers.
-	assert_palette_contrast( $light, 'auto' === $scheme ? 'auto (light)' : $scheme );
-	if ( null !== $dark ) {
-		assert_palette_contrast( $dark, 'auto (dark)' );
 	}
 
 	$bg     = $light['bg'];
@@ -235,6 +228,13 @@ function build_root_css() {
 
 		// Colour transitions between modes are jarring; declare the intent.
 		$css .= ':root{color-scheme:light dark;}';
+	}
+
+	// Development-time only: warn if a resolved palette is unreadable. No-op in
+	// production and for the shipped presets, which the contrast test covers.
+	assert_palette_contrast( $light, 'auto' === $scheme ? 'auto (light)' : $scheme );
+	if ( null !== $dark ) {
+		assert_palette_contrast( $dark, 'auto (dark)' );
 	}
 
 	/**

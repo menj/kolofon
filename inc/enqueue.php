@@ -13,8 +13,8 @@ defined( 'ABSPATH' ) || exit;
 /**
  * URL for a stylesheet, preferring the minified build when one exists.
  *
- * Sources stay readable and commented in assets/css/; `node tools/minify-css.js`
- * emits the .min.css beside them. SCRIPT_DEBUG forces the readable file, which
+ * Sources stay readable and commented in assets/css/. Each has a `.min.css`
+ * beside it, and this function serves that unless SCRIPT_DEBUG is on, which
  * is what you want while working on the theme.
  *
  * @param string $file Stylesheet filename, for example 'main.css'.
@@ -131,6 +131,19 @@ function enqueue_assets() {
 		wp_enqueue_script(
 			'kolofon-hover-preview',
 			KOLOFON_URI . 'assets/js/hover-preview.js',
+			array(),
+			KOLOFON_VERSION,
+			true
+		);
+	}
+
+	// The copy-link button on the per-post share row is the only part of
+	// sharing that needs JavaScript; the platform links are plain anchors.
+	// Loaded only where the row can actually appear.
+	if ( is_singular( 'post' ) && opt( 'post_sharing_enabled' ) ) {
+		wp_enqueue_script(
+			'kolofon-post-share',
+			KOLOFON_URI . 'assets/js/post-share.js',
 			array(),
 			KOLOFON_VERSION,
 			true

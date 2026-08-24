@@ -1045,6 +1045,74 @@ pre {
 @media ( forced-colors: active ) {
 	.tags li a { background: none; }
 }
+/* Per-post sharing row. Reuses .hero-social-link for the same circular
+   icon-button language as the profile row in the header, so the two read as
+   one visual family even though they serve different purposes: that row
+   links to the site owner's own accounts, this one shares the post being
+   read. Framed the same way as .post-tags directly above it — hairline rule,
+   letterspaced label — so the foot of a post reads as one consistent stack:
+   tags, then share. */
+.post-share {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.6rem;
+	margin: 1.75rem 0 0;
+	padding-top: 1.25rem;
+	border-top: 1px solid var(--k-rule);
+	position: relative;
+}
+.post-share-label {
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--k-muted);
+	margin-right: 0.15rem;
+}
+.post-share-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+.post-share-list li { margin: 0; }
+.post-share-link {
+	width: 32px;
+	height: 32px;
+}
+.post-share-copy {
+	appearance: none;
+	-webkit-appearance: none;
+	font: inherit;
+	padding: 0;
+	cursor: pointer;
+}
+.post-share-status {
+	position: absolute;
+	right: 0;
+	bottom: -1.4rem;
+	font-size: 0.78rem;
+	color: var(--k-muted);
+	opacity: 0;
+	transition: opacity 0.15s ease;
+}
+.post-share-status.is-visible { opacity: 1; }
+.footer-attribution {
+	font-size: 0.78rem;
+	color: var(--k-muted);
+}
+.footer-attribution a {
+	color: var(--k-muted);
+	border-bottom: 1px solid var(--k-rule);
+}
+.footer-attribution a:hover,
+.footer-attribution a:focus-visible {
+	color: var(--k-accent);
+	border-bottom-color: var(--k-accent);
+}
 .featured-image { margin: 1.5rem 0; }
 .e-content h2 { margin-top: 2.5rem; }
 
@@ -1607,7 +1675,21 @@ body.search-overlay-open { overflow: hidden; }
 		padding: 1rem 1.25rem;
 	}
 	.sidebar-card .site-nav .nav-menu { flex-direction: row; flex-wrap: wrap; gap: 0.25rem 0.75rem; }
-	.sidebar-card .sidebar-social { display: none; }
+	.sidebar-card .sidebar-social { display: block; }
+	.sidebar-social { margin-top: 0.75rem; }
+	.sidebar-social-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	.sidebar-social-list li { border-top: 0; }
+	.sidebar-social-link {
+		padding: 0.35rem 0.75rem;
+		border: 1px solid var(--k-rule);
+		border-radius: 999px;
+		font-size: 0.85rem;
+	}
+	.sidebar-social-arrow { display: none; }
 	.nav-num { display: none; }
 	.hero { padding: 3rem 0 2.5rem; }
 	.hero-inner { gap: 2.5rem; }
@@ -1729,7 +1811,9 @@ body.search-overlay-open { overflow: hidden; }
    Pointer-coarse devices need larger hit areas than a mouse does. 44px is the
    figure both Apple and WCAG 2.2 settle on. */
 @media (pointer: coarse) {
-	.hero-social-link {
+	.hero-social-link,
+	.post-share-link,
+	.post-share-copy {
 		width: 44px;
 		height: 44px;
 	}
@@ -1806,6 +1890,7 @@ a.k-email.is-resolved { cursor: auto; }
 	.pagination,
 	.search-form,
 	.hero-social,
+	.post-share,
 	.post-preview,
 	.not-found-search,
 	.planned-notice .planned-badge-line {
@@ -2025,4 +2110,50 @@ a.k-email.is-resolved { cursor: auto; }
 	.post-preview-shared {
 		transition: opacity 0.18s ease;
 	}
+}
+
+/* Resilience notice (inc/resilience.php). Admin-only; uses the theme's own
+   colour tokens and body font so it reads as part of Kolofon, not a foreign
+   popup. Deliberately high z-index and fixed position — it must stay
+   visible even if the page that triggered it is otherwise broken. */
+.kolofon-resilience-notice {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 99999;
+	padding: 12px 16px;
+	background: color-mix( in srgb, var(--k-text, #1d1d1d) 92%, var(--k-bg, #fff) );
+	color: var(--k-bg, #fff);
+	border-top: 2px solid var(--k-accent, #b8823c);
+	font-family: var(--k-font-body, -apple-system, sans-serif);
+	font-size: 0.85rem;
+	line-height: 1.5;
+}
+
+.kolofon-resilience-notice p {
+	margin: 0 0 4px;
+}
+
+.kolofon-resilience-notice details {
+	margin: 0;
+}
+
+.kolofon-resilience-notice summary {
+	cursor: pointer;
+	color: var(--k-accent, #b8823c);
+	opacity: 0.9;
+}
+
+.kolofon-resilience-notice summary:hover {
+	opacity: 1;
+}
+
+.kolofon-resilience-notice details p {
+	margin: 6px 0 0;
+	opacity: 0.75;
+}
+
+.kolofon-resilience-notice code {
+	font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }

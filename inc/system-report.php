@@ -160,7 +160,7 @@ function get_system_report() {
 			count( $slugs )
 		),
 		'note'  => count( $sections ) < count( $slugs )
-			? __( 'At least one configured slug has no matching category. The Sections tab lists which.', 'kolofon' )
+			? __( 'At least one configured slug has no matching category. The Layout tab lists which.', 'kolofon' )
 			: '',
 	);
 

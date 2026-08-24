@@ -10,7 +10,7 @@ namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'KOLOFON_VERSION', '7.3.1.1' );
+define( 'KOLOFON_VERSION', '7.4.0' );
 define( 'KOLOFON_DIR', trailingslashit( get_template_directory() ) );
 define( 'KOLOFON_URI', trailingslashit( get_template_directory_uri() ) );
 define( 'KOLOFON_OPTION_KEY', 'kolofon_options' );
@@ -20,6 +20,7 @@ define( 'KOLOFON_OPTION_KEY', 'kolofon_options' );
  */
 $kolofon_modules = array(
 	'defaults',
+	'resilience',
 	'hooks',
 	'options-schema',
 	'setup',
@@ -32,6 +33,7 @@ $kolofon_modules = array(
 	'options',
 	'settings-io',
 	'social',
+	'share',
 	'email-guard',
 	'post-list',
 	'page-states',

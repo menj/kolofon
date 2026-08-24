@@ -3,695 +3,1412 @@
 # This file is distributed under the same license as the Kolofon theme.
 msgid ""
 msgstr ""
-"Project-Id-Version: Kolofon 7.3.1.1\n"
+"Project-Id-Version: Kolofon 7.4.0\n"
 "Report-Msgid-Bugs-To: https://github.com/menj/kolofon/issues\n"
-"POT-Creation-Date: 2026-07-25 10:08+0000\n"
+"POT-Creation-Date: 2026-08-24 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Domain: kolofon\n"
-
-#: inc/system-report.php:158
-msgid "%1$d of %2$d configured slugs resolve"
-msgstr ""
-
-#: inc/post-list.php:94
-msgid "%1$s to %2$s of %3$s"
-msgstr ""
-
-#: page-blog.php:36
-msgid "%d post"
-msgid_plural "%d posts"
-msgstr[0] ""
-msgstr[1] ""
-
-#: index.php:45
-msgid "%d post found."
-msgid_plural "%d posts found."
-msgstr[0] ""
-msgstr[1] ""
-
-#: inc/system-report.php:102
-msgid "%s is active and owns this output."
-msgstr ""
-
-#: inc/options.php:414
-msgid "%s post"
-msgid_plural "%s posts"
-msgstr[0] ""
-msgstr[1] ""
-
-#: inc/tags.php:66
-msgid "+%s more"
-msgid_plural "+%s more"
-msgstr[0] ""
-msgstr[1] ""
-
-#: inc/system-report.php:53
-msgid "A Site Icon is set, so WordPress emits it and the theme stands down."
-msgstr ""
-
-#: inc/options.php:108
-#: inc/options.php:576
-msgid "A lede paragraph sets the scene in slightly larger type, carrying the voice before the body settles in."
-msgstr ""
-
-#: inc/page-states.php:123
-msgid "A planned page stays in the navigation with a badge, and shows its excerpt as a short description of what it will contain."
-msgstr ""
-
-#: inc/options-schema.php:126
-msgid "A short line above the heading, set in small letterspaced capitals. Leave empty to hide it."
-msgstr ""
-
-#: patterns/bio-card.php:31
-msgid "A short one-line description of what you do."
-msgstr ""
-
-#: inc/social.php:38
-msgid "Academia.edu"
-msgstr ""
-
-#: inc/blocks.php:52
-msgid "Accent border"
-msgstr ""
-
-#: inc/options-schema.php:42
-msgid "Advanced"
-msgstr ""
-
-#: inc/options-schema.php:188
-msgid "Any beyond this are summarised as a count."
-msgstr ""
-
-#: inc/options-schema.php:40
-msgid "Appearance"
-msgstr ""
-
-#: inc/system-report.php:163
-msgid "At least one configured slug has no matching category. The Sections tab lists which."
-msgstr ""
-
-#: inc/system-report.php:112
-msgid "Available"
-msgstr ""
-
-#: inc/options-schema.php:226
-msgid "Bare email works; mailto: is added automatically."
-msgstr ""
-
-#: inc/options-schema.php:153
-msgid "Basic HTML is allowed."
-msgstr ""
-
-#: inc/activation.php:71
-msgid "Blog"
-msgstr ""
-
-#: inc/system-report.php:144
-msgid "Blog index"
-msgstr ""
-
-#: inc/system-report.php:89
-msgid "Bundled default"
-msgstr ""
-
-#: inc/options-schema.php:161
-msgid "Category slugs in the order they should appear, separated by commas or new lines. Each must be an existing category. Sections are mutually exclusive: a post belongs to exactly one. Use tags for topics that cut across sections."
-msgstr ""
-
-#: inc/docs.php:135
-msgid "Changelog"
-msgstr ""
-
-#: inc/options.php:249
-msgid "Choose image"
-msgstr ""
-
-#: inc/options-schema.php:270
-msgid "Chrome layout"
-msgstr ""
-
-#: inc/defaults.php:263
-msgid "Circle"
-msgstr ""
-
-#: inc/options-schema.php:233
-#: inc/system-report.php:80
-msgid "Colour scheme"
-msgstr ""
-
-#: inc/options-schema.php:330
-msgid "Columns: date, section, title in aligned columns"
-msgstr ""
-
-#: inc/options-schema.php:371
-msgid "Content Security Policy"
-msgstr ""
-
-#: inc/options-schema.php:293
-msgid "Content width (px)"
-msgstr ""
-
-#: inc/system-report.php:115
-msgid "Controlled by the theme setting on the Advanced tab."
-msgstr ""
-
-#: inc/system-report.php:140
-msgid "Convention (/blog); no page found"
-msgstr ""
-
-#: patterns/contact-block.php:23
-msgid "Corrections, disagreements, and commissions all welcome."
-msgstr ""
-
-#: inc/options-schema.php:102
-msgid "Currently standing down: %s is active and owns this output. Emitting a second set would leave consumers to disagree about which wins."
-msgstr ""
-
-#: inc/settings-io.php:160
-msgid "Defaults restored."
-msgstr ""
-
-#: inc/options-schema.php:311
-msgid "Diameter or edge length of the hero portrait."
-msgstr ""
-
-#: inc/options-schema.php:285
-msgid "Digits 0 to 9 follow the correspondingly numbered navigation link. Sidebar layout only. Never fires while typing in a field. Turn off if it conflicts with assistive tooling."
-msgstr ""
-
-#: inc/options-schema.php:380
-msgid "Disable file editors"
-msgstr ""
-
-#: inc/system-report.php:112
-msgid "Disabled"
-msgstr ""
-
-#: inc/system-report.php:105
-msgid "Disabled on the Advanced tab."
-msgstr ""
-
-#: inc/migration-notice.php:70
-msgid "Dismiss"
-msgstr ""
-
-#: inc/options-schema.php:167
-msgid "Displays the row of section links on the home page and on section archives."
-msgstr ""
-
-#: inc/options-schema.php:44
-msgid "Documentation"
-msgstr ""
-
-#: inc/system-report.php:44
-msgid "Documentation falls back to escaped source in a pre block."
-msgstr ""
-
-#: inc/system-report.php:170
-msgid "Documentation files"
-msgstr ""
-
-#: inc/system-report.php:40
-msgid "Documentation parser"
-msgstr ""
-
-#: inc/system-report.php:43
-msgid "Documentation renders as HTML on the Documentation tab."
-msgstr ""
-
-#: inc/docs.php:211
-msgid "Documents"
-msgstr ""
-
-#: inc/options.php:363
-msgid "Download JSON"
-msgstr ""
-
-#: inc/options-schema.php:407
-msgid "Downloads every theme setting as a JSON file. Useful as a backup and for moving a configuration to another install."
-msgstr ""
-
-#: patterns/link-list.php:15
-msgid "Elsewhere"
-msgstr ""
-
-#: inc/social.php:86
-msgid "Email"
-msgstr ""
-
-#: inc/options-schema.php:206
-#: inc/system-report.php:61
-msgid "Email protection"
-msgstr ""
-
-#: inc/options-schema.php:386
-msgid "Emit meta tags and schema"
-msgstr ""
-
-#: inc/options-schema.php:96
-msgid "Emits Open Graph, Twitter card, canonical, and JSON-LD Person and WebSite markup. Without these a shared link renders as whatever the receiving platform guesses."
-msgstr ""
-
-#: inc/system-report.php:98
-msgid "Emitted by the theme"
-msgstr ""
-
-#: inc/options.php:316
-msgid "Enabled"
-msgstr ""
-
-#: inc/security.php:193
-msgid "Enforce"
-msgstr ""
-
-#: inc/options.php:294
-msgid "Exact value"
-msgstr ""
-
-#: inc/options-schema.php:404
-msgid "Export settings"
-msgstr ""
-
-#: inc/social.php:71
-msgid "Facebook"
-msgstr ""
-
-#: inc/system-report.php:50
-msgid "Favicon source"
-msgstr ""
-
-#: inc/security.php:106
-msgid "File editing disabled"
-msgstr ""
-
-#: inc/security.php:105
-msgid "File editing is disabled."
-msgstr ""
-
-#: inc/system-report.php:111
-msgid "File editors"
-msgstr ""
-
-#: inc/social.php:166
-msgid "Find me on:"
-msgstr ""
-
-#: patterns/link-list.php:21
-msgid "First link"
-msgstr ""
-
-#: inc/defaults.php:262
-msgid "Floating (transparent cut-out, no mask)"
-msgstr ""
-
-#: inc/options-schema.php:320
-msgid "Floating suits a cut-out PNG with a transparent background."
-msgstr ""
-
-#: inc/options-schema.php:239
-msgid "Font stack"
-msgstr ""
-
-#: footer.php:14
-msgid "Footer"
-msgstr ""
-
-#: inc/setup.php:37
-msgid "Footer Menu"
-msgstr ""
-
-#: inc/options-schema.php:150
-msgid "Footer text"
-msgstr ""
-
-#: patterns/contact-block.php:19
-msgid "Get in touch"
-msgstr ""
-
-#: inc/social.php:56
-msgid "GitHub"
-msgstr ""
-
-#: inc/email-guard.php:81
-msgid "HTML entities (works without JavaScript)"
-msgstr ""
-
-#: inc/blocks.php:44
-msgid "Hairline"
-msgstr ""
-
-#: inc/options-schema.php:135
-msgid "Hero body copy"
-msgstr ""
-
-#: inc/options-schema.php:123
-msgid "Hero eyebrow"
-msgstr ""
-
-#: inc/options-schema.php:129
-msgid "Hero heading"
-msgstr ""
-
-#: inc/options-schema.php:144
-#: inc/system-report.php:88
-msgid "Hero portrait"
-msgstr ""
-
-#: inc/options-schema.php:304
-msgid "Hero portrait size (px)"
-msgstr ""
-
-#: inc/options-schema.php:315
-msgid "Hero portrait style"
-msgstr ""
-
-#: patterns/bio-hero.php:17
-msgid "Hi, I'm Mohd Elfie"
-msgstr ""
-
-#: inc/options-schema.php:81
-msgid "Hides Appearance > Theme File Editor and Plugins > Plugin File Editor, and blocks direct access. Editing live PHP from a browser turns a hijacked admin session into arbitrary code execution. Setting DISALLOW_FILE_EDIT in wp-config.php is stronger still, and takes precedence over this."
-msgstr ""
-
-#: inc/options-schema.php:343
-msgid "Hover preview width (px)"
-msgstr ""
-
-#: inc/options-schema.php:37
-msgid "Identity"
-msgstr ""
-
-#: inc/options-schema.php:410
-msgid "Import settings"
-msgstr ""
-
-#: inc/options-schema.php:333
-msgid "Index reads as a table of contents: a hairline-ruled row list where the title carries the eye and the excerpt sits below. Suits sites organised by title rather than by date."
-msgstr ""
-
-#: inc/options-schema.php:331
-msgid "Index: title with year, excerpt underneath, indexical"
-msgstr ""
-
-#: inc/social.php:66
-msgid "Instagram"
-msgstr ""
-
-#: inc/setup.php:51
-msgid "Intro"
-msgstr ""
-
-#: inc/system-report.php:74
-msgid "Ivory when the device prefers light, Charcoal when it prefers dark."
-msgstr ""
-
-#: inc/email-guard.php:80
-msgid "JavaScript rebuild (strongest)"
-msgstr ""
-
-#: inc/options-schema.php:198
-msgid "Keep previous and next within a section"
-msgstr ""
-
-#: inc/options-schema.php:211
-msgid "Keeps plain mailto: strings out of the served HTML so harvesters find nothing to scrape. Applies to the icon below, to mailto: links in post content, and to the [kolofon_email] shortcode."
-msgstr ""
-
-#: inc/options-schema.php:282
-msgid "Keyboard shortcuts"
-msgstr ""
-
-#: inc/blocks.php:28
-msgid "Kolofon"
-msgstr ""
-
-#: inc/migration-notice.php:48
-msgid "Kolofon: migration complete."
-msgstr ""
-
-#: inc/options-schema.php:170
-msgid "Label for the all-sections link"
-msgstr ""
-
-#: inc/options-schema.php:41
-msgid "Layout"
-msgstr ""
-
-#: inc/options-schema.php:256
-msgid "Lede body size (px)"
-msgstr ""
-
-#: inc/options-schema.php:244
-msgid "Lede heading size (px)"
-msgstr ""
-
-#: inc/social.php:33
-msgid "LinkedIn"
-msgstr ""
-
-#: inc/options.php:572
-msgid "Live preview"
-msgstr ""
-
-#: inc/system-report.php:114
-msgid "Locked by DISALLOW_FILE_EDIT in wp-config.php, which takes precedence over the theme setting."
-msgstr ""
-
-#: inc/options.php:432
-msgid "Manage categories"
-msgstr ""
-
-#: inc/docs.php:110
-msgid "Markdown could not be rendered, so the source is shown below."
-msgstr ""
-
-#: inc/social.php:23
-msgid "Mastodon"
-msgstr ""
-
-#: inc/options-schema.php:252
-msgid "Maximum size. The heading scales down fluidly on narrow screens. Drag to preview, or type an exact value."
-msgstr ""
-
-#: header.php:35
-#: header.php:67
-msgid "Menu"
-msgstr ""
-
-#: inc/system-report.php:97
-msgid "Meta tags and schema"
-msgstr ""
-
-#: inc/post-list.php:106
-msgid "Newer posts"
-msgstr ""
-
-#: inc/system-report.php:54
-msgid "No Site Icon set; the theme emits its bundled favicon set."
-msgstr ""
-
-#: inc/docs.php:202
-msgid "No documentation files found in the docs/ directory."
-msgstr ""
-
-#: inc/settings-io.php:164
-msgid "No file was uploaded."
-msgstr ""
-
-#: inc/system-report.php:147
-msgid "No page provisioned. Reactivate the theme to trigger the activation hook, or set a Posts page under Settings > Reading."
-msgstr ""
-
-#: page-blog.php:68
-msgid "No posts yet."
-msgstr ""
-
-#: patterns/callout.php:15
-msgid "Note"
-msgstr ""
-
-#: inc/options-schema.php:84
-msgid "Note: DISALLOW_FILE_EDIT is already set in wp-config.php on this install, so the editors stay off regardless of this setting."
-msgstr ""
-
-#: index.php:75
-msgid "Nothing found."
-msgstr ""
-
-#: inc/social.php:47
-msgid "ORCID"
-msgstr ""
-
-#: inc/security.php:191
-msgid "Off"
-msgstr ""
-
-#: inc/options-schema.php:376
-msgid "Off by default. A policy strict enough to matter blocks inline scripts, which WordPress core and most plugins emit, so enforcing one without preparation can blank the front end. Start on Report only, watch the browser console across the site, and switch to Enforce once nothing legitimate is being flagged. Never applied to admin screens. Adjust the directives with the kolofon_csp_directives filter."
-msgstr ""
-
-#: inc/email-guard.php:82
-msgid "Off, emit plain mailto:"
-msgstr ""
-
-#: inc/post-list.php:115
-msgid "Older posts"
-msgstr ""
-
-#: inc/options-schema.php:192
-msgid "One category per post"
-msgstr ""
-
-#: inc/migration-notice.php:67
-msgid "Open Kolofon Options"
-msgstr ""
-
-#: inc/options.php:617
-#: inc/options.php:623
-msgid "Open Site Identity"
-msgstr ""
-
-#: 404.php:35
-msgid "Or search for something"
-msgstr ""
 
 #: 404.php:23
 msgid "Page not found"
 msgstr ""
 
-#: inc/page-states.php:96
-msgid "Page state"
-msgstr ""
-
-#: inc/system-report.php:138
-msgid "Page with Blog Index template"
-msgstr ""
-
-#: singular.php:58
-msgid "Pages:"
-msgstr ""
-
-#: inc/post-list.php:89
-msgid "Pagination"
-msgstr ""
-
-#: inc/social.php:81
-msgid "Pinterest"
-msgstr ""
-
-#: inc/options-schema.php:392
-msgid "Planned page badge"
-msgstr ""
-
-#: inc/options-schema.php:398
-msgid "Planned page notice"
-msgstr ""
-
-#: inc/page-states.php:59
-msgid "Planned, not yet written"
-msgstr ""
-
-#: inc/options-schema.php:337
-msgid "Post hover previews"
-msgstr ""
-
-#: inc/options-schema.php:324
-msgid "Post list style"
-msgstr ""
-
-#: singular.php:74
-msgid "Post navigation"
-msgstr ""
-
-#: index.php:38
-msgid "Posts"
-msgstr ""
-
-#: index.php:26
-msgid "Posts in:"
-msgstr ""
-
-#: index.php:32
-msgid "Posts tagged:"
-msgstr ""
-
-#: header.php:35
-#: header.php:67
-msgid "Primary"
-msgstr ""
-
-#: inc/setup.php:36
-msgid "Primary Menu"
-msgstr ""
-
-#: inc/page-states.php:58
-msgid "Published normally"
-msgstr ""
-
-#: inc/social.php:91
-msgid "RSS"
-msgstr ""
-
-#: inc/docs.php:132
-msgid "Readme"
-msgstr ""
-
-#: home.php:75
-msgid "Recent Posts"
-msgstr ""
-
-#: inc/options-schema.php:359
-msgid "Recent posts count"
-msgstr ""
-
-#: inc/options-schema.php:195
-msgid "Reduces every post to a single category on save, and makes the block editor category panel behave as a single-choice list. Applies to posts created through REST, WP-CLI, and imports too."
-msgstr ""
-
-#: inc/options.php:251
-msgid "Remove"
-msgstr ""
-
-#: patterns/callout.php:19
-msgid "Replace this with the point worth setting apart from the surrounding argument."
-msgstr ""
-
-#: inc/options-schema.php:413
-msgid "Replaces all current settings. Unknown keys are discarded and every value is re-validated, so an edited file cannot introduce anything the theme does not recognise."
-msgstr ""
-
-#: inc/security.php:192
-msgid "Report only (logs violations, blocks nothing)"
-msgstr ""
-
-#: inc/options-schema.php:416
-msgid "Reset to defaults"
-msgstr ""
-
-#: inc/options.php:445
-msgid "Restore all options to default values. Continue?"
-msgstr ""
-
-#: inc/options.php:446
-msgid "Restore defaults"
+#: 404.php:25
+msgid "The page you requested does not exist, or has been moved."
 msgstr ""
 
 #: 404.php:30
 msgid "Return home"
 msgstr ""
 
-#: inc/options-schema.php:340
-msgid "Reveals a post featured image beside the list on hover or keyboard focus. Posts without a featured image show nothing. Pointer devices only."
+#: 404.php:35
+msgid "Or search for something"
 msgstr ""
+
+#: archive-kolofon_status.php:23 inc/microblog/class-cpt.php:31
+#: inc/microblog/class-cpt.php:41 index.php:38
+msgid "Statuses"
+msgstr ""
+
+#: archive-kolofon_status.php:37
+msgid "%d status"
+msgid_plural "%d statuses"
+msgstr[0] ""
+msgstr[1] ""
+
+#: archive-kolofon_status.php:76
+msgid "Newer"
+msgstr ""
+
+#: archive-kolofon_status.php:77
+msgid "Older"
+msgstr ""
+
+#: archive-kolofon_status.php:82 inc/microblog/class-timeline.php:150
+msgid "No statuses yet."
+msgstr ""
+
+#: footer.php:14
+msgid "Footer"
+msgstr ""
+
+#. translators: %s: "Font Awesome" linked to its site.
+#: footer.php:37
+msgid "Icons by %s"
+msgstr ""
+
+#: header.php:27 searchform.php:13
+msgid "Search"
+msgstr ""
+
+#: header.php:28
+msgid "Close search"
+msgstr ""
+
+#: header.php:29 header.php:30
+msgid "Search this site"
+msgstr ""
+
+#: header.php:34
+msgid "Skip to content"
+msgstr ""
+
+#: header.php:50 header.php:82
+msgid "Primary"
+msgstr ""
+
+#: header.php:50 header.php:82
+msgid "Menu"
+msgstr ""
+
+#: home.php:92
+msgid "Recent Posts"
+msgstr ""
+
+#: inc/activation.php:71
+msgid "Blog"
+msgstr ""
+
+#: inc/blocks.php:28 inc/options.php:593
+msgid "Kolofon"
+msgstr ""
+
+#: inc/blocks.php:44
+msgid "Hairline"
+msgstr ""
+
+#: inc/blocks.php:52
+msgid "Accent border"
+msgstr ""
+
+#: inc/defaults.php:306
+msgid "Floating (transparent cut-out, no mask)"
+msgstr ""
+
+#: inc/defaults.php:307
+msgid "Circle"
+msgstr ""
+
+#: inc/defaults.php:308
+msgid "Rounded square"
+msgstr ""
+
+#: inc/defaults.php:309
+msgid "Square"
+msgstr ""
+
+#: inc/docs.php:121
+msgid "Markdown could not be rendered, so the source is shown below."
+msgstr ""
+
+#: inc/docs.php:145
+msgid "Readme"
+msgstr ""
+
+#: inc/docs.php:149
+msgid "SSOT"
+msgstr ""
+
+#: inc/docs.php:153
+msgid "Upgrading"
+msgstr ""
+
+#: inc/docs.php:157
+msgid "Changelog"
+msgstr ""
+
+#: inc/docs.php:161
+msgid "Now feature spec"
+msgstr ""
+
+#: inc/docs.php:235
+msgid "No documentation files found in the docs/ directory."
+msgstr ""
+
+#: inc/docs.php:244
+msgid "Documents"
+msgstr ""
+
+#: inc/docs.php:264
+msgid "Source:"
+msgstr ""
+
+#: inc/email-guard.php:64
+msgid "Show email address"
+msgstr ""
+
+#: inc/email-guard.php:80
+msgid "JavaScript rebuild (strongest)"
+msgstr ""
+
+#: inc/email-guard.php:81
+msgid "HTML entities (works without JavaScript)"
+msgstr ""
+
+#: inc/email-guard.php:82
+msgid "Off, emit plain mailto:"
+msgstr ""
+
+#. translators: %s: search term */ return sprintf( __( 'Search results for %s', 'kolofon' ), get_search_query() ); } return get_bloginfo( 'name', 'display' ); } /** * Canonical URL for the current view. * * @return string */ function meta_canonical() { if ( is_singular() ) { // A singular view can itself be paginated — native <!--nextpage--> // content, or a template like the Blog Index that runs its own // WP_Query with `paged`. Either way WordPress reflects the current // page in the `page` (or, less commonly, `paged`) query var, and the // bare permalink is only correct on page 1: on page 2+ it would // canonicalise every page back to page 1, telling crawlers not to // index the rest. get_pagenum_link() builds the right `/page/N/` URL // for the current request regardless of which mechanism is paginating // it, so this stays correct without knowing which one is in play. $view_page = max( 1, (int) get_query_var( 'page' ), (int) get_query_var( 'paged' ) ); return 1 === $view_page ? (string) get_permalink() : (string) get_pagenum_link( $view_page ); } if ( is_category() || is_tag() || is_tax() ) { $link = get_term_link( get_queried_object() ); return is_wp_error( $link ) ? home_url( '/' ) : (string) $link; } return home_url( '/' ); } /** * Emit Open Graph, Twitter card, description, and canonical tags. */ function emit_meta_tags() { if ( ! meta_output_enabled() ) { return; } $title = meta_title(); $description = meta_description(); $image = meta_image(); $canonical = meta_canonical(); $site_name = get_bloginfo( 'name', 'display' ); $type = is_singular( 'post' ) ? 'article' : 'website'; echo "\n<!-- Kolofon meta -->\n"; printf( "<link rel=\"canonical\" href=\"%s\" />\n", esc_url( $canonical ) ); if ( '' !== $description ) { printf( "<meta name=\"description\" content=\"%s\" />\n", esc_attr( $description ) ); } printf( "<meta property=\"og:type\" content=\"%s\" />\n", esc_attr( $type ) ); printf( "<meta property=\"og:title\" content=\"%s\" />\n", esc_attr( $title ) ); printf( "<meta property=\"og:url\" content=\"%s\" />\n", esc_url( $canonical ) ); printf( "<meta property=\"og:site_name\" content=\"%s\" />\n", esc_attr( $site_name ) ); printf( "<meta property=\"og:locale\" content=\"%s\" />\n", esc_attr( get_locale() ) ); if ( '' !== $description ) { printf( "<meta property=\"og:description\" content=\"%s\" />\n", esc_attr( $description ) ); } if ( '' !== $image ) { printf( "<meta property=\"og:image\" content=\"%s\" />\n", esc_url( $image ) ); } if ( 'article' === $type ) { printf( "<meta property=\"article:published_time\" content=\"%s\" />\n", esc_attr( get_the_date( DATE_W3C ) ) ); printf( "<meta property=\"article:modified_time\" content=\"%s\" />\n", esc_attr( get_the_modified_date( DATE_W3C ) ) ); $section = get_the_category(); if ( ! empty( $section ) ) { printf( "<meta property=\"article:section\" content=\"%s\" />\n", esc_attr( $section[0]->name ) ); } } printf( "<meta name=\"twitter:card\" content=\"%s\" />\n", '' !== $image ? 'summary_large_image' : 'summary' ); printf( "<meta name=\"twitter:title\" content=\"%s\" />\n", esc_attr( $title ) ); if ( '' !== $description ) { printf( "<meta name=\"twitter:description\" content=\"%s\" />\n", esc_attr( $description ) ); } if ( '' !== $image ) { printf( "<meta name=\"twitter:image\" content=\"%s\" />\n", esc_url( $image ) ); } $twitter = social_handle_from_url( opt( social_key( 'x' ) ) ); if ( '' !== $twitter ) { printf( "<meta name=\"twitter:creator\" content=\"@%s\" />\n", esc_attr( $twitter ) ); } } /** * Extract a handle from a social profile URL. * * @param string $url Profile URL. * @return string Handle without the leading at sign, or an empty string. */ function social_handle_from_url( $url ) { $path = wp_parse_url( (string) $url, PHP_URL_PATH ); if ( ! $path ) { return ''; } $handle = trim( $path, '/' ); $handle = ltrim( $handle, '@' ); // Only a bare handle is useful; anything with further path segments is not. if ( '' === $handle || false !== strpos( $handle, '/' ) ) { return ''; } return sanitize_text_field( $handle ); } /** * Split the "Additional profile pages" field into a clean list of URLs. * * Deliberately splits on newlines only, never commas: unlike a slug list, a * URL can legitimately contain a comma in its query string, so the pattern * `parse_section_slugs()` uses would corrupt it. * * @param string $raw Raw option value, one URL per line. * @return string[] Cleaned, deduplicated, in the order entered. */ function parse_same_as_urls( $raw ) { $lines = preg_split( '/\r\n|\r|\n/', (string) $raw ); $urls = array(); foreach ( $lines as $line ) { $line = trim( $line ); if ( '' === $line ) { continue; } $clean = esc_url_raw( $line ); if ( '' !== $clean ) { $urls[] = $clean; } } return array_values( array_unique( $urls ) ); } /** * The site owner's additional sameAs URLs: pages about them that are not * social media (a Gravatar profile, Wikipedia, Crunchbase, IMDb, a personal * wiki) and so are deliberately kept out of `get_social_platforms()` — that * registry also drives an icon and a profile-row link, which none of these * should have. * * @return string[] */ function get_same_as_urls() { return parse_same_as_urls( opt( 'same_as_urls' ) ); } /** * Emit a JSON-LD graph describing the person and the site. */ function emit_schema() { if ( ! meta_output_enabled() ) { return; } $home = home_url( '/' ); $site_name = get_bloginfo( 'name', 'display' ); $person_id = $home . '#person'; $site_id = $home . '#website'; $same_as = array(); foreach ( array_keys( get_social_platforms() ) as $slug ) { if ( in_array( $slug, array( 'email', 'rss' ), true ) ) { continue; } $url = opt( social_key( $slug ) ); if ( $url ) { $same_as[] = $url; } } // Non-social pages about the site owner — Gravatar, Wikipedia, and the // like — belong in sameAs too, but deliberately have no icon or profile // link of their own, so they come from a separate field rather than the // social platform registry. $same_as = array_values( array_unique( array_merge( $same_as, get_same_as_urls() ) ) ); $person = array( '@type' => 'Person', '@id' => $person_id, 'name' => wp_strip_all_tags( (string) opt( 'hero_heading' ) ), 'url' => $home, ); $description = wp_strip_all_tags( (string) opt( 'hero_body' ) ); $description = trim( preg_replace( '/\s+/', ' ', $description ) ); if ( '' !== $description ) { $person['description'] = $description; } $portrait = opt( 'hero_portrait' ) ? opt( 'hero_portrait' ) : default_portrait_url(); if ( $portrait ) { $person['image'] = $portrait; } if ( $same_as ) { $person['sameAs'] = array_values( $same_as ); } $website = array( '@type' => 'WebSite', '@id' => $site_id, 'url' => $home, 'name' => $site_name, 'publisher' => array( '@id' => $person_id ), 'inLanguage' => get_bloginfo( 'language' ), // Enables the sitelinks search box in Google results. The target is the // theme's own search URL; the query token is the standard placeholder. 'potentialAction' => array( '@type' => 'SearchAction', 'target' => array( '@type' => 'EntryPoint', 'urlTemplate' => $home . '?s={search_term_string}', ), 'query-input' => 'required name=search_term_string', ), ); $graph = array( $person, $website ); // The front page of a single-author microsite is that author's profile. // ProfilePage tells crawlers and AI tools "this page is about this Person", // which is exactly the "who is this" question they try to answer. if ( is_front_page() ) { $graph[] = array( '@type' => 'ProfilePage', '@id' => $home . '#profilepage', 'url' => $home, 'name' => $site_name, 'about' => array( '@id' => $person_id ), 'mainEntity' => array( '@id' => $person_id ), 'isPartOf' => array( '@id' => $site_id ), 'inLanguage' => get_bloginfo( 'language' ), ); } if ( is_singular( 'post' ) ) { $article = array( '@type' => 'BlogPosting', '@id' => get_permalink() . '#article', 'headline' => wp_strip_all_tags( get_the_title() ), 'url' => get_permalink(), 'datePublished' => get_the_date( DATE_W3C ), 'dateModified' => get_the_modified_date( DATE_W3C ), 'author' => array( '@id' => $person_id ), 'publisher' => array( '@id' => $person_id ), 'isPartOf' => array( '@id' => $site_id ), 'mainEntityOfPage' => array( '@id' => get_permalink() . '#article' ), ); $excerpt = meta_description(); if ( '' !== $excerpt ) { $article['description'] = $excerpt; } $image = meta_image(); if ( '' !== $image ) { $article['image'] = $image; } $section = get_the_category(); if ( ! empty( $section ) ) { $article['articleSection'] = $section[0]->name; } $graph[] = $article; } // A single page (not a post, not the front page) is a WebPage. The site's // About page, if its slug or title says so, is the more specific AboutPage. if ( is_page() && ! is_front_page() ) { $queried = get_queried_object(); $is_about = ( $queried instanceof \WP_Post ) && ( 'about' === $queried->post_name || 0 === strcasecmp( 'about', (string) $queried->post_title ) ); $page_node = array( '@type' => $is_about ? 'AboutPage' : 'WebPage', '@id' => get_permalink() . '#webpage', 'url' => get_permalink(), 'name' => wp_strip_all_tags( get_the_title() ), 'isPartOf' => array( '@id' => $site_id ), 'about' => array( '@id' => $person_id ), 'inLanguage' => get_bloginfo( 'language' ), ); $page_desc = meta_description(); if ( '' !== $page_desc ) { $page_node['description'] = $page_desc; } $graph[] = $page_node; } // Archives (category, tag, date, author) and the Blog Index page are // collections. CollectionPage plus an ItemList of the posts on the page // tells a crawler exactly which posts this listing contains and in what // order, which is what AI tools extract when summarising a section. $is_blog_template = is_page() && get_page_template_slug() === 'page-blog.php'; if ( is_archive() || is_home() || $is_blog_template ) { $collection = build_collection_schema( $site_id, $person_id ); if ( $collection ) { $graph[] = $collection; } } // Search results are their own page type. if ( is_search() ) { $graph[] = array( '@type' => 'SearchResultsPage', '@id' => $home . '?s=' . rawurlencode( get_search_query() ) . '#searchresults', 'url' => $home . '?s=' . rawurlencode( get_search_query() ), 'name' => sprintf( /* translators: %s: the search query
+#. translators: %s: search term */ return sprintf( __( 'Search results for %s', 'kolofon' ), get_search_query() ); } return get_bloginfo( 'name', 'display' ); } /** * Canonical URL for the current view. * * @return string */ function meta_canonical() { if ( is_singular() ) { // A singular view can itself be paginated — native <!--nextpage--> // content, or a template like the Blog Index that runs its own // WP_Query with `paged`. Either way WordPress reflects the current // page in the `page` (or, less commonly, `paged`) query var, and the // bare permalink is only correct on page 1: on page 2+ it would // canonicalise every page back to page 1, telling crawlers not to // index the rest. get_pagenum_link() builds the right `/page/N/` URL // for the current request regardless of which mechanism is paginating // it, so this stays correct without knowing which one is in play. $view_page = max( 1, (int) get_query_var( 'page' ), (int) get_query_var( 'paged' ) ); return 1 === $view_page ? (string) get_permalink() : (string) get_pagenum_link( $view_page ); } if ( is_category() || is_tag() || is_tax() ) { $link = get_term_link( get_queried_object() ); return is_wp_error( $link ) ? home_url( '/' ) : (string) $link; } return home_url( '/' ); } /** * Emit Open Graph, Twitter card, description, and canonical tags. */ function emit_meta_tags() { if ( ! meta_output_enabled() ) { return; } $title = meta_title(); $description = meta_description(); $image = meta_image(); $canonical = meta_canonical(); $site_name = get_bloginfo( 'name', 'display' ); $type = is_singular( 'post' ) ? 'article' : 'website'; echo "\n<!-- Kolofon meta -->\n"; printf( "<link rel=\"canonical\" href=\"%s\" />\n", esc_url( $canonical ) ); if ( '' !== $description ) { printf( "<meta name=\"description\" content=\"%s\" />\n", esc_attr( $description ) ); } printf( "<meta property=\"og:type\" content=\"%s\" />\n", esc_attr( $type ) ); printf( "<meta property=\"og:title\" content=\"%s\" />\n", esc_attr( $title ) ); printf( "<meta property=\"og:url\" content=\"%s\" />\n", esc_url( $canonical ) ); printf( "<meta property=\"og:site_name\" content=\"%s\" />\n", esc_attr( $site_name ) ); printf( "<meta property=\"og:locale\" content=\"%s\" />\n", esc_attr( get_locale() ) ); if ( '' !== $description ) { printf( "<meta property=\"og:description\" content=\"%s\" />\n", esc_attr( $description ) ); } if ( '' !== $image ) { printf( "<meta property=\"og:image\" content=\"%s\" />\n", esc_url( $image ) ); } if ( 'article' === $type ) { printf( "<meta property=\"article:published_time\" content=\"%s\" />\n", esc_attr( get_the_date( DATE_W3C ) ) ); printf( "<meta property=\"article:modified_time\" content=\"%s\" />\n", esc_attr( get_the_modified_date( DATE_W3C ) ) ); $section = get_the_category(); if ( ! empty( $section ) ) { printf( "<meta property=\"article:section\" content=\"%s\" />\n", esc_attr( $section[0]->name ) ); } } printf( "<meta name=\"twitter:card\" content=\"%s\" />\n", '' !== $image ? 'summary_large_image' : 'summary' ); printf( "<meta name=\"twitter:title\" content=\"%s\" />\n", esc_attr( $title ) ); if ( '' !== $description ) { printf( "<meta name=\"twitter:description\" content=\"%s\" />\n", esc_attr( $description ) ); } if ( '' !== $image ) { printf( "<meta name=\"twitter:image\" content=\"%s\" />\n", esc_url( $image ) ); } $twitter = social_handle_from_url( opt( social_key( 'x' ) ) ); if ( '' !== $twitter ) { printf( "<meta name=\"twitter:creator\" content=\"@%s\" />\n", esc_attr( $twitter ) ); } } /** * Extract a handle from a social profile URL. * * @param string $url Profile URL. * @return string Handle without the leading at sign, or an empty string. */ function social_handle_from_url( $url ) { $path = wp_parse_url( (string) $url, PHP_URL_PATH ); if ( ! $path ) { return ''; } $handle = trim( $path, '/' ); $handle = ltrim( $handle, '@' ); // Only a bare handle is useful; anything with further path segments is not. if ( '' === $handle || false !== strpos( $handle, '/' ) ) { return ''; } return sanitize_text_field( $handle ); } /** * Split the "Additional profile pages" field into a clean list of URLs. * * Deliberately splits on newlines only, never commas: unlike a slug list, a * URL can legitimately contain a comma in its query string, so the pattern * `parse_section_slugs()` uses would corrupt it. * * @param string $raw Raw option value, one URL per line. * @return string[] Cleaned, deduplicated, in the order entered. */ function parse_same_as_urls( $raw ) { $lines = preg_split( '/\r\n|\r|\n/', (string) $raw ); $urls = array(); foreach ( $lines as $line ) { $line = trim( $line ); if ( '' === $line ) { continue; } $clean = esc_url_raw( $line ); if ( '' !== $clean ) { $urls[] = $clean; } } return array_values( array_unique( $urls ) ); } /** * The site owner's additional sameAs URLs: pages about them that are not * social media (a Gravatar profile, Wikipedia, Crunchbase, IMDb, a personal * wiki) and so are deliberately kept out of `get_social_platforms()` — that * registry also drives an icon and a profile-row link, which none of these * should have. * * @return string[] */ function get_same_as_urls() { return parse_same_as_urls( opt( 'same_as_urls' ) ); } /** * Emit a JSON-LD graph describing the person and the site. */ function emit_schema() { if ( ! meta_output_enabled() ) { return; } $home = home_url( '/' ); $site_name = get_bloginfo( 'name', 'display' ); $person_id = $home . '#person'; $site_id = $home . '#website'; $same_as = array(); foreach ( array_keys( get_social_platforms() ) as $slug ) { if ( in_array( $slug, array( 'email', 'rss' ), true ) ) { continue; } $url = opt( social_key( $slug ) ); if ( $url ) { $same_as[] = $url; } } // Non-social pages about the site owner — Gravatar, Wikipedia, and the // like — belong in sameAs too, but deliberately have no icon or profile // link of their own, so they come from a separate field rather than the // social platform registry. $same_as = array_values( array_unique( array_merge( $same_as, get_same_as_urls() ) ) ); $person = array( '@type' => 'Person', '@id' => $person_id, 'name' => wp_strip_all_tags( (string) opt( 'hero_heading' ) ), 'url' => $home, ); $description = wp_strip_all_tags( (string) opt( 'hero_body' ) ); $description = trim( preg_replace( '/\s+/', ' ', $description ) ); if ( '' !== $description ) { $person['description'] = $description; } $portrait = opt( 'hero_portrait' ) ? opt( 'hero_portrait' ) : default_portrait_url(); if ( $portrait ) { $person['image'] = $portrait; } if ( $same_as ) { $person['sameAs'] = array_values( $same_as ); } $website = array( '@type' => 'WebSite', '@id' => $site_id, 'url' => $home, 'name' => $site_name, 'publisher' => array( '@id' => $person_id ), 'inLanguage' => get_bloginfo( 'language' ), // Enables the sitelinks search box in Google results. The target is the // theme's own search URL; the query token is the standard placeholder. 'potentialAction' => array( '@type' => 'SearchAction', 'target' => array( '@type' => 'EntryPoint', 'urlTemplate' => $home . '?s={search_term_string}', ), 'query-input' => 'required name=search_term_string', ), ); $graph = array( $person, $website ); // The front page of a single-author microsite is that author's profile. // ProfilePage tells crawlers and AI tools "this page is about this Person", // which is exactly the "who is this" question they try to answer. if ( is_front_page() ) { $graph[] = array( '@type' => 'ProfilePage', '@id' => $home . '#profilepage', 'url' => $home, 'name' => $site_name, 'about' => array( '@id' => $person_id ), 'mainEntity' => array( '@id' => $person_id ), 'isPartOf' => array( '@id' => $site_id ), 'inLanguage' => get_bloginfo( 'language' ), ); } if ( is_singular( 'post' ) ) { $article = array( '@type' => 'BlogPosting', '@id' => get_permalink() . '#article', 'headline' => wp_strip_all_tags( get_the_title() ), 'url' => get_permalink(), 'datePublished' => get_the_date( DATE_W3C ), 'dateModified' => get_the_modified_date( DATE_W3C ), 'author' => array( '@id' => $person_id ), 'publisher' => array( '@id' => $person_id ), 'isPartOf' => array( '@id' => $site_id ), 'mainEntityOfPage' => array( '@id' => get_permalink() . '#article' ), ); $excerpt = meta_description(); if ( '' !== $excerpt ) { $article['description'] = $excerpt; } $image = meta_image(); if ( '' !== $image ) { $article['image'] = $image; } $section = get_the_category(); if ( ! empty( $section ) ) { $article['articleSection'] = $section[0]->name; } $graph[] = $article; } // A single page (not a post, not the front page) is a WebPage. The site's // About page, if its slug or title says so, is the more specific AboutPage. if ( is_page() && ! is_front_page() ) { $queried = get_queried_object(); $is_about = ( $queried instanceof \WP_Post ) && ( 'about' === $queried->post_name || 0 === strcasecmp( 'about', (string) $queried->post_title ) ); $page_node = array( '@type' => $is_about ? 'AboutPage' : 'WebPage', '@id' => get_permalink() . '#webpage', 'url' => get_permalink(), 'name' => wp_strip_all_tags( get_the_title() ), 'isPartOf' => array( '@id' => $site_id ), 'about' => array( '@id' => $person_id ), 'inLanguage' => get_bloginfo( 'language' ), ); $page_desc = meta_description(); if ( '' !== $page_desc ) { $page_node['description'] = $page_desc; } $graph[] = $page_node; } // Archives (category, tag, date, author) and the Blog Index page are // collections. CollectionPage plus an ItemList of the posts on the page // tells a crawler exactly which posts this listing contains and in what // order, which is what AI tools extract when summarising a section. $is_blog_template = is_page() && get_page_template_slug() === 'page-blog.php'; if ( is_archive() || is_home() || $is_blog_template ) { $collection = build_collection_schema( $site_id, $person_id ); if ( $collection ) { $graph[] = $collection; } } // Search results are their own page type. if ( is_search() ) { $graph[] = array( '@type' => 'SearchResultsPage', '@id' => $home . '?s=' . rawurlencode( get_search_query() ) . '#searchresults', 'url' => $home . '?s=' . rawurlencode( get_search_query() ), 'name' => sprintf( /* translators: %s: the search query */ __( 'Search results for %s', 'kolofon' ), get_search_query() ), 'isPartOf' => array( '@id' => $site_id ), 'inLanguage' => get_bloginfo( 'language' ), ); } // Breadcrumbs on every non-front view. Google renders these directly in // results, and they give crawlers the page's place in the site hierarchy. $breadcrumb = build_breadcrumb_schema( $home ); if ( $breadcrumb ) { $graph[] = $breadcrumb; } $payload = array( '@context' => 'https://schema.org', '@graph' => $graph, ); printf( "<script type=\"application/ld+json\">%s</script>\n", wp_json_encode( $payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) ); } /** * Build a CollectionPage node with an ItemList of the posts in the loop. * * Covers category, tag, date, and author archives, the posts index, and the * Blog Index page template. The ItemList positions each post so a crawler * reads the listing as an ordered set of specific URLs rather than opaque * pagination. Reads the main query without disturbing it. * * @param string $site_id The WebSite node @id, for isPartOf. * @param string $person_id The Person node @id, unused placeholder for parity. * @return array|null The node, or null when the loop is empty. */ function build_collection_schema( $site_id, $person_id ) { unset( $person_id ); // Reserved; collection authorship is site-level. // The Blog Index template runs its own paginated WP_Query for the posts // it lists (see page-blog.php); the global main query for that view is // the static Page itself, a single-item array containing the Page post, // not the ledger's posts. Reading global $wp_query here would build an // ItemList of one item — the "Blog" page — never the posts actually // shown. blog_index_query_args() is the same source page-blog.php builds // its query from, so this always describes exactly what the page renders. if ( is_page() && get_page_template_slug() === 'page-blog.php' ) { $blog_query = new WP_Query( blog_index_query_args() ); $posts = $blog_query->posts; } else { global $wp_query; $posts = $wp_query->posts; } if ( empty( $posts ) || ! is_array( $posts ) ) { return null; } $items = array(); $position = 0; foreach ( $posts as $post_object ) { if ( ! isset( $post_object->ID ) ) { continue; } ++$position; $items[] = array( '@type' => 'ListItem', 'position' => $position, 'url' => get_permalink( $post_object->ID ), 'name' => wp_strip_all_tags( get_the_title( $post_object->ID ) ), ); } if ( empty( $items ) ) { return null; } $current = home_url( add_query_arg( array() ) ); return array( '@type' => 'CollectionPage', '@id' => $current . '#collection', 'url' => $current, 'name' => wp_strip_all_tags( collection_title() ), 'isPartOf' => array( '@id' => $site_id ), 'inLanguage' => get_bloginfo( 'language' ), 'mainEntity' => array( '@type' => 'ItemList', 'numberOfItems' => count( $items ), 'itemListElement' => $items, ), ); } /** * A human title for the current collection view. * * @return string */ function collection_title() { if ( is_category() || is_tag() || is_tax() ) { return single_term_title( '', false ); } if ( is_author() ) { return get_the_author(); } if ( is_date() ) { return get_the_archive_title(); } return get_bloginfo( 'name', 'display' ); } /** * Build a BreadcrumbList reflecting the current view's place in the site. * * Home is always the first crumb. Posts add their primary category then the * post; pages add the page; archives add the archive label. Google renders * this trail directly in results and crawlers use it for hierarchy. * * @param string $home Home URL with trailing slash. * @return array|null The node, or null on the front page where a trail is noise. */ function build_breadcrumb_schema( $home ) { if ( is_front_page() ) { return null; } $crumbs = array(); $position = 0; $add = function ( $name, $url ) use ( &$crumbs, &$position ) { $name = wp_strip_all_tags( (string) $name ); if ( '' === $name ) { return; } ++$position; $crumb = array( '@type' => 'ListItem', 'position' => $position, 'name' => $name, ); if ( $url ) { $crumb['item'] = $url; } $crumbs[] = $crumb; }; $add( __( 'Home', 'kolofon' ), $home ); if ( is_singular( 'post' ) ) { $cats = get_the_category(); if ( ! empty( $cats ) ) { $add( $cats[0]->name, get_category_link( $cats[0]->term_id ) ); } $add( get_the_title(), get_permalink() ); } elseif ( is_page() ) { $add( get_the_title(), get_permalink() ); } elseif ( is_category() || is_tag() || is_tax() ) { $add( single_term_title( '', false ), null ); } elseif ( is_author() ) { $add( get_the_author(), null ); } elseif ( is_date() ) { $add( get_the_archive_title(), null ); } elseif ( is_search() ) { $add( sprintf( /* translators: %s: the search query
+#: inc/meta.php:172 inc/meta.php:505 inc/meta.php:675
+msgid "Search results for %s"
+msgstr ""
+
+#: inc/meta.php:655
+msgid "Home"
+msgstr ""
+
+#: inc/meta.php:681
+msgid "Not found"
+msgstr ""
+
+#: inc/microblog.php:274
+msgid "Switches on federation. The standalone ActivityPub plugin is active, so the theme defers to it and uses its engine rather than the bundled copy."
+msgstr ""
+
+#: inc/microblog.php:277
+msgid "Switches on federation. The ActivityPub engine is bundled with this theme, so no plugin is needed: turning this on loads it, generates your keys and opens your Actor, inbox and WebFinger endpoints. Leaving it off loads none of it."
+msgstr ""
+
+#: inc/microblog.php:318
+msgid "The site"
+msgstr ""
+
+#: inc/microblog.php:320
+msgid "Follow this to receive everything published here. This is usually the one to share."
+msgstr ""
+
+#: inc/microblog.php:330
+msgid "You as author"
+msgstr ""
+
+#: inc/microblog.php:332
+msgid "Follow this to receive only posts written by this account."
+msgstr ""
+
+#: inc/microblog.php:341
+msgid "ActivityPub engine"
+msgstr ""
+
+#: inc/microblog.php:346
+msgid "Running from the standalone plugin, which the theme defers to."
+msgstr ""
+
+#: inc/microblog.php:347
+msgid "Running from the copy bundled in this theme. No plugin needed."
+msgstr ""
+
+#: inc/microblog.php:349
+msgid "Switched off. Turn on \"Federate statuses\" above to load it."
+msgstr ""
+
+#: inc/microblog.php:354
+msgid "HTTPS"
+msgstr ""
+
+#: inc/microblog.php:357
+msgid "On. Remote servers refuse to talk to plain HTTP."
+msgstr ""
+
+#: inc/microblog.php:358
+msgid "Off. Most Fediverse servers will not federate with an insecure site."
+msgstr ""
+
+#: inc/microblog.php:363
+msgid "Pretty permalinks"
+msgstr ""
+
+#: inc/microblog.php:366
+msgid "Set. WebFinger and the Actor endpoint need rewrite rules."
+msgstr ""
+
+#: inc/microblog.php:367
+msgid "Plain permalinks are set. Discovery endpoints will not resolve."
+msgstr ""
+
+#: inc/microblog.php:372
+msgid "Search engine visibility"
+msgstr ""
+
+#: inc/microblog.php:375
+msgid "Site is public."
+msgstr ""
+
+#: inc/microblog.php:376
+msgid "Reading settings discourage indexing, which also holds back federation."
+msgstr ""
+
+#: inc/microblog.php:381
+msgid "Publicly reachable host"
+msgstr ""
+
+#: inc/microblog.php:384
+msgid "Remote servers can reach this domain."
+msgstr ""
+
+#: inc/microblog.php:385
+msgid "A local or staging host cannot be reached by other servers."
+msgstr ""
+
+#. translators: 1: personal handle, 2: site handle
+#: inc/microblog.php:533
+msgid "What people follow you at. The first option gives one handle, %1$s. The site option repeats the domain, %2$s, because the engine will not let a site profile take an existing author name; that restriction exists so a handle resolves to exactly one identity. Changing this rewrites your profile, so anyone already following the old handle will need to follow the new one."
+msgstr ""
+
+#: inc/microblog.php:592
+msgid "Handle"
+msgstr ""
+
+#: inc/microblog.php:594
+msgid "No profile is published. Switch on \"Federate statuses\" first."
+msgstr ""
+
+#: inc/microblog.php:612 inc/microblog.php:623 inc/microblog.php:630
+#: inc/microblog.php:642
+msgid "WebFinger"
+msgstr ""
+
+#: inc/microblog.php:615 inc/microblog.php:660
+msgid "Request failed: %s"
+msgstr ""
+
+#: inc/microblog.php:626
+msgid "Returned HTTP %d. Visit Settings then Permalinks once to rebuild the rewrite rules."
+msgstr ""
+
+#: inc/microblog.php:632
+msgid "Responded, but not with the expected JSON. Something else is answering this URL."
+msgstr ""
+
+#: inc/microblog.php:645
+msgid "Resolves, and points at an actor. This is the lookup Mastodon performs when someone searches your handle."
+msgstr ""
+
+#: inc/microblog.php:646
+msgid "Resolves, but carries no self link, so no actor can be found."
+msgstr ""
+
+#: inc/microblog.php:657
+msgid "Actor"
+msgstr ""
+
+#: inc/microblog.php:668
+msgid "Actor document"
+msgstr ""
+
+#: inc/microblog.php:671
+msgid "Serves a profile with an inbox, which is where replies and follows arrive."
+msgstr ""
+
+#: inc/microblog.php:672
+msgid "Served, but without an inbox, so nothing can be delivered to you."
+msgstr ""
+
+#: inc/microblog.php:676
+msgid "Signing key"
+msgstr ""
+
+#: inc/microblog.php:679
+msgid "A public key is published, so remote servers can verify what you send."
+msgstr ""
+
+#: inc/microblog.php:680
+msgid "No public key found. Deliveries will be rejected as unverifiable."
+msgstr ""
+
+#: inc/microblog/class-composer.php:28 inc/microblog/class-composer.php:76
+msgid "Post"
+msgstr ""
+
+#: inc/microblog/class-composer.php:75
+msgid "What's happening?"
+msgstr ""
+
+#: inc/microblog/class-composer.php:77
+msgid "Posting..."
+msgstr ""
+
+#: inc/microblog/class-composer.php:78
+msgid "Posted"
+msgstr ""
+
+#: inc/microblog/class-composer.php:79
+msgid "Could not post. Try again."
+msgstr ""
+
+#: inc/microblog/class-composer.php:80
+msgid "%d characters remaining"
+msgstr ""
+
+#: inc/microblog/class-composer.php:81
+msgid "%d characters over the limit"
+msgstr ""
+
+#: inc/microblog/class-composer.php:82
+msgid "Close"
+msgstr ""
+
+#: inc/microblog/class-composer.php:96
+msgid "Status is empty."
+msgstr ""
+
+#. translators: %d: character limit
+#: inc/microblog/class-composer.php:104
+msgid "Status exceeds the %d character limit."
+msgstr ""
+
+#: inc/microblog/class-composer.php:113 inc/microblog/class-cpt.php:32
+msgid "Status"
+msgstr ""
+
+#: inc/microblog/class-cpt.php:33
+msgid "Add New"
+msgstr ""
+
+#: inc/microblog/class-cpt.php:34
+msgid "Add New Status"
+msgstr ""
+
+#: inc/microblog/class-cpt.php:35
+msgid "Edit Status"
+msgstr ""
+
+#: inc/microblog/class-cpt.php:36
+msgid "New Status"
+msgstr ""
+
+#: inc/microblog/class-cpt.php:37
+msgid "View Status"
+msgstr ""
+
+#: inc/microblog/class-cpt.php:38
+msgid "Search Statuses"
+msgstr ""
+
+#: inc/microblog/class-cpt.php:39
+msgid "No statuses found"
+msgstr ""
+
+#: inc/microblog/class-cpt.php:40
+msgid "No statuses in trash"
+msgstr ""
+
+#: inc/migration-notice.php:48
+msgid "Kolofon: migration complete."
+msgstr ""
+
+#. translators: %d: number of stored options migrated
+#: inc/migration-notice.php:53
+msgid "%d setting was carried over from the previous menj-bio theme."
+msgid_plural "%d settings were carried over from the previous menj-bio theme."
+msgstr[0] ""
+msgstr[1] ""
 
 #: inc/migration-notice.php:63
 msgid "Review the Kolofon options page to confirm everything is where you expect it."
 msgstr ""
 
-#: inc/defaults.php:264
-msgid "Rounded square"
+#: inc/migration-notice.php:67
+msgid "Open Kolofon Options"
+msgstr ""
+
+#: inc/migration-notice.php:70
+msgid "Dismiss"
+msgstr ""
+
+#: inc/migration-notice.php:86
+msgid "You do not have permission to perform this action."
+msgstr ""
+
+#: inc/options-schema.php:37
+msgid "Identity"
+msgstr ""
+
+#: inc/options-schema.php:38
+msgid "Layout"
+msgstr ""
+
+#: inc/options-schema.php:39
+msgid "Social"
+msgstr ""
+
+#: inc/options-schema.php:40
+msgid "Fediverse"
+msgstr ""
+
+#: inc/options-schema.php:41
+msgid "Advanced"
+msgstr ""
+
+#: inc/options-schema.php:42
+msgid "Documentation"
+msgstr ""
+
+#: inc/options-schema.php:81
+msgid "Hides Appearance > Theme File Editor and Plugins > Plugin File Editor, and blocks direct access. Editing live PHP from a browser turns a hijacked admin session into arbitrary code execution. Setting DISALLOW_FILE_EDIT in wp-config.php is stronger still, and takes precedence over this."
+msgstr ""
+
+#: inc/options-schema.php:84
+msgid "Note: DISALLOW_FILE_EDIT is already set in wp-config.php on this install, so the editors stay off regardless of this setting."
+msgstr ""
+
+#: inc/options-schema.php:96
+msgid "Emits Open Graph, Twitter card, canonical, and JSON-LD Person and WebSite markup. Without these a shared link renders as whatever the receiving platform guesses."
+msgstr ""
+
+#. translators: %s: name of the detected SEO plugin
+#: inc/options-schema.php:102
+msgid "Currently standing down: %s is active and owns this output. Emitting a second set would leave consumers to disagree about which wins."
+msgstr ""
+
+#: inc/options-schema.php:123
+msgid "Hero eyebrow"
+msgstr ""
+
+#: inc/options-schema.php:126
+msgid "A short line above the heading, set in small letterspaced capitals. Leave empty to hide it."
+msgstr ""
+
+#: inc/options-schema.php:129
+msgid "Hero heading"
+msgstr ""
+
+#: inc/options-schema.php:132
+msgid "Wrap a phrase in <mark> to give it the accent colour. Only mark, em, strong, and br are allowed."
+msgstr ""
+
+#: inc/options-schema.php:135
+msgid "Citation name"
+msgstr ""
+
+#: inc/options-schema.php:139
+msgid "Your name inverted for citations, as MLA requires: Last, First (for example, \"Lovelace, Ada\"). Used in the citation printed at the foot of a post. If left empty, the hero heading is used as written."
+msgstr ""
+
+#: inc/options-schema.php:143
+msgid "Hero body copy"
+msgstr ""
+
+#: inc/options-schema.php:147
+msgid "The intro paragraph. Basic HTML allowed, including links: <a href=\"...\">like this</a>. Links render bold with an accent underline. Blank lines become paragraphs."
+msgstr ""
+
+#: inc/options-schema.php:152 inc/system-report.php:88
+msgid "Hero portrait"
+msgstr ""
+
+#: inc/options-schema.php:155
+msgid "Square image works best. Rendered as a circle."
+msgstr ""
+
+#: inc/options-schema.php:158
+msgid "Footer text"
+msgstr ""
+
+#: inc/options-schema.php:161
+msgid "Basic HTML is allowed."
+msgstr ""
+
+#: inc/options-schema.php:164
+msgid "Additional profile pages (sameAs)"
+msgstr ""
+
+#: inc/options-schema.php:168
+msgid "One URL per line. For pages about you that aren't social media — a Gravatar profile, a Wikipedia page, a Crunchbase or IMDb entry, a personal wiki. These feed the sameAs structured data alongside the Social tab URLs, but never render as an icon or a link anywhere on the site: this field exists only to tell search engines and AI crawlers these other pages describe the same person."
+msgstr ""
+
+#: inc/options-schema.php:175
+msgid "Section categories"
+msgstr ""
+
+#: inc/options-schema.php:178
+msgid "Category slugs in the order they should appear, separated by commas or new lines. Each must be an existing category. Sections are mutually exclusive: a post belongs to exactly one. Use tags for topics that cut across sections."
+msgstr ""
+
+#: inc/options-schema.php:181
+msgid "Show section chooser"
+msgstr ""
+
+#: inc/options-schema.php:184
+msgid "Displays the row of section links on the home page and on section archives."
+msgstr ""
+
+#: inc/options-schema.php:187
+msgid "Label for the all-sections link"
+msgstr ""
+
+#: inc/options-schema.php:192
+msgid "One category per post"
+msgstr ""
+
+#: inc/options-schema.php:195
+msgid "Reduces every post to a single category on save, and makes the block editor category panel behave as a single-choice list. Applies to posts created through REST, WP-CLI, and imports too."
+msgstr ""
+
+#: inc/options-schema.php:198
+msgid "Keep previous and next within a section"
+msgstr ""
+
+#: inc/options-schema.php:201
+msgid "Without this, the links at the foot of a post run chronologically across every section, so a reader following one topic is dropped into another."
+msgstr ""
+
+#: inc/options-schema.php:206 inc/system-report.php:61
+msgid "Email protection"
+msgstr ""
+
+#: inc/options-schema.php:211
+msgid "Keeps plain mailto: strings out of the served HTML so harvesters find nothing to scrape. Applies to the icon below, to mailto: links in post content, and to the [kolofon_email] shortcode."
+msgstr ""
+
+#: inc/options-schema.php:226
+msgid "Bare email works; mailto: is added automatically."
+msgstr ""
+
+#: inc/options-schema.php:233 inc/system-report.php:80
+msgid "Colour scheme"
+msgstr ""
+
+#: inc/options-schema.php:239
+msgid "Font stack"
+msgstr ""
+
+#: inc/options-schema.php:244
+msgid "Lede heading size (px)"
+msgstr ""
+
+#: inc/options-schema.php:252
+msgid "Maximum size. The heading scales down fluidly on narrow screens. Drag to preview, or type an exact value."
+msgstr ""
+
+#: inc/options-schema.php:256
+msgid "Lede body size (px)"
+msgstr ""
+
+#: inc/options-schema.php:264
+msgid "Size of the intro paragraph under the heading. Drag to preview, or type an exact value."
+msgstr ""
+
+#: inc/options-schema.php:270
+msgid "Chrome layout"
+msgstr ""
+
+#: inc/options-schema.php:275
+msgid "Top bar: full-width header above the content"
+msgstr ""
+
+#: inc/options-schema.php:276
+msgid "Sidebar: floating card in a left rail"
+msgstr ""
+
+#: inc/options-schema.php:278
+msgid "The sidebar card holds the wordmark, a numbered navigation, and the stay-in-touch links, leaving the content column free. Collapses to the top bar on narrow screens."
+msgstr ""
+
+#: inc/options-schema.php:282
+msgid "Keyboard shortcuts"
+msgstr ""
+
+#: inc/options-schema.php:285
+msgid "Digits 0 to 9 follow the correspondingly numbered navigation link. Sidebar layout only. Never fires while typing in a field. Turn off if it conflicts with assistive tooling."
+msgstr ""
+
+#: inc/options-schema.php:288
+msgid "Stay-in-touch heading"
+msgstr ""
+
+#: inc/options-schema.php:293
+msgid "Content width (px)"
+msgstr ""
+
+#: inc/options-schema.php:300
+msgid "Widescreen sites sit well between 1040 and 1280."
+msgstr ""
+
+#: inc/options-schema.php:304
+msgid "Hero portrait size (px)"
+msgstr ""
+
+#: inc/options-schema.php:311
+msgid "Diameter or edge length of the hero portrait."
+msgstr ""
+
+#: inc/options-schema.php:315
+msgid "Hero portrait style"
+msgstr ""
+
+#: inc/options-schema.php:320
+msgid "Floating suits a cut-out PNG with a transparent background."
+msgstr ""
+
+#: inc/options-schema.php:324
+msgid "Your Fediverse address"
+msgstr ""
+
+#: inc/options-schema.php:329
+msgid "Microblog"
+msgstr ""
+
+#: inc/options-schema.php:333
+msgid "Adds a Statuses post type for short, title-less posts, with a composer in the toolbar and a timeline shortcode. Merged into the theme, so no separate microblog plugin is needed."
+msgstr ""
+
+#: inc/options-schema.php:337
+msgid "Federate statuses"
+msgstr ""
+
+#: inc/options-schema.php:345
+msgid "Your Fediverse handle"
+msgstr ""
+
+#: inc/options-schema.php:350
+msgid "One handle from your username, e.g. @you@example.com"
+msgstr ""
+
+#: inc/options-schema.php:351
+msgid "One handle for the site, e.g. @example.com@example.com"
+msgstr ""
+
+#: inc/options-schema.php:352
+msgid "Both a site handle and a personal one"
+msgstr ""
+
+#: inc/options-schema.php:358
+msgid "Show statuses on the blog"
+msgstr ""
+
+#: inc/options-schema.php:362
+msgid "Mixes statuses into the main post list and the RSS feed alongside articles. Off by default, so statuses stay on their own archive at /statuses/ and do not crowd the front page."
+msgstr ""
+
+#: inc/options-schema.php:366
+msgid "Hide statuses from search engines"
+msgstr ""
+
+#: inc/options-schema.php:370
+msgid "Adds a noindex header to the status archive. Statuses still federate and are still readable; they simply are not indexed."
+msgstr ""
+
+#: inc/options-schema.php:374
+msgid "Status length limit"
+msgstr ""
+
+#: inc/options-schema.php:381
+msgid "Characters allowed in the composer. Mastodon shows 500 by default, so anything longer may be truncated by some servers."
+msgstr ""
+
+#: inc/options-schema.php:385
+msgid "Statuses per timeline page"
+msgstr ""
+
+#: inc/options-schema.php:392
+msgid "How many statuses the [kolofon_microblog] shortcode shows at a time."
+msgstr ""
+
+#: inc/options-schema.php:396
+msgid "Post list title size (px)"
+msgstr ""
+
+#: inc/options-schema.php:403
+msgid "Size of the post titles in list views, including the main page. Stored in px, applied in rem so it still honours the reader's browser font size."
+msgstr ""
+
+#: inc/options-schema.php:407
+msgid "Post list style"
+msgstr ""
+
+#: inc/options-schema.php:412
+msgid "Stacked: title with date at the end"
+msgstr ""
+
+#: inc/options-schema.php:413
+msgid "Columns: date, section, title in aligned columns"
+msgstr ""
+
+#: inc/options-schema.php:414
+msgid "Index: title with year, excerpt underneath, indexical"
+msgstr ""
+
+#: inc/options-schema.php:416
+msgid "Index reads as a table of contents: a hairline-ruled row list where the title carries the eye and the excerpt sits below. Suits sites organised by title rather than by date."
+msgstr ""
+
+#: inc/options-schema.php:420
+msgid "Post hover previews"
+msgstr ""
+
+#: inc/options-schema.php:423
+msgid "Reveals a post featured image beside the list on hover or keyboard focus. Posts without a featured image show nothing. Pointer devices only."
+msgstr ""
+
+#: inc/options-schema.php:426
+msgid "Hover preview width (px)"
+msgstr ""
+
+#: inc/options-schema.php:433
+msgid "Width of the small floating preview that appears below-right of a post row on hover. Kept small so it reads as a peek rather than a card."
+msgstr ""
+
+#: inc/options-schema.php:437
+msgid "Show recent posts on home"
+msgstr ""
+
+#: inc/options-schema.php:442
+msgid "Recent posts count"
+msgstr ""
+
+#: inc/options-schema.php:452
+msgid "Blog page posts per page"
+msgstr ""
+
+#: inc/options-schema.php:459
+msgid "How many posts appear on each page of the Blog Index template before pagination kicks in. A year of posts can split across two pages once it runs past this count."
+msgstr ""
+
+#: inc/options-schema.php:463
+msgid "Show sharing icons on posts"
+msgstr ""
+
+#: inc/options-schema.php:466
+msgid "Adds a row of share links at the foot of each post: X, Facebook, LinkedIn, Bluesky, Reddit, Telegram, WhatsApp, email, and a copy-link button. Only platforms with both an icon and a working share link render, so a target added through the kolofon_share_targets filter needs a matching icon in the registry."
+msgstr ""
+
+#: inc/options-schema.php:471
+msgid "Content Security Policy"
+msgstr ""
+
+#: inc/options-schema.php:476
+msgid "Off by default. A policy strict enough to matter blocks inline scripts, which WordPress core and most plugins emit, so enforcing one without preparation can blank the front end. Start on Report only, watch the browser console across the site, and switch to Enforce once nothing legitimate is being flagged. Never applied to admin screens. Adjust the directives with the kolofon_csp_directives filter."
+msgstr ""
+
+#: inc/options-schema.php:480
+msgid "Disable file editors"
+msgstr ""
+
+#: inc/options-schema.php:486
+msgid "Emit meta tags and schema"
+msgstr ""
+
+#: inc/options-schema.php:492
+msgid "Planned page badge"
+msgstr ""
+
+#: inc/options-schema.php:495
+msgid "Shown in the navigation next to pages marked as planned, and on the page itself. Mark a page as planned in its editor sidebar."
+msgstr ""
+
+#: inc/options-schema.php:498
+msgid "Planned page notice"
+msgstr ""
+
+#: inc/options-schema.php:501
+msgid "The sentence shown in place of content on a planned page."
+msgstr ""
+
+#: inc/options-schema.php:504
+msgid "Export settings"
+msgstr ""
+
+#: inc/options-schema.php:507
+msgid "Downloads every theme setting as a JSON file. Useful as a backup and for moving a configuration to another install."
+msgstr ""
+
+#: inc/options-schema.php:510
+msgid "Import settings"
+msgstr ""
+
+#: inc/options-schema.php:513
+msgid "Replaces all current settings. Unknown keys are discarded and every value is re-validated, so an edited file cannot introduce anything the theme does not recognise."
+msgstr ""
+
+#: inc/options-schema.php:516
+msgid "Reset to defaults"
+msgstr ""
+
+#: inc/options.php:29 inc/options.php:30 inc/options.php:584
+msgid "Theme Options"
+msgstr ""
+
+#: inc/options.php:114 inc/options.php:698
+msgid "The reader arrives here first"
+msgstr ""
+
+#: inc/options.php:115 inc/options.php:699
+msgid "A lede paragraph sets the scene in slightly larger type, carrying the voice before the body settles in."
+msgstr ""
+
+#: inc/options.php:116 inc/options.php:700
+msgid "This is body copy at reading size. It is the measure of the whole design: the face you choose and the size you set decide how a visitor experiences everything you publish. Adjust the controls and watch this specimen answer."
+msgstr ""
+
+#: inc/options.php:273
+msgid "Choose image"
+msgstr ""
+
+#: inc/options.php:275
+msgid "Remove"
+msgstr ""
+
+#: inc/options.php:318
+msgid "Exact value"
+msgstr ""
+
+#: inc/options.php:340
+msgid "Enabled"
+msgstr ""
+
+#: inc/options.php:387
+msgid "Download JSON"
+msgstr ""
+
+#: inc/options.php:399
+msgid "This replaces all current settings. Continue?"
+msgstr ""
+
+#: inc/options.php:400
+msgid "Upload and replace"
+msgstr ""
+
+#: inc/options.php:418
+msgid "first-slug, second-slug, third-slug"
+msgstr ""
+
+#. translators: %s: number of posts
+#: inc/options.php:438
+msgid "%s post"
+msgid_plural "%s posts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/options.php:447
+msgid "no category with this slug exists yet"
+msgstr ""
+
+#: inc/options.php:456
+msgid "Manage categories"
+msgstr ""
+
+#: inc/options.php:466
+msgid "No profile is published yet. Switch on \"Federate statuses\" below."
+msgstr ""
+
+#: inc/options.php:468
+msgid "There is nothing to sign up for: with the engine running, this site is its own Fediverse server. Paste a handle into the search box on Mastodon and press follow."
+msgstr ""
+
+#: inc/options.php:480
+msgid "Both exist because the ActivityPub screen is set to publish author and blog profiles. Searching for one will not find the other, which is the usual reason a site seems missing from Mastodon."
+msgstr ""
+
+#: inc/options.php:491
+msgid "Ready"
+msgstr ""
+
+#: inc/options.php:491
+msgid "Needs attention"
+msgstr ""
+
+#: inc/options.php:502
+msgid "Live endpoint test"
+msgstr ""
+
+#: inc/options.php:517
+msgid "Run live endpoint test"
+msgstr ""
+
+#: inc/options.php:525
+msgid "Test discovery: this should return JSON describing the site"
+msgstr ""
+
+#: inc/options.php:539
+msgid "Restore all options to default values. Continue?"
+msgstr ""
+
+#: inc/options.php:540
+msgid "Restore defaults"
+msgstr ""
+
+#: inc/options.php:557 inc/settings-io.php:34
+msgid "You are not allowed to do that."
+msgstr ""
+
+#. translators: %s: number of posts */ _n( '%s post', '%s posts', $term->count, 'kolofon' ), number_format_i18n( $term->count ) ) ) ); } else { printf( '<li class="is-missing"><code>%1$s</code> %2$s</li>', esc_html( $slug ), esc_html__( 'no category with this slug exists yet', 'kolofon' ) ); } } echo '</ul>'; printf( '<p class="description"><a href="%1$s">%2$s</a></p>', esc_url( admin_url( 'edit-tags.php?taxonomy=category' ) ), esc_html__( 'Manage categories', 'kolofon' ) ); } break; case 'fediverse_identity': $identity = \Kolofon\fediverse_identity(); echo '<div class="kolofon-fedi">'; if ( empty( $identity['handles'] ) ) { echo '<p class="kolofon-fedi-lead">' . esc_html__( 'No profile is published yet. Switch on "Federate statuses" below.', 'kolofon' ) . '</p>'; } else { echo '<p class="kolofon-fedi-lead">' . esc_html__( 'There is nothing to sign up for: with the engine running, this site is its own Fediverse server. Paste a handle into the search box on Mastodon and press follow.', 'kolofon' ) . '</p>'; foreach ( $identity['handles'] as $entry ) { printf( '<p class="kolofon-fedi-handle"><span class="kolofon-fedi-who">%1$s</span><code>@%2$s</code><span class="kolofon-fedi-note">%3$s</span></p>', esc_html( $entry['label'] ), esc_html( $entry['handle'] ), esc_html( $entry['note'] ) ); } if ( count( $identity['handles'] ) > 1 ) { echo '<p class="kolofon-fedi-lead">' . esc_html__( 'Both exist because the ActivityPub screen is set to publish author and blog profiles. Searching for one will not find the other, which is the usual reason a site seems missing from Mastodon.', 'kolofon' ) . '</p>'; } } echo '<ul class="kolofon-fedi-checks">'; foreach ( $identity['checks'] as $check ) { printf( '<li class="%1$s"><span class="kolofon-fedi-dot" aria-hidden="true"></span><span class="kolofon-fedi-label">%2$s</span> <span class="kolofon-fedi-note">%3$s</span><span class="screen-reader-text">%4$s</span></li>', $check['ok'] ? 'is-ok' : 'is-bad', esc_html( $check['label'] ), esc_html( $check['note'] ), $check['ok'] ? esc_html__( 'Ready', 'kolofon' ) : esc_html__( 'Needs attention', 'kolofon' ) ); } echo '</ul>'; // The live test runs only when asked, since it costs three network // round trips. Everything above it is inferred from settings; this // is the part that proves a remote server can actually reach you. $run_live = isset( $_GET['kolofon_fedi_test'] ) && check_admin_referer( 'kolofon_fedi_test' ); if ( $run_live ) { echo '<h3 class="kolofon-fedi-livetitle">' . esc_html__( 'Live endpoint test', 'kolofon' ) . '</h3>'; echo '<ul class="kolofon-fedi-checks">'; foreach ( \Kolofon\fediverse_live_test() as $check ) { printf( '<li class="%1$s"><span class="kolofon-fedi-dot" aria-hidden="true"></span><span class="kolofon-fedi-label">%2$s</span> <span class="kolofon-fedi-note">%3$s</span></li>', $check['ok'] ? 'is-ok' : 'is-bad', esc_html( $check['label'] ), esc_html( $check['note'] ) ); } echo '</ul>'; } else { printf( '<p><a class="button button-secondary" href="%1$s">%2$s</a></p>', esc_url( wp_nonce_url( add_query_arg( 'kolofon_fedi_test', '1' ), 'kolofon_fedi_test' ) ), esc_html__( 'Run live endpoint test', 'kolofon' ) ); } if ( '' !== $identity['handle'] ) { printf( '<p class="description"><a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a></p>', esc_url( $identity['webfinger'] ), esc_html__( 'Test discovery: this should return JSON describing the site', 'kolofon' ) ); } echo '</div>'; break; case 'reset_button': $reset_url = wp_nonce_url( admin_url( 'admin-post.php?action=kolofon_reset' ), 'kolofon_reset' ); printf( '<a href="%1$s" class="button button-secondary" onclick="return confirm(\'%2$s\');">%3$s</a>', esc_url( $reset_url ), esc_js( __( 'Restore all options to default values. Continue?', 'kolofon' ) ), esc_html__( 'Restore defaults', 'kolofon' ) ); break; } // Help text normally lives in the label column (see add_field). It is only // printed here for fields that bypass add_field and set help directly. if ( ! empty( $args['help'] ) && empty( $args['help_in_label'] ) ) { printf( '<p class="description">%s</p>', esc_html( $args['help'] ) ); } } /** * Handle the Restore Defaults action. */ function handle_reset() { if ( ! current_user_can( 'manage_options' ) ) { wp_die( esc_html__( 'You are not allowed to do that.', 'kolofon' ) ); } check_admin_referer( 'kolofon_reset' ); update_option( KOLOFON_OPTION_KEY, get_defaults() ); redirect_to_options( 'reset-ok' ); } /** * Render the options page shell (tabs + Settings API form). */ function render_options_page() { if ( ! current_user_can( 'manage_options' ) ) { return; } $tabs = get_option_tabs(); // The Documentation tab renders outside the settings form, so it carries // no section and no fields. $form_tabs = get_form_tabs(); ?> <div class="wrap kolofon-wrap js-tabs"> <div class="kolofon-masthead"> <p class="kolofon-masthead-eyebrow"><?php esc_html_e( 'Theme Options', 'kolofon' ); ?></p> <h1 class="kolofon-options-title"> <?php // wp_get_theme() returns a WP_Theme in WordPress, but guard the // call so a non-object environment cannot fatal the screen. $kolofon_theme = function_exists( 'wp_get_theme' ) ? wp_get_theme() : null; $kolofon_theme_name = ( is_object( $kolofon_theme ) && method_exists( $kolofon_theme, 'get' ) ) ? (string) $kolofon_theme->get( 'Name' ) : ''; echo esc_html( '' !== $kolofon_theme_name ? $kolofon_theme_name : __( 'Kolofon', 'kolofon' ) ); ?> <span class="kolofon-version-pill"> <?php printf( /* translators: %s: theme version number
+#: inc/options.php:599
+msgid "v%s"
+msgstr ""
+
+#: inc/options.php:606
+msgid "Identity, sections, social, appearance, and layout settings for the site."
+msgstr ""
+
+#: inc/options.php:640
+msgid "Settings sections"
+msgstr ""
+
+#: inc/options.php:641
+msgid "Theme options sections"
+msgstr ""
+
+#: inc/options.php:695
+msgid "Live preview"
+msgstr ""
+
+#: inc/options.php:697
+msgid "Specimen"
+msgstr ""
+
+#: inc/options.php:702
+msgid "Updates as you change the font, sizes, and colour scheme below. Nothing is saved until you press Save Changes."
+msgstr ""
+
+#: inc/options.php:732
+msgid "The theme ships a default favicon, shown in the browser tab until you set your own. It is a serif K on the Charcoal background, matching the wordmark."
+msgstr ""
+
+#. translators: %s: number of posts */ _n( '%s post', '%s posts', $term->count, 'kolofon' ), number_format_i18n( $term->count ) ) ) ); } else { printf( '<li class="is-missing"><code>%1$s</code> %2$s</li>', esc_html( $slug ), esc_html__( 'no category with this slug exists yet', 'kolofon' ) ); } } echo '</ul>'; printf( '<p class="description"><a href="%1$s">%2$s</a></p>', esc_url( admin_url( 'edit-tags.php?taxonomy=category' ) ), esc_html__( 'Manage categories', 'kolofon' ) ); } break; case 'fediverse_identity': $identity = \Kolofon\fediverse_identity(); echo '<div class="kolofon-fedi">'; if ( empty( $identity['handles'] ) ) { echo '<p class="kolofon-fedi-lead">' . esc_html__( 'No profile is published yet. Switch on "Federate statuses" below.', 'kolofon' ) . '</p>'; } else { echo '<p class="kolofon-fedi-lead">' . esc_html__( 'There is nothing to sign up for: with the engine running, this site is its own Fediverse server. Paste a handle into the search box on Mastodon and press follow.', 'kolofon' ) . '</p>'; foreach ( $identity['handles'] as $entry ) { printf( '<p class="kolofon-fedi-handle"><span class="kolofon-fedi-who">%1$s</span><code>@%2$s</code><span class="kolofon-fedi-note">%3$s</span></p>', esc_html( $entry['label'] ), esc_html( $entry['handle'] ), esc_html( $entry['note'] ) ); } if ( count( $identity['handles'] ) > 1 ) { echo '<p class="kolofon-fedi-lead">' . esc_html__( 'Both exist because the ActivityPub screen is set to publish author and blog profiles. Searching for one will not find the other, which is the usual reason a site seems missing from Mastodon.', 'kolofon' ) . '</p>'; } } echo '<ul class="kolofon-fedi-checks">'; foreach ( $identity['checks'] as $check ) { printf( '<li class="%1$s"><span class="kolofon-fedi-dot" aria-hidden="true"></span><span class="kolofon-fedi-label">%2$s</span> <span class="kolofon-fedi-note">%3$s</span><span class="screen-reader-text">%4$s</span></li>', $check['ok'] ? 'is-ok' : 'is-bad', esc_html( $check['label'] ), esc_html( $check['note'] ), $check['ok'] ? esc_html__( 'Ready', 'kolofon' ) : esc_html__( 'Needs attention', 'kolofon' ) ); } echo '</ul>'; // The live test runs only when asked, since it costs three network // round trips. Everything above it is inferred from settings; this // is the part that proves a remote server can actually reach you. $run_live = isset( $_GET['kolofon_fedi_test'] ) && check_admin_referer( 'kolofon_fedi_test' ); if ( $run_live ) { echo '<h3 class="kolofon-fedi-livetitle">' . esc_html__( 'Live endpoint test', 'kolofon' ) . '</h3>'; echo '<ul class="kolofon-fedi-checks">'; foreach ( \Kolofon\fediverse_live_test() as $check ) { printf( '<li class="%1$s"><span class="kolofon-fedi-dot" aria-hidden="true"></span><span class="kolofon-fedi-label">%2$s</span> <span class="kolofon-fedi-note">%3$s</span></li>', $check['ok'] ? 'is-ok' : 'is-bad', esc_html( $check['label'] ), esc_html( $check['note'] ) ); } echo '</ul>'; } else { printf( '<p><a class="button button-secondary" href="%1$s">%2$s</a></p>', esc_url( wp_nonce_url( add_query_arg( 'kolofon_fedi_test', '1' ), 'kolofon_fedi_test' ) ), esc_html__( 'Run live endpoint test', 'kolofon' ) ); } if ( '' !== $identity['handle'] ) { printf( '<p class="description"><a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a></p>', esc_url( $identity['webfinger'] ), esc_html__( 'Test discovery: this should return JSON describing the site', 'kolofon' ) ); } echo '</div>'; break; case 'reset_button': $reset_url = wp_nonce_url( admin_url( 'admin-post.php?action=kolofon_reset' ), 'kolofon_reset' ); printf( '<a href="%1$s" class="button button-secondary" onclick="return confirm(\'%2$s\');">%3$s</a>', esc_url( $reset_url ), esc_js( __( 'Restore all options to default values. Continue?', 'kolofon' ) ), esc_html__( 'Restore defaults', 'kolofon' ) ); break; } // Help text normally lives in the label column (see add_field). It is only // printed here for fields that bypass add_field and set help directly. if ( ! empty( $args['help'] ) && empty( $args['help_in_label'] ) ) { printf( '<p class="description">%s</p>', esc_html( $args['help'] ) ); } } /** * Handle the Restore Defaults action. */ function handle_reset() { if ( ! current_user_can( 'manage_options' ) ) { wp_die( esc_html__( 'You are not allowed to do that.', 'kolofon' ) ); } check_admin_referer( 'kolofon_reset' ); update_option( KOLOFON_OPTION_KEY, get_defaults() ); redirect_to_options( 'reset-ok' ); } /** * Render the options page shell (tabs + Settings API form). */ function render_options_page() { if ( ! current_user_can( 'manage_options' ) ) { return; } $tabs = get_option_tabs(); // The Documentation tab renders outside the settings form, so it carries // no section and no fields. $form_tabs = get_form_tabs(); ?> <div class="wrap kolofon-wrap js-tabs"> <div class="kolofon-masthead"> <p class="kolofon-masthead-eyebrow"><?php esc_html_e( 'Theme Options', 'kolofon' ); ?></p> <h1 class="kolofon-options-title"> <?php // wp_get_theme() returns a WP_Theme in WordPress, but guard the // call so a non-object environment cannot fatal the screen. $kolofon_theme = function_exists( 'wp_get_theme' ) ? wp_get_theme() : null; $kolofon_theme_name = ( is_object( $kolofon_theme ) && method_exists( $kolofon_theme, 'get' ) ) ? (string) $kolofon_theme->get( 'Name' ) : ''; echo esc_html( '' !== $kolofon_theme_name ? $kolofon_theme_name : __( 'Kolofon', 'kolofon' ) ); ?> <span class="kolofon-version-pill"> <?php printf( /* translators: %s: theme version number */ esc_html__( 'v%s', 'kolofon' ), esc_html( KOLOFON_VERSION ) ); ?> </span> </h1> <p class="kolofon-masthead-desc"> <?php esc_html_e( 'Identity, sections, social, appearance, and layout settings for the site.', 'kolofon' ); ?> </p> </div> <?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only status flag set by our own redirect. $status = isset( $_GET['kolofon_status'] ) ? sanitize_key( wp_unslash( $_GET['kolofon_status'] ) ) : ''; $notices = get_status_messages(); if ( $status && isset( $notices[ $status ] ) ) { printf( '<div class="notice notice-%1$s is-dismissible"><p>%2$s</p></div>', esc_attr( $notices[ $status ]['type'] ), esc_html( $notices[ $status ]['text'] ) ); } ?> <?php settings_errors(); ?> <?php /* * The import form is declared here rather than inside the settings * form, because HTML forbids nesting forms and the settings form must * post to options.php. The file input and button inside the Advanced * tab reference this form by id, which HTML5 permits. */ ?> <form id="kolofon-import-form" method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="kolofon-hidden-form"> <input type="hidden" name="action" value="kolofon_import" /> <?php wp_nonce_field( 'kolofon_import' ); ?> </form> <h2 class="screen-reader-text"><?php esc_html_e( 'Settings sections', 'kolofon' ); ?></h2> <div class="nav-tab-wrapper kolofon-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Theme options sections', 'kolofon' ); ?>"> <?php foreach ( $tabs as $slug => $label ) : ?> <button type="button" role="tab" id="tabctl-<?php echo esc_attr( $slug ); ?>" class="nav-tab" data-tab="<?php echo esc_attr( $slug ); ?>" aria-controls="tab-<?php echo esc_attr( $slug ); ?>" aria-selected="false" tabindex="-1"> <?php echo esc_html( $label ); ?> </button> <?php endforeach; ?> </div> <form action="options.php" method="post" class="kolofon-form"> <?php settings_fields( OPTION_GROUP ); ?> <?php foreach ( array_keys( $form_tabs ) as $slug ) : ?> <div class="kolofon-panel" id="tab-<?php echo esc_attr( $slug ); ?>" role="tabpanel" aria-labelledby="tabctl-<?php echo esc_attr( $slug ); ?>" tabindex="0"> <?php if ( 'identity' === $slug ) : ?> <?php render_appearance_preview(); ?> <?php render_appearance_tab_intro(); ?> <?php endif; ?> <?php if ( 'fediverse' === $slug ) : ?> <?php render_fediverse_tab_intro(); ?> <?php endif; ?> <table class="form-table" role="presentation"> <?php do_settings_fields( OPTION_PAGE, $slug ); ?> </table> <?php if ( 'advanced' === $slug ) : ?> <?php render_system_panel(); ?> <?php endif; ?> </div> <?php endforeach; ?> <?php submit_button(); ?> </form> <div class="kolofon-panel kolofon-docs-panel" id="tab-docs" role="tabpanel" aria-labelledby="tabctl-docs" tabindex="0"> <?php render_docs_panel(); ?> </div> </div> <?php } /** * Live typography and colour preview for the Identity tab. * * A specimen block that re-renders as the font stack, sizes, and colour scheme * controls change, entirely client-side. The markup here is the initial state; * admin-options.js reads the localised stack and scheme data and updates the * inline styles as the controls move. With JavaScript off it still shows a * static, readable specimen in the default face. */ function render_appearance_preview() { ?> <div class="kolofon-preview" data-kolofon-preview aria-live="polite"> <p class="kolofon-preview-label"><?php esc_html_e( 'Live preview', 'kolofon' ); ?></p> <div class="kolofon-preview-stage" data-preview-stage> <p class="kolofon-preview-eyebrow" data-preview-eyebrow><?php esc_html_e( 'Specimen', 'kolofon' ); ?></p> <h2 class="kolofon-preview-heading" data-preview-heading><?php esc_html_e( 'The reader arrives here first', 'kolofon' ); ?></h2> <p class="kolofon-preview-lede" data-preview-lede><?php esc_html_e( 'A lede paragraph sets the scene in slightly larger type, carrying the voice before the body settles in.', 'kolofon' ); ?></p> <p class="kolofon-preview-body" data-preview-body><?php esc_html_e( 'This is body copy at reading size. It is the measure of the whole design: the face you choose and the size you set decide how a visitor experiences everything you publish. Adjust the controls and watch this specimen answer.', 'kolofon' ); ?></p> </div> <p class="kolofon-preview-note description"><?php esc_html_e( 'Updates as you change the font, sizes, and colour scheme below. Nothing is saved until you press Save Changes.', 'kolofon' ); ?></p> </div> <?php } /** * Intro block on the Identity tab: explains the favicon. * * The theme ships a default favicon (a serif K on the Charcoal background, in * the theme's own display face) and emits it as a fallback only when no Site * Icon is set. Changing it is core's job: the Site Icon control handles * cropping and generates every required size, which a theme option would * reproduce badly. So rather than duplicate that UI, point at it. */ function render_appearance_tab_intro() { $customize_url = wp_customize_url(); // Deep-link straight to the Site Icon control when the current WordPress // supports autofocus; harmless query args on versions that do not. $site_icon_url = add_query_arg( array( 'autofocus' => array( 'section' => 'title_tagline' ), 'return' => rawurlencode( admin_url( 'themes.php?page=' . OPTION_PAGE ) ), ), $customize_url ); $has_icon = function_exists( 'has_site_icon' ) && has_site_icon(); ?> <div class="kolofon-intro"> <p> <?php esc_html_e( 'The theme ships a default favicon, shown in the browser tab until you set your own. It is a serif K on the Charcoal background, matching the wordmark.', 'kolofon' ); ?> </p> <p> <?php if ( $has_icon ) { printf( /* translators: %s: link to the Site Icon control
+#: inc/options.php:739
+msgid "You have set a custom Site Icon, which overrides the default. %s to change it."
+msgstr ""
+
+#: inc/options.php:740 inc/options.php:746
+msgid "Open Site Identity"
+msgstr ""
+
+#. translators: %s: number of posts */ _n( '%s post', '%s posts', $term->count, 'kolofon' ), number_format_i18n( $term->count ) ) ) ); } else { printf( '<li class="is-missing"><code>%1$s</code> %2$s</li>', esc_html( $slug ), esc_html__( 'no category with this slug exists yet', 'kolofon' ) ); } } echo '</ul>'; printf( '<p class="description"><a href="%1$s">%2$s</a></p>', esc_url( admin_url( 'edit-tags.php?taxonomy=category' ) ), esc_html__( 'Manage categories', 'kolofon' ) ); } break; case 'fediverse_identity': $identity = \Kolofon\fediverse_identity(); echo '<div class="kolofon-fedi">'; if ( empty( $identity['handles'] ) ) { echo '<p class="kolofon-fedi-lead">' . esc_html__( 'No profile is published yet. Switch on "Federate statuses" below.', 'kolofon' ) . '</p>'; } else { echo '<p class="kolofon-fedi-lead">' . esc_html__( 'There is nothing to sign up for: with the engine running, this site is its own Fediverse server. Paste a handle into the search box on Mastodon and press follow.', 'kolofon' ) . '</p>'; foreach ( $identity['handles'] as $entry ) { printf( '<p class="kolofon-fedi-handle"><span class="kolofon-fedi-who">%1$s</span><code>@%2$s</code><span class="kolofon-fedi-note">%3$s</span></p>', esc_html( $entry['label'] ), esc_html( $entry['handle'] ), esc_html( $entry['note'] ) ); } if ( count( $identity['handles'] ) > 1 ) { echo '<p class="kolofon-fedi-lead">' . esc_html__( 'Both exist because the ActivityPub screen is set to publish author and blog profiles. Searching for one will not find the other, which is the usual reason a site seems missing from Mastodon.', 'kolofon' ) . '</p>'; } } echo '<ul class="kolofon-fedi-checks">'; foreach ( $identity['checks'] as $check ) { printf( '<li class="%1$s"><span class="kolofon-fedi-dot" aria-hidden="true"></span><span class="kolofon-fedi-label">%2$s</span> <span class="kolofon-fedi-note">%3$s</span><span class="screen-reader-text">%4$s</span></li>', $check['ok'] ? 'is-ok' : 'is-bad', esc_html( $check['label'] ), esc_html( $check['note'] ), $check['ok'] ? esc_html__( 'Ready', 'kolofon' ) : esc_html__( 'Needs attention', 'kolofon' ) ); } echo '</ul>'; // The live test runs only when asked, since it costs three network // round trips. Everything above it is inferred from settings; this // is the part that proves a remote server can actually reach you. $run_live = isset( $_GET['kolofon_fedi_test'] ) && check_admin_referer( 'kolofon_fedi_test' ); if ( $run_live ) { echo '<h3 class="kolofon-fedi-livetitle">' . esc_html__( 'Live endpoint test', 'kolofon' ) . '</h3>'; echo '<ul class="kolofon-fedi-checks">'; foreach ( \Kolofon\fediverse_live_test() as $check ) { printf( '<li class="%1$s"><span class="kolofon-fedi-dot" aria-hidden="true"></span><span class="kolofon-fedi-label">%2$s</span> <span class="kolofon-fedi-note">%3$s</span></li>', $check['ok'] ? 'is-ok' : 'is-bad', esc_html( $check['label'] ), esc_html( $check['note'] ) ); } echo '</ul>'; } else { printf( '<p><a class="button button-secondary" href="%1$s">%2$s</a></p>', esc_url( wp_nonce_url( add_query_arg( 'kolofon_fedi_test', '1' ), 'kolofon_fedi_test' ) ), esc_html__( 'Run live endpoint test', 'kolofon' ) ); } if ( '' !== $identity['handle'] ) { printf( '<p class="description"><a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a></p>', esc_url( $identity['webfinger'] ), esc_html__( 'Test discovery: this should return JSON describing the site', 'kolofon' ) ); } echo '</div>'; break; case 'reset_button': $reset_url = wp_nonce_url( admin_url( 'admin-post.php?action=kolofon_reset' ), 'kolofon_reset' ); printf( '<a href="%1$s" class="button button-secondary" onclick="return confirm(\'%2$s\');">%3$s</a>', esc_url( $reset_url ), esc_js( __( 'Restore all options to default values. Continue?', 'kolofon' ) ), esc_html__( 'Restore defaults', 'kolofon' ) ); break; } // Help text normally lives in the label column (see add_field). It is only // printed here for fields that bypass add_field and set help directly. if ( ! empty( $args['help'] ) && empty( $args['help_in_label'] ) ) { printf( '<p class="description">%s</p>', esc_html( $args['help'] ) ); } } /** * Handle the Restore Defaults action. */ function handle_reset() { if ( ! current_user_can( 'manage_options' ) ) { wp_die( esc_html__( 'You are not allowed to do that.', 'kolofon' ) ); } check_admin_referer( 'kolofon_reset' ); update_option( KOLOFON_OPTION_KEY, get_defaults() ); redirect_to_options( 'reset-ok' ); } /** * Render the options page shell (tabs + Settings API form). */ function render_options_page() { if ( ! current_user_can( 'manage_options' ) ) { return; } $tabs = get_option_tabs(); // The Documentation tab renders outside the settings form, so it carries // no section and no fields. $form_tabs = get_form_tabs(); ?> <div class="wrap kolofon-wrap js-tabs"> <div class="kolofon-masthead"> <p class="kolofon-masthead-eyebrow"><?php esc_html_e( 'Theme Options', 'kolofon' ); ?></p> <h1 class="kolofon-options-title"> <?php // wp_get_theme() returns a WP_Theme in WordPress, but guard the // call so a non-object environment cannot fatal the screen. $kolofon_theme = function_exists( 'wp_get_theme' ) ? wp_get_theme() : null; $kolofon_theme_name = ( is_object( $kolofon_theme ) && method_exists( $kolofon_theme, 'get' ) ) ? (string) $kolofon_theme->get( 'Name' ) : ''; echo esc_html( '' !== $kolofon_theme_name ? $kolofon_theme_name : __( 'Kolofon', 'kolofon' ) ); ?> <span class="kolofon-version-pill"> <?php printf( /* translators: %s: theme version number */ esc_html__( 'v%s', 'kolofon' ), esc_html( KOLOFON_VERSION ) ); ?> </span> </h1> <p class="kolofon-masthead-desc"> <?php esc_html_e( 'Identity, sections, social, appearance, and layout settings for the site.', 'kolofon' ); ?> </p> </div> <?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only status flag set by our own redirect. $status = isset( $_GET['kolofon_status'] ) ? sanitize_key( wp_unslash( $_GET['kolofon_status'] ) ) : ''; $notices = get_status_messages(); if ( $status && isset( $notices[ $status ] ) ) { printf( '<div class="notice notice-%1$s is-dismissible"><p>%2$s</p></div>', esc_attr( $notices[ $status ]['type'] ), esc_html( $notices[ $status ]['text'] ) ); } ?> <?php settings_errors(); ?> <?php /* * The import form is declared here rather than inside the settings * form, because HTML forbids nesting forms and the settings form must * post to options.php. The file input and button inside the Advanced * tab reference this form by id, which HTML5 permits. */ ?> <form id="kolofon-import-form" method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="kolofon-hidden-form"> <input type="hidden" name="action" value="kolofon_import" /> <?php wp_nonce_field( 'kolofon_import' ); ?> </form> <h2 class="screen-reader-text"><?php esc_html_e( 'Settings sections', 'kolofon' ); ?></h2> <div class="nav-tab-wrapper kolofon-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Theme options sections', 'kolofon' ); ?>"> <?php foreach ( $tabs as $slug => $label ) : ?> <button type="button" role="tab" id="tabctl-<?php echo esc_attr( $slug ); ?>" class="nav-tab" data-tab="<?php echo esc_attr( $slug ); ?>" aria-controls="tab-<?php echo esc_attr( $slug ); ?>" aria-selected="false" tabindex="-1"> <?php echo esc_html( $label ); ?> </button> <?php endforeach; ?> </div> <form action="options.php" method="post" class="kolofon-form"> <?php settings_fields( OPTION_GROUP ); ?> <?php foreach ( array_keys( $form_tabs ) as $slug ) : ?> <div class="kolofon-panel" id="tab-<?php echo esc_attr( $slug ); ?>" role="tabpanel" aria-labelledby="tabctl-<?php echo esc_attr( $slug ); ?>" tabindex="0"> <?php if ( 'identity' === $slug ) : ?> <?php render_appearance_preview(); ?> <?php render_appearance_tab_intro(); ?> <?php endif; ?> <?php if ( 'fediverse' === $slug ) : ?> <?php render_fediverse_tab_intro(); ?> <?php endif; ?> <table class="form-table" role="presentation"> <?php do_settings_fields( OPTION_PAGE, $slug ); ?> </table> <?php if ( 'advanced' === $slug ) : ?> <?php render_system_panel(); ?> <?php endif; ?> </div> <?php endforeach; ?> <?php submit_button(); ?> </form> <div class="kolofon-panel kolofon-docs-panel" id="tab-docs" role="tabpanel" aria-labelledby="tabctl-docs" tabindex="0"> <?php render_docs_panel(); ?> </div> </div> <?php } /** * Live typography and colour preview for the Identity tab. * * A specimen block that re-renders as the font stack, sizes, and colour scheme * controls change, entirely client-side. The markup here is the initial state; * admin-options.js reads the localised stack and scheme data and updates the * inline styles as the controls move. With JavaScript off it still shows a * static, readable specimen in the default face. */ function render_appearance_preview() { ?> <div class="kolofon-preview" data-kolofon-preview aria-live="polite"> <p class="kolofon-preview-label"><?php esc_html_e( 'Live preview', 'kolofon' ); ?></p> <div class="kolofon-preview-stage" data-preview-stage> <p class="kolofon-preview-eyebrow" data-preview-eyebrow><?php esc_html_e( 'Specimen', 'kolofon' ); ?></p> <h2 class="kolofon-preview-heading" data-preview-heading><?php esc_html_e( 'The reader arrives here first', 'kolofon' ); ?></h2> <p class="kolofon-preview-lede" data-preview-lede><?php esc_html_e( 'A lede paragraph sets the scene in slightly larger type, carrying the voice before the body settles in.', 'kolofon' ); ?></p> <p class="kolofon-preview-body" data-preview-body><?php esc_html_e( 'This is body copy at reading size. It is the measure of the whole design: the face you choose and the size you set decide how a visitor experiences everything you publish. Adjust the controls and watch this specimen answer.', 'kolofon' ); ?></p> </div> <p class="kolofon-preview-note description"><?php esc_html_e( 'Updates as you change the font, sizes, and colour scheme below. Nothing is saved until you press Save Changes.', 'kolofon' ); ?></p> </div> <?php } /** * Intro block on the Identity tab: explains the favicon. * * The theme ships a default favicon (a serif K on the Charcoal background, in * the theme's own display face) and emits it as a fallback only when no Site * Icon is set. Changing it is core's job: the Site Icon control handles * cropping and generates every required size, which a theme option would * reproduce badly. So rather than duplicate that UI, point at it. */ function render_appearance_tab_intro() { $customize_url = wp_customize_url(); // Deep-link straight to the Site Icon control when the current WordPress // supports autofocus; harmless query args on versions that do not. $site_icon_url = add_query_arg( array( 'autofocus' => array( 'section' => 'title_tagline' ), 'return' => rawurlencode( admin_url( 'themes.php?page=' . OPTION_PAGE ) ), ), $customize_url ); $has_icon = function_exists( 'has_site_icon' ) && has_site_icon(); ?> <div class="kolofon-intro"> <p> <?php esc_html_e( 'The theme ships a default favicon, shown in the browser tab until you set your own. It is a serif K on the Charcoal background, matching the wordmark.', 'kolofon' ); ?> </p> <p> <?php if ( $has_icon ) { printf( /* translators: %s: link to the Site Icon control */ esc_html__( 'You have set a custom Site Icon, which overrides the default. %s to change it.', 'kolofon' ), '<a href="' . esc_url( $site_icon_url ) . '">' . esc_html__( 'Open Site Identity', 'kolofon' ) . '</a>' ); } else { printf( /* translators: %s: link to the Site Icon control
+#: inc/options.php:745
+msgid "To use your own, set a Site Icon in the Customizer. %s. It handles cropping and generates every size browsers and devices ask for."
+msgstr ""
+
+#: inc/options.php:769
+msgid "Two independent switches. The microblog gives you short, title-less posts on this site. Federation publishes them to the Fediverse. You can run the microblog on its own; federating without it is possible but pointless, since there would be nothing to send."
+msgstr ""
+
+#: inc/options.php:773
+msgid "Switch on Microblog below and save. A Statuses item appears in the admin menu, a Post status button appears in the toolbar, and the [kolofon_microblog] shortcode starts working."
+msgstr ""
+
+#: inc/options.php:776
+msgid "Write a status. Statuses have no title on purpose: the text is the post."
+msgstr ""
+
+#: inc/options.php:779
+msgid "Switch on Federate statuses and save. This loads the bundled ActivityPub engine, generates your keys and opens your Actor, inbox and WebFinger endpoints."
+msgstr ""
+
+#: inc/options.php:782
+msgid "Check the discovery link under your address above returns JSON. If it does not, open Settings then Permalinks once to flush the rewrite rules."
+msgstr ""
+
+#. translators: %s: number of posts */ _n( '%s post', '%s posts', $term->count, 'kolofon' ), number_format_i18n( $term->count ) ) ) ); } else { printf( '<li class="is-missing"><code>%1$s</code> %2$s</li>', esc_html( $slug ), esc_html__( 'no category with this slug exists yet', 'kolofon' ) ); } } echo '</ul>'; printf( '<p class="description"><a href="%1$s">%2$s</a></p>', esc_url( admin_url( 'edit-tags.php?taxonomy=category' ) ), esc_html__( 'Manage categories', 'kolofon' ) ); } break; case 'fediverse_identity': $identity = \Kolofon\fediverse_identity(); echo '<div class="kolofon-fedi">'; if ( empty( $identity['handles'] ) ) { echo '<p class="kolofon-fedi-lead">' . esc_html__( 'No profile is published yet. Switch on "Federate statuses" below.', 'kolofon' ) . '</p>'; } else { echo '<p class="kolofon-fedi-lead">' . esc_html__( 'There is nothing to sign up for: with the engine running, this site is its own Fediverse server. Paste a handle into the search box on Mastodon and press follow.', 'kolofon' ) . '</p>'; foreach ( $identity['handles'] as $entry ) { printf( '<p class="kolofon-fedi-handle"><span class="kolofon-fedi-who">%1$s</span><code>@%2$s</code><span class="kolofon-fedi-note">%3$s</span></p>', esc_html( $entry['label'] ), esc_html( $entry['handle'] ), esc_html( $entry['note'] ) ); } if ( count( $identity['handles'] ) > 1 ) { echo '<p class="kolofon-fedi-lead">' . esc_html__( 'Both exist because the ActivityPub screen is set to publish author and blog profiles. Searching for one will not find the other, which is the usual reason a site seems missing from Mastodon.', 'kolofon' ) . '</p>'; } } echo '<ul class="kolofon-fedi-checks">'; foreach ( $identity['checks'] as $check ) { printf( '<li class="%1$s"><span class="kolofon-fedi-dot" aria-hidden="true"></span><span class="kolofon-fedi-label">%2$s</span> <span class="kolofon-fedi-note">%3$s</span><span class="screen-reader-text">%4$s</span></li>', $check['ok'] ? 'is-ok' : 'is-bad', esc_html( $check['label'] ), esc_html( $check['note'] ), $check['ok'] ? esc_html__( 'Ready', 'kolofon' ) : esc_html__( 'Needs attention', 'kolofon' ) ); } echo '</ul>'; // The live test runs only when asked, since it costs three network // round trips. Everything above it is inferred from settings; this // is the part that proves a remote server can actually reach you. $run_live = isset( $_GET['kolofon_fedi_test'] ) && check_admin_referer( 'kolofon_fedi_test' ); if ( $run_live ) { echo '<h3 class="kolofon-fedi-livetitle">' . esc_html__( 'Live endpoint test', 'kolofon' ) . '</h3>'; echo '<ul class="kolofon-fedi-checks">'; foreach ( \Kolofon\fediverse_live_test() as $check ) { printf( '<li class="%1$s"><span class="kolofon-fedi-dot" aria-hidden="true"></span><span class="kolofon-fedi-label">%2$s</span> <span class="kolofon-fedi-note">%3$s</span></li>', $check['ok'] ? 'is-ok' : 'is-bad', esc_html( $check['label'] ), esc_html( $check['note'] ) ); } echo '</ul>'; } else { printf( '<p><a class="button button-secondary" href="%1$s">%2$s</a></p>', esc_url( wp_nonce_url( add_query_arg( 'kolofon_fedi_test', '1' ), 'kolofon_fedi_test' ) ), esc_html__( 'Run live endpoint test', 'kolofon' ) ); } if ( '' !== $identity['handle'] ) { printf( '<p class="description"><a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a></p>', esc_url( $identity['webfinger'] ), esc_html__( 'Test discovery: this should return JSON describing the site', 'kolofon' ) ); } echo '</div>'; break; case 'reset_button': $reset_url = wp_nonce_url( admin_url( 'admin-post.php?action=kolofon_reset' ), 'kolofon_reset' ); printf( '<a href="%1$s" class="button button-secondary" onclick="return confirm(\'%2$s\');">%3$s</a>', esc_url( $reset_url ), esc_js( __( 'Restore all options to default values. Continue?', 'kolofon' ) ), esc_html__( 'Restore defaults', 'kolofon' ) ); break; } // Help text normally lives in the label column (see add_field). It is only // printed here for fields that bypass add_field and set help directly. if ( ! empty( $args['help'] ) && empty( $args['help_in_label'] ) ) { printf( '<p class="description">%s</p>', esc_html( $args['help'] ) ); } } /** * Handle the Restore Defaults action. */ function handle_reset() { if ( ! current_user_can( 'manage_options' ) ) { wp_die( esc_html__( 'You are not allowed to do that.', 'kolofon' ) ); } check_admin_referer( 'kolofon_reset' ); update_option( KOLOFON_OPTION_KEY, get_defaults() ); redirect_to_options( 'reset-ok' ); } /** * Render the options page shell (tabs + Settings API form). */ function render_options_page() { if ( ! current_user_can( 'manage_options' ) ) { return; } $tabs = get_option_tabs(); // The Documentation tab renders outside the settings form, so it carries // no section and no fields. $form_tabs = get_form_tabs(); ?> <div class="wrap kolofon-wrap js-tabs"> <div class="kolofon-masthead"> <p class="kolofon-masthead-eyebrow"><?php esc_html_e( 'Theme Options', 'kolofon' ); ?></p> <h1 class="kolofon-options-title"> <?php // wp_get_theme() returns a WP_Theme in WordPress, but guard the // call so a non-object environment cannot fatal the screen. $kolofon_theme = function_exists( 'wp_get_theme' ) ? wp_get_theme() : null; $kolofon_theme_name = ( is_object( $kolofon_theme ) && method_exists( $kolofon_theme, 'get' ) ) ? (string) $kolofon_theme->get( 'Name' ) : ''; echo esc_html( '' !== $kolofon_theme_name ? $kolofon_theme_name : __( 'Kolofon', 'kolofon' ) ); ?> <span class="kolofon-version-pill"> <?php printf( /* translators: %s: theme version number */ esc_html__( 'v%s', 'kolofon' ), esc_html( KOLOFON_VERSION ) ); ?> </span> </h1> <p class="kolofon-masthead-desc"> <?php esc_html_e( 'Identity, sections, social, appearance, and layout settings for the site.', 'kolofon' ); ?> </p> </div> <?php // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only status flag set by our own redirect. $status = isset( $_GET['kolofon_status'] ) ? sanitize_key( wp_unslash( $_GET['kolofon_status'] ) ) : ''; $notices = get_status_messages(); if ( $status && isset( $notices[ $status ] ) ) { printf( '<div class="notice notice-%1$s is-dismissible"><p>%2$s</p></div>', esc_attr( $notices[ $status ]['type'] ), esc_html( $notices[ $status ]['text'] ) ); } ?> <?php settings_errors(); ?> <?php /* * The import form is declared here rather than inside the settings * form, because HTML forbids nesting forms and the settings form must * post to options.php. The file input and button inside the Advanced * tab reference this form by id, which HTML5 permits. */ ?> <form id="kolofon-import-form" method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="kolofon-hidden-form"> <input type="hidden" name="action" value="kolofon_import" /> <?php wp_nonce_field( 'kolofon_import' ); ?> </form> <h2 class="screen-reader-text"><?php esc_html_e( 'Settings sections', 'kolofon' ); ?></h2> <div class="nav-tab-wrapper kolofon-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Theme options sections', 'kolofon' ); ?>"> <?php foreach ( $tabs as $slug => $label ) : ?> <button type="button" role="tab" id="tabctl-<?php echo esc_attr( $slug ); ?>" class="nav-tab" data-tab="<?php echo esc_attr( $slug ); ?>" aria-controls="tab-<?php echo esc_attr( $slug ); ?>" aria-selected="false" tabindex="-1"> <?php echo esc_html( $label ); ?> </button> <?php endforeach; ?> </div> <form action="options.php" method="post" class="kolofon-form"> <?php settings_fields( OPTION_GROUP ); ?> <?php foreach ( array_keys( $form_tabs ) as $slug ) : ?> <div class="kolofon-panel" id="tab-<?php echo esc_attr( $slug ); ?>" role="tabpanel" aria-labelledby="tabctl-<?php echo esc_attr( $slug ); ?>" tabindex="0"> <?php if ( 'identity' === $slug ) : ?> <?php render_appearance_preview(); ?> <?php render_appearance_tab_intro(); ?> <?php endif; ?> <?php if ( 'fediverse' === $slug ) : ?> <?php render_fediverse_tab_intro(); ?> <?php endif; ?> <table class="form-table" role="presentation"> <?php do_settings_fields( OPTION_PAGE, $slug ); ?> </table> <?php if ( 'advanced' === $slug ) : ?> <?php render_system_panel(); ?> <?php endif; ?> </div> <?php endforeach; ?> <?php submit_button(); ?> </form> <div class="kolofon-panel kolofon-docs-panel" id="tab-docs" role="tabpanel" aria-labelledby="tabctl-docs" tabindex="0"> <?php render_docs_panel(); ?> </div> </div> <?php } /** * Live typography and colour preview for the Identity tab. * * A specimen block that re-renders as the font stack, sizes, and colour scheme * controls change, entirely client-side. The markup here is the initial state; * admin-options.js reads the localised stack and scheme data and updates the * inline styles as the controls move. With JavaScript off it still shows a * static, readable specimen in the default face. */ function render_appearance_preview() { ?> <div class="kolofon-preview" data-kolofon-preview aria-live="polite"> <p class="kolofon-preview-label"><?php esc_html_e( 'Live preview', 'kolofon' ); ?></p> <div class="kolofon-preview-stage" data-preview-stage> <p class="kolofon-preview-eyebrow" data-preview-eyebrow><?php esc_html_e( 'Specimen', 'kolofon' ); ?></p> <h2 class="kolofon-preview-heading" data-preview-heading><?php esc_html_e( 'The reader arrives here first', 'kolofon' ); ?></h2> <p class="kolofon-preview-lede" data-preview-lede><?php esc_html_e( 'A lede paragraph sets the scene in slightly larger type, carrying the voice before the body settles in.', 'kolofon' ); ?></p> <p class="kolofon-preview-body" data-preview-body><?php esc_html_e( 'This is body copy at reading size. It is the measure of the whole design: the face you choose and the size you set decide how a visitor experiences everything you publish. Adjust the controls and watch this specimen answer.', 'kolofon' ); ?></p> </div> <p class="kolofon-preview-note description"><?php esc_html_e( 'Updates as you change the font, sizes, and colour scheme below. Nothing is saved until you press Save Changes.', 'kolofon' ); ?></p> </div> <?php } /** * Intro block on the Identity tab: explains the favicon. * * The theme ships a default favicon (a serif K on the Charcoal background, in * the theme's own display face) and emits it as a fallback only when no Site * Icon is set. Changing it is core's job: the Site Icon control handles * cropping and generates every required size, which a theme option would * reproduce badly. So rather than duplicate that UI, point at it. */ function render_appearance_tab_intro() { $customize_url = wp_customize_url(); // Deep-link straight to the Site Icon control when the current WordPress // supports autofocus; harmless query args on versions that do not. $site_icon_url = add_query_arg( array( 'autofocus' => array( 'section' => 'title_tagline' ), 'return' => rawurlencode( admin_url( 'themes.php?page=' . OPTION_PAGE ) ), ), $customize_url ); $has_icon = function_exists( 'has_site_icon' ) && has_site_icon(); ?> <div class="kolofon-intro"> <p> <?php esc_html_e( 'The theme ships a default favicon, shown in the browser tab until you set your own. It is a serif K on the Charcoal background, matching the wordmark.', 'kolofon' ); ?> </p> <p> <?php if ( $has_icon ) { printf( /* translators: %s: link to the Site Icon control */ esc_html__( 'You have set a custom Site Icon, which overrides the default. %s to change it.', 'kolofon' ), '<a href="' . esc_url( $site_icon_url ) . '">' . esc_html__( 'Open Site Identity', 'kolofon' ) . '</a>' ); } else { printf( /* translators: %s: link to the Site Icon control */ esc_html__( 'To use your own, set a Site Icon in the Customizer. %s. It handles cropping and generates every size browsers and devices ask for.', 'kolofon' ), '<a href="' . esc_url( $site_icon_url ) . '">' . esc_html__( 'Open Site Identity', 'kolofon' ) . '</a>' ); } ?> </p> </div> <?php } /** * Intro card for the Fediverse tab. * * The two switches below it are independent and the order matters, so the steps * are spelled out rather than left to be inferred. Both engines ship inside the * theme, so no plugin is involved at any point. */ function render_fediverse_tab_intro() { $microblog = 1 === intval( opt( 'microblog_enabled' ) ); $federate = 1 === intval( opt( 'fediverse_enabled' ) ); ?> <div class="kolofon-intro"> <p> <?php esc_html_e( 'Two independent switches. The microblog gives you short, title-less posts on this site. Federation publishes them to the Fediverse. You can run the microblog on its own; federating without it is possible but pointless, since there would be nothing to send.', 'kolofon' ); ?> </p> <ol class="kolofon-steps"> <li class="<?php echo $microblog ? 'is-done' : ''; ?>"> <?php esc_html_e( 'Switch on Microblog below and save. A Statuses item appears in the admin menu, a Post status button appears in the toolbar, and the [kolofon_microblog] shortcode starts working.', 'kolofon' ); ?> </li> <li class="<?php echo $microblog ? '' : 'is-waiting'; ?>"> <?php esc_html_e( 'Write a status. Statuses have no title on purpose: the text is the post.', 'kolofon' ); ?> </li> <li class="<?php echo $federate ? 'is-done' : ''; ?>"> <?php esc_html_e( 'Switch on Federate statuses and save. This loads the bundled ActivityPub engine, generates your keys and opens your Actor, inbox and WebFinger endpoints.', 'kolofon' ); ?> </li> <li class="<?php echo $federate ? '' : 'is-waiting'; ?>"> <?php esc_html_e( 'Check the discovery link under your address above returns JSON. If it does not, open Settings then Permalinks once to flush the rewrite rules.', 'kolofon' ); ?> </li> </ol> <p> <?php printf( /* translators: %s: the shortcode, already wrapped in a code element
+#: inc/options.php:789
+msgid "To show a timeline on a page, add %s to its content."
+msgstr ""
+
+#: inc/options.php:795
+msgid "Where statuses appear on the front end is controlled by the settings below. By default they live on their own archive at /statuses/ and stay out of the blog, so switching the microblog on changes nothing about your existing pages until you say otherwise."
+msgstr ""
+
+#: inc/page-states.php:58
+msgid "Published normally"
+msgstr ""
+
+#: inc/page-states.php:59
+msgid "Planned, not yet written"
+msgstr ""
+
+#: inc/page-states.php:96
+msgid "Page state"
+msgstr ""
+
+#: inc/page-states.php:123
+msgid "A planned page stays in the navigation with a badge, and shows its excerpt as a short description of what it will contain."
+msgstr ""
+
+#: inc/post-list.php:215 page-blog.php:137
+msgid "Pagination"
+msgstr ""
+
+#. translators: 1: first item on this page, 2: last item on this page, 3: total items
+#. translators: %d: post count */ esc_html( _n( '%d post', '%d posts', $kolofon_blog_query->found_posts, 'kolofon' ) ), intval( $kolofon_blog_query->found_posts ) ); ?> </p> </div> <div class="content ledger"> <?php if ( $kolofon_blog_query->have_posts() ) : $kolofon_current_year = null; $kolofon_year_rows = ''; $kolofon_year_count = 0; while ( $kolofon_blog_query->have_posts() ) : $kolofon_blog_query->the_post(); $kolofon_group_year = get_the_date( 'Y' ); if ( $kolofon_group_year !== $kolofon_current_year ) : if ( null !== $kolofon_current_year ) : // Flush the completed group: the entry count is only // known once every post in it has been visited. printf( '<section class="year-block" itemscope="itemscope" itemtype="https://schema.org/ItemList"><div class="year-rail"><p class="year-num" itemprop="name">%1$s <span class="year-count">&middot; %2$s</span></p></div><ol class="index-list">%3$s</ol></section>', esc_html( $kolofon_current_year ), esc_html( sprintf( /* translators: %d: number of posts in this year, on this page */ _n( '%d entry', '%d entries', $kolofon_year_count, 'kolofon' ), $kolofon_year_count ) ), $kolofon_year_rows // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped fragments below. ); endif; // Each year group is its own schema.org ItemList; reset the // position counter so ListItem positions — and the printed // index number, which is the same integer — start at 1 // within each year. $GLOBALS['kolofon_list_position'] = 0; $kolofon_current_year = $kolofon_group_year; $kolofon_year_rows = ''; $kolofon_year_count = 0; endif; ++$kolofon_year_count; $kolofon_cats = get_the_category(); $kolofon_section = ! empty( $kolofon_cats ) ? $kolofon_cats[0] : null; ob_start(); ?> <li class="entry h-entry" itemprop="itemListElement" itemscope="itemscope" itemtype="https://schema.org/ListItem"> <meta itemprop="position" content="<?php echo esc_attr( (string) ( ++$GLOBALS['kolofon_list_position'] ) ); ?>" /> <span class="entry-index" aria-hidden="true"><?php echo esc_html( str_pad( (string) $kolofon_year_count, 2, '0', STR_PAD_LEFT ) ); ?></span> <a class="entry-link u-url" href="<?php the_permalink(); ?>" itemprop="url"> <span itemprop="item" itemscope="itemscope" itemtype="https://schema.org/BlogPosting"> <meta itemprop="url" content="<?php the_permalink(); ?>" /> <span class="entry-meta"> <time class="entry-date" itemprop="datePublished" datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>"><?php echo esc_html( get_the_date( 'M j' ) ); ?></time> <?php if ( $kolofon_section ) : ?> <span class="entry-section"><?php echo esc_html( $kolofon_section->name ); ?></span> <?php endif; ?> </span> <span class="entry-title p-name" itemprop="headline name"><?php the_title(); ?></span> </span> </a> </li> <?php $kolofon_year_rows .= ob_get_clean(); endwhile; // Flush the final group; the loop above only flushes on a year // transition, so the last year needs one more push after it ends. printf( '<section class="year-block" itemscope="itemscope" itemtype="https://schema.org/ItemList"><div class="year-rail"><p class="year-num" itemprop="name">%1$s <span class="year-count">&middot; %2$s</span></p></div><ol class="index-list">%3$s</ol></section>', esc_html( $kolofon_current_year ), esc_html( sprintf( /* translators: %d: number of posts in this year, on this page */ _n( '%d entry', '%d entries', $kolofon_year_count, 'kolofon' ), $kolofon_year_count ) ), $kolofon_year_rows // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped fragments above. ); wp_reset_postdata(); else : ?> <p><?php esc_html_e( 'No posts yet.', 'kolofon' ); ?></p> <?php endif; ?> </div> <?php if ( $kolofon_blog_query->max_num_pages > 1 ) : ?> <nav class="pagination" aria-label="<?php esc_attr_e( 'Pagination', 'kolofon' ); ?>"> <p class="pagination-count"> <?php $kolofon_first = ( ( $kolofon_current_page - 1 ) * $kolofon_per_page ) + 1; $kolofon_last = min( $kolofon_blog_query->found_posts, $kolofon_current_page * $kolofon_per_page ); printf( /* translators: 1: first item on this page, 2: last item on this page, 3: total items
+#: inc/post-list.php:220 page-blog.php:144
+msgid "%1$s to %2$s of %3$s"
+msgstr ""
+
+#: inc/post-list.php:232 page-blog.php:165
+msgid "Newer posts"
+msgstr ""
+
+#: inc/post-list.php:241 page-blog.php:174
+msgid "Older posts"
+msgstr ""
+
+#: inc/print-branding.php:107
+msgid "Cite this page (MLA)"
+msgstr ""
+
+#: inc/print-branding.php:123
+msgid "Accessed %s."
+msgstr ""
+
+#: inc/resilience.php:83
+msgid "a missing file"
+msgstr ""
+
+#: inc/resilience.php:87
+msgid "a missing function (outdated plugin)"
+msgstr ""
+
+#: inc/resilience.php:92
+msgid "a plugin conflict"
+msgstr ""
+
+#: inc/resilience.php:96
+msgid "a missing dependency"
+msgstr ""
+
+#: inc/resilience.php:100
+msgid "a plugin bug"
+msgstr ""
+
+#: inc/resilience.php:104
+msgid "a calculation error"
+msgstr ""
+
+#: inc/resilience.php:108
+msgid "a memory limit"
+msgstr ""
+
+#: inc/resilience.php:112
+msgid "a timeout"
+msgstr ""
+
+#: inc/resilience.php:141
+msgid "Technical details (visible only to admins)"
+msgstr ""
+
+#: inc/resilience.php:158
+msgid "A header script"
+msgstr ""
+
+#: inc/resilience.php:159
+msgid "A footer script"
+msgstr ""
+
+#: inc/resilience.php:162
+msgid "A plugin"
+msgstr ""
+
+#. translators: 1: what failed, e.g. "A footer script". 2: what went wrong, e.g. "a missing file".
+#: inc/resilience.php:167
+msgid "%1$s failed to load: %2$s. Not a theme issue — rest of the page is fine."
+msgstr ""
+
+#: inc/sections.php:300 inc/system-report.php:155
+msgid "Sections"
+msgstr ""
+
+#: inc/security.php:105
+msgid "File editing is disabled."
+msgstr ""
+
+#: inc/security.php:106
+msgid "File editing disabled"
+msgstr ""
+
+#: inc/security.php:191
+msgid "Off"
+msgstr ""
+
+#: inc/security.php:192
+msgid "Report only (logs violations, blocks nothing)"
+msgstr ""
+
+#: inc/security.php:193
+msgid "Enforce"
+msgstr ""
+
+#: inc/settings-io.php:156
+msgid "Settings imported."
+msgstr ""
+
+#: inc/settings-io.php:160
+msgid "Defaults restored."
+msgstr ""
+
+#: inc/settings-io.php:164
+msgid "No file was uploaded."
+msgstr ""
+
+#: inc/settings-io.php:168
+msgid "That file is empty or larger than 256 KB, so it is not a settings export."
+msgstr ""
+
+#: inc/settings-io.php:172
+msgid "The uploaded file could not be read."
+msgstr ""
+
+#: inc/settings-io.php:176
+msgid "That file is not valid JSON, or has no options to import."
+msgstr ""
+
+#: inc/settings-io.php:180
+msgid "That export belongs to a different theme."
+msgstr ""
+
+#: inc/setup.php:36
+msgid "Primary Menu"
+msgstr ""
+
+#: inc/setup.php:37
+msgid "Footer Menu"
+msgstr ""
+
+#: inc/setup.php:51
+msgid "Intro"
+msgstr ""
+
+#: inc/setup.php:53
+msgid "The intro area at the top of the home page."
+msgstr ""
+
+#: inc/share.php:32
+msgid "Share on X"
+msgstr ""
+
+#: inc/share.php:33
+msgid "Share on Facebook"
+msgstr ""
+
+#: inc/share.php:34
+msgid "Share on LinkedIn"
+msgstr ""
+
+#: inc/share.php:35
+msgid "Share on Bluesky"
+msgstr ""
+
+#: inc/share.php:36
+msgid "Share on Reddit"
+msgstr ""
+
+#: inc/share.php:37
+msgid "Share on Telegram"
+msgstr ""
+
+#: inc/share.php:38
+msgid "Share on WhatsApp"
+msgstr ""
+
+#: inc/share.php:39
+msgid "Share by email"
+msgstr ""
+
+#: inc/share.php:175
+msgid "Share:"
+msgstr ""
+
+#: inc/share.php:183
+msgid "Link copied"
+msgstr ""
+
+#: inc/share.php:184 inc/share.php:185
+msgid "Copy link"
+msgstr ""
+
+#: inc/social.php:23
+msgid "Mastodon"
+msgstr ""
+
+#: inc/social.php:28
+msgid "X"
+msgstr ""
+
+#: inc/social.php:33
+msgid "LinkedIn"
+msgstr ""
+
+#: inc/social.php:38
+msgid "Academia.edu"
+msgstr ""
+
+#: inc/social.php:47
+msgid "ORCID"
+msgstr ""
+
+#: inc/social.php:56
+msgid "GitHub"
+msgstr ""
+
+#: inc/social.php:61
+msgid "YouTube"
+msgstr ""
+
+#: inc/social.php:66
+msgid "Instagram"
+msgstr ""
+
+#: inc/social.php:71
+msgid "Facebook"
+msgstr ""
+
+#: inc/social.php:76
+msgid "Threads"
+msgstr ""
+
+#: inc/social.php:81
+msgid "Pinterest"
+msgstr ""
+
+#: inc/social.php:86
+msgid "Goodreads"
+msgstr ""
+
+#: inc/social.php:93
+msgid "LibraryThing"
+msgstr ""
+
+#: inc/social.php:100
+msgid "GamingTribe"
+msgstr ""
+
+#: inc/social.php:107
+msgid "TikTok"
+msgstr ""
+
+#: inc/social.php:112
+msgid "Snapchat"
+msgstr ""
+
+#: inc/social.php:117
+msgid "WhatsApp"
+msgstr ""
+
+#: inc/social.php:122
+msgid "Telegram"
+msgstr ""
+
+#: inc/social.php:127
+msgid "Discord"
+msgstr ""
+
+#: inc/social.php:132
+msgid "Reddit"
+msgstr ""
+
+#: inc/social.php:137
+msgid "Bluesky"
+msgstr ""
+
+#: inc/social.php:142
+msgid "Tumblr"
+msgstr ""
+
+#: inc/social.php:147
+msgid "WeChat"
+msgstr ""
+
+#: inc/social.php:152
+msgid "Twitch"
+msgstr ""
+
+#: inc/social.php:157
+msgid "Vimeo"
+msgstr ""
+
+#: inc/social.php:162
+msgid "Medium"
+msgstr ""
+
+#: inc/social.php:167
+msgid "Behance"
+msgstr ""
+
+#: inc/social.php:172
+msgid "Dribbble"
+msgstr ""
+
+#: inc/social.php:177
+msgid "LINE"
+msgstr ""
+
+#: inc/social.php:182
+msgid "Signal"
+msgstr ""
+
+#: inc/social.php:187
+msgid "Spotify"
+msgstr ""
+
+#: inc/social.php:192
+msgid "Wikipedia"
+msgstr ""
+
+#: inc/social.php:197
+msgid "Wikidata"
+msgstr ""
+
+#: inc/social.php:202
+msgid "Quora"
+msgstr ""
+
+#: inc/social.php:207
+msgid "Issuu"
+msgstr ""
+
+#: inc/social.php:212
+msgid "Substack"
+msgstr ""
+
+#: inc/social.php:217
+msgid "Flickr"
+msgstr ""
+
+#: inc/social.php:222
+msgid "Scribd"
+msgstr ""
+
+#: inc/social.php:231
+msgid "Email"
+msgstr ""
+
+#: inc/social.php:236
+msgid "RSS"
+msgstr ""
+
+#: inc/social.php:333
+msgid "Find me on:"
+msgstr ""
+
+#: inc/system-report.php:30
+msgid "Theme version"
 msgstr ""
 
 #: inc/system-report.php:33
@@ -702,310 +1419,258 @@ msgstr ""
 msgid "Running directly, no child theme active."
 msgstr ""
 
-#: inc/docs.php:133
-msgid "SSOT"
-msgstr ""
-
-#: searchform.php:12
-msgid "Search"
-msgstr ""
-
-#: searchform.php:10
-msgid "Search for:"
-msgstr ""
-
-#: inc/meta.php:172
-msgid "Search results for %s"
-msgstr ""
-
-#: index.php:20
-msgid "Search results for:"
-msgstr ""
-
-#: searchform.php:11
-msgid "Search…"
-msgstr ""
-
-#: patterns/link-list.php:24
-msgid "Second link"
-msgstr ""
-
-#: inc/options-schema.php:158
-msgid "Section categories"
-msgstr ""
-
-#: inc/options-schema.php:38
-#: inc/sections.php:300
-#: inc/system-report.php:155
-msgid "Sections"
-msgstr ""
-
-#: inc/system-report.php:136
-msgid "Settings > Reading (Posts page)"
-msgstr ""
-
-#: inc/settings-io.php:156
-msgid "Settings imported."
-msgstr ""
-
-#: inc/options.php:519
-msgid "Settings sections"
-msgstr ""
-
-#: inc/email-guard.php:64
-msgid "Show email address"
-msgstr ""
-
-#: inc/options-schema.php:354
-msgid "Show recent posts on home"
-msgstr ""
-
-#: inc/options-schema.php:164
-msgid "Show section chooser"
-msgstr ""
-
-#: inc/options-schema.php:175
-msgid "Show tags in post lists"
-msgstr ""
-
-#: inc/options-schema.php:395
-msgid "Shown in the navigation next to pages marked as planned, and on the page itself. Mark a page as planned in its editor sidebar."
-msgstr ""
-
-#: inc/options-schema.php:276
-msgid "Sidebar: floating card in a left rail"
-msgstr ""
-
-#: inc/system-report.php:51
-msgid "Site Icon (Customiser)"
-msgstr ""
-
-#: inc/options-schema.php:264
-msgid "Size of the intro paragraph under the heading. Drag to preview, or type an exact value."
-msgstr ""
-
-#: header.php:19
-msgid "Skip to content"
-msgstr ""
-
-#: inc/options-schema.php:39
-msgid "Social"
-msgstr ""
-
-#: inc/docs.php:231
-msgid "Source:"
-msgstr ""
-
-#: inc/tags.php:147
-msgid "Spans: %s"
-msgstr ""
-
-#: inc/options.php:574
-msgid "Specimen"
-msgstr ""
-
-#: inc/defaults.php:265
-msgid "Square"
-msgstr ""
-
-#: inc/options-schema.php:147
-msgid "Square image works best. Rendered as a circle."
-msgstr ""
-
-#: inc/options-schema.php:329
-msgid "Stacked: title with date at the end"
-msgstr ""
-
-#: inc/system-report.php:98
-msgid "Standing down"
-msgstr ""
-
-#: inc/options-schema.php:288
-msgid "Stay-in-touch heading"
-msgstr ""
-
-#: inc/options-schema.php:43
-msgid "System"
-msgstr ""
-
-#: inc/options-schema.php:178
-msgid "Tags are the counterpart to sections: a post lives in one section and carries any number of tags, so tags are how a topic crosses sections."
-msgstr ""
-
-#: inc/options-schema.php:181
-msgid "Tags shown per row"
-msgstr ""
-
-#: inc/settings-io.php:180
-msgid "That export belongs to a different theme."
-msgstr ""
-
-#: inc/settings-io.php:168
-msgid "That file is empty or larger than 256 KB, so it is not a settings export."
-msgstr ""
-
-#: inc/settings-io.php:176
-msgid "That file is not valid JSON, or has no options to import."
-msgstr ""
-
-#: inc/system-report.php:64
-msgid "The decoder script is enqueued only on pages that render a protected link."
-msgstr ""
-
-#: inc/setup.php:53
-msgid "The intro area at the top of the home page."
-msgstr ""
-
-#: inc/options-schema.php:139
-msgid "The intro paragraph. Basic HTML allowed."
-msgstr ""
-
-#: 404.php:25
-msgid "The page you requested does not exist, or has been moved."
-msgstr ""
-
-#: inc/options.php:107
-#: inc/options.php:575
-msgid "The reader arrives here first"
-msgstr ""
-
-#: inc/options-schema.php:401
-msgid "The sentence shown in place of content on a planned page."
-msgstr ""
-
-#: inc/options-schema.php:278
-msgid "The sidebar card holds the wordmark, a numbered navigation, and the stay-in-touch links, leaving the content column free. Collapses to the top bar on narrow screens."
-msgstr ""
-
-#: inc/options.php:609
-msgid "The theme ships a default favicon, shown in the browser tab until you set your own. It is a serif K on the Charcoal background, matching the wordmark."
-msgstr ""
-
-#: inc/settings-io.php:172
-msgid "The uploaded file could not be read."
-msgstr ""
-
-#: inc/options.php:29
-#: inc/options.php:30
-#: inc/options.php:487
-msgid "Theme Options"
-msgstr ""
-
-#: inc/system-report.php:51
-msgid "Theme bundled icons"
-msgstr ""
-
-#: inc/options.php:520
-msgid "Theme options sections"
-msgstr ""
-
-#: inc/system-report.php:30
-msgid "Theme version"
-msgstr ""
-
-#: inc/options.php:109
-#: inc/options.php:577
-msgid "This is body copy at reading size. It is the measure of the whole design: the face you choose and the size you set decide how a visitor experiences everything you publish. Adjust the controls and watch this specimen answer."
-msgstr ""
-
-#: inc/options.php:375
-msgid "This replaces all current settings. Continue?"
-msgstr ""
-
-#: inc/social.php:76
-msgid "Threads"
-msgstr ""
-
-#: inc/options.php:622
-msgid "To use your own, set a Site Icon in the Customizer. %s. It handles cropping and generates every size browsers and devices ask for."
-msgstr ""
-
-#: inc/options-schema.php:275
-msgid "Top bar: full-width header above the content"
+#: inc/system-report.php:40
+msgid "Documentation parser"
 msgstr ""
 
 #: inc/system-report.php:41
 msgid "Unavailable"
 msgstr ""
 
-#: inc/options.php:579
-msgid "Updates as you change the font, sizes, and colour scheme below. Nothing is saved until you press Save Changes."
+#: inc/system-report.php:43
+msgid "Documentation renders as HTML on the Documentation tab."
 msgstr ""
 
-#: inc/docs.php:134
-msgid "Upgrading"
+#: inc/system-report.php:44
+msgid "Documentation falls back to escaped source in a pre block."
 msgstr ""
 
-#: inc/options.php:376
-msgid "Upload and replace"
+#: inc/system-report.php:50
+msgid "Favicon source"
+msgstr ""
+
+#: inc/system-report.php:51
+msgid "Site Icon (Customiser)"
+msgstr ""
+
+#: inc/system-report.php:51
+msgid "Theme bundled icons"
+msgstr ""
+
+#: inc/system-report.php:53
+msgid "A Site Icon is set, so WordPress emits it and the theme stands down."
+msgstr ""
+
+#: inc/system-report.php:54
+msgid "No Site Icon set; the theme emits its bundled favicon set."
+msgstr ""
+
+#: inc/system-report.php:64
+msgid "The decoder script is enqueued only on pages that render a protected link."
+msgstr ""
+
+#: inc/system-report.php:74
+msgid "Ivory when the device prefers light, Charcoal when it prefers dark."
 msgstr ""
 
 #: inc/system-report.php:89
 msgid "Uploaded image"
 msgstr ""
 
-#: inc/options-schema.php:300
-msgid "Widescreen sites sit well between 1040 and 1280."
+#: inc/system-report.php:89
+msgid "Bundled default"
 msgstr ""
 
-#: inc/options-schema.php:350
-msgid "Width of the small floating preview that appears below-right of a post row on hover. Kept small so it reads as a peek rather than a card."
+#: inc/system-report.php:97
+msgid "Meta tags and schema"
 msgstr ""
 
-#: inc/options-schema.php:201
-msgid "Without this, the links at the foot of a post run chronologically across every section, so a reader following one topic is dropped into another."
+#: inc/system-report.php:98
+msgid "Emitted by the theme"
 msgstr ""
 
-#: inc/options-schema.php:132
-msgid "Wrap a phrase in <mark> to give it the accent colour. Only mark, em, strong, and br are allowed."
+#: inc/system-report.php:98
+msgid "Standing down"
 msgstr ""
 
-#: patterns/bio-card.php:35
-msgid "Write a longer paragraph here. Keep it factual, direct, and free of filler."
+#. translators: %s: plugin name
+#: inc/system-report.php:102
+msgid "%s is active and owns this output."
 msgstr ""
 
-#: patterns/contact-block.php:23
-msgid "Write to me"
+#: inc/system-report.php:105
+msgid "Disabled on the Advanced tab."
 msgstr ""
 
-#: patterns/bio-hero.php:21
-msgid "Writer, apologist, and developer. Replace this paragraph with your own introduction."
+#: inc/system-report.php:111
+msgid "File editors"
 msgstr ""
 
-#: inc/social.php:28
-msgid "X"
+#: inc/system-report.php:112
+msgid "Disabled"
 msgstr ""
 
-#: inc/options.php:461
-#: inc/settings-io.php:34
-msgid "You are not allowed to do that."
+#: inc/system-report.php:112
+msgid "Available"
 msgstr ""
 
-#: inc/migration-notice.php:86
-msgid "You do not have permission to perform this action."
+#: inc/system-report.php:114
+msgid "Locked by DISALLOW_FILE_EDIT in wp-config.php, which takes precedence over the theme setting."
 msgstr ""
 
-#: inc/options.php:616
-msgid "You have set a custom Site Icon, which overrides the default. %s to change it."
+#: inc/system-report.php:115
+msgid "Controlled by the theme setting on the Advanced tab."
 msgstr ""
 
-#: inc/social.php:61
-msgid "YouTube"
+#: inc/system-report.php:136
+msgid "Settings > Reading (Posts page)"
+msgstr ""
+
+#: inc/system-report.php:138
+msgid "Page with Blog Index template"
+msgstr ""
+
+#: inc/system-report.php:140
+msgid "Convention (/blog); no page found"
+msgstr ""
+
+#: inc/system-report.php:144
+msgid "Blog index"
+msgstr ""
+
+#: inc/system-report.php:147
+msgid "No page provisioned. Reactivate the theme to trigger the activation hook, or set a Posts page under Settings > Reading."
+msgstr ""
+
+#. translators: %s: plugin name */ __( '%s is active and owns this output.', 'kolofon' ), $detected ) : ( $emitting ? '' : __( 'Disabled on the Advanced tab.', 'kolofon' ) ), ); // File editors. $config_locked = defined( 'DISALLOW_FILE_EDIT' ) && DISALLOW_FILE_EDIT; $rows[] = array( 'label' => __( 'File editors', 'kolofon' ), 'value' => ( $config_locked || file_editors_disabled() ) ? __( 'Disabled', 'kolofon' ) : __( 'Available', 'kolofon' ), 'note' => $config_locked ? __( 'Locked by DISALLOW_FILE_EDIT in wp-config.php, which takes precedence over the theme setting.', 'kolofon' ) : __( 'Controlled by the theme setting on the Advanced tab.', 'kolofon' ), ); // Blog index page — where "View all" points, and whether the activation // hook has provisioned it. Written to surface the class of bug where the // hook did not fire, since a 404 on /blog is otherwise mysterious. $blog_url = get_blog_index_url(); $page_for_posts = (int) get_option( 'page_for_posts' ); $blog_template_pages = get_posts( array( 'post_type' => 'page', 'post_status' => 'publish', 'meta_key' => '_wp_page_template', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key 'meta_value' => 'page-blog.php', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value 'posts_per_page' => 1, 'fields' => 'ids', 'no_found_rows' => true, ) ); if ( $page_for_posts ) { $blog_source = __( 'Settings > Reading (Posts page)', 'kolofon' ); } elseif ( ! empty( $blog_template_pages ) ) { $blog_source = __( 'Page with Blog Index template', 'kolofon' ); } else { $blog_source = __( 'Convention (/blog); no page found', 'kolofon' ); } $rows[] = array( 'label' => __( 'Blog index', 'kolofon' ), 'value' => $blog_url, 'note' => empty( $blog_template_pages ) && ! $page_for_posts ? __( 'No page provisioned. Reactivate the theme to trigger the activation hook, or set a Posts page under Settings > Reading.', 'kolofon' ) : $blog_source, ); // Sections. $sections = get_sections(); $slugs = parse_section_slugs( opt( 'section_slugs' ) ); $rows[] = array( 'label' => __( 'Sections', 'kolofon' ), 'value' => sprintf( /* translators: 1: resolved count, 2: configured count
+#: inc/system-report.php:158
+msgid "%1$d of %2$d configured slugs resolve"
+msgstr ""
+
+#: inc/system-report.php:163
+msgid "At least one configured slug has no matching category. The Layout tab lists which."
+msgstr ""
+
+#: inc/system-report.php:170
+msgid "Documentation files"
+msgstr ""
+
+#: inc/tags.php:40
+msgid "Tagged"
+msgstr ""
+
+#. translators: %s: list of linked section names
+#: inc/tags.php:123
+msgid "Spans: %s"
+msgstr ""
+
+#: index.php:20
+msgid "Search results for:"
+msgstr ""
+
+#: index.php:26
+msgid "Posts in:"
+msgstr ""
+
+#: index.php:32
+msgid "Posts tagged:"
+msgstr ""
+
+#: index.php:52
+msgid "Posts"
+msgstr ""
+
+#: index.php:59
+msgid "%d post found."
+msgid_plural "%d posts found."
+msgstr[0] ""
+msgstr[1] ""
+
+#: index.php:89
+msgid "Nothing found."
+msgstr ""
+
+#: page-blog.php:40
+msgid "%d post"
+msgid_plural "%d posts"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: post count */ esc_html( _n( '%d post', '%d posts', $kolofon_blog_query->found_posts, 'kolofon' ) ), intval( $kolofon_blog_query->found_posts ) ); ?> </p> </div> <div class="content ledger"> <?php if ( $kolofon_blog_query->have_posts() ) : $kolofon_current_year = null; $kolofon_year_rows = ''; $kolofon_year_count = 0; while ( $kolofon_blog_query->have_posts() ) : $kolofon_blog_query->the_post(); $kolofon_group_year = get_the_date( 'Y' ); if ( $kolofon_group_year !== $kolofon_current_year ) : if ( null !== $kolofon_current_year ) : // Flush the completed group: the entry count is only // known once every post in it has been visited. printf( '<section class="year-block" itemscope="itemscope" itemtype="https://schema.org/ItemList"><div class="year-rail"><p class="year-num" itemprop="name">%1$s <span class="year-count">&middot; %2$s</span></p></div><ol class="index-list">%3$s</ol></section>', esc_html( $kolofon_current_year ), esc_html( sprintf( /* translators: %d: number of posts in this year, on this page
+#. translators: %d: post count */ esc_html( _n( '%d post', '%d posts', $kolofon_blog_query->found_posts, 'kolofon' ) ), intval( $kolofon_blog_query->found_posts ) ); ?> </p> </div> <div class="content ledger"> <?php if ( $kolofon_blog_query->have_posts() ) : $kolofon_current_year = null; $kolofon_year_rows = ''; $kolofon_year_count = 0; while ( $kolofon_blog_query->have_posts() ) : $kolofon_blog_query->the_post(); $kolofon_group_year = get_the_date( 'Y' ); if ( $kolofon_group_year !== $kolofon_current_year ) : if ( null !== $kolofon_current_year ) : // Flush the completed group: the entry count is only // known once every post in it has been visited. printf( '<section class="year-block" itemscope="itemscope" itemtype="https://schema.org/ItemList"><div class="year-rail"><p class="year-num" itemprop="name">%1$s <span class="year-count">&middot; %2$s</span></p></div><ol class="index-list">%3$s</ol></section>', esc_html( $kolofon_current_year ), esc_html( sprintf( /* translators: %d: number of posts in this year, on this page */ _n( '%d entry', '%d entries', $kolofon_year_count, 'kolofon' ), $kolofon_year_count ) ), $kolofon_year_rows // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- built from escaped fragments below. ); endif; // Each year group is its own schema.org ItemList; reset the // position counter so ListItem positions — and the printed // index number, which is the same integer — start at 1 // within each year. $GLOBALS['kolofon_list_position'] = 0; $kolofon_current_year = $kolofon_group_year; $kolofon_year_rows = ''; $kolofon_year_count = 0; endif; ++$kolofon_year_count; $kolofon_cats = get_the_category(); $kolofon_section = ! empty( $kolofon_cats ) ? $kolofon_cats[0] : null; ob_start(); ?> <li class="entry h-entry" itemprop="itemListElement" itemscope="itemscope" itemtype="https://schema.org/ListItem"> <meta itemprop="position" content="<?php echo esc_attr( (string) ( ++$GLOBALS['kolofon_list_position'] ) ); ?>" /> <span class="entry-index" aria-hidden="true"><?php echo esc_html( str_pad( (string) $kolofon_year_count, 2, '0', STR_PAD_LEFT ) ); ?></span> <a class="entry-link u-url" href="<?php the_permalink(); ?>" itemprop="url"> <span itemprop="item" itemscope="itemscope" itemtype="https://schema.org/BlogPosting"> <meta itemprop="url" content="<?php the_permalink(); ?>" /> <span class="entry-meta"> <time class="entry-date" itemprop="datePublished" datetime="<?php echo esc_attr( get_the_date( DATE_W3C ) ); ?>"><?php echo esc_html( get_the_date( 'M j' ) ); ?></time> <?php if ( $kolofon_section ) : ?> <span class="entry-section"><?php echo esc_html( $kolofon_section->name ); ?></span> <?php endif; ?> </span> <span class="entry-title p-name" itemprop="headline name"><?php the_title(); ?></span> </span> </a> </li> <?php $kolofon_year_rows .= ob_get_clean(); endwhile; // Flush the final group; the loop above only flushes on a year // transition, so the last year needs one more push after it ends. printf( '<section class="year-block" itemscope="itemscope" itemtype="https://schema.org/ItemList"><div class="year-rail"><p class="year-num" itemprop="name">%1$s <span class="year-count">&middot; %2$s</span></p></div><ol class="index-list">%3$s</ol></section>', esc_html( $kolofon_current_year ), esc_html( sprintf( /* translators: %d: number of posts in this year, on this page
+#: page-blog.php:68 page-blog.php:120
+msgid "%d entry"
+msgid_plural "%d entries"
+msgstr[0] ""
+msgstr[1] ""
+
+#: page-blog.php:130
+msgid "No posts yet."
 msgstr ""
 
 #: patterns/bio-card.php:27
 msgid "Your name here"
 msgstr ""
 
-#: inc/options.php:394
-msgid "first-slug, second-slug, third-slug"
+#: patterns/bio-card.php:31
+msgid "A short one-line description of what you do."
 msgstr ""
 
-#: inc/options.php:423
-msgid "no category with this slug exists yet"
+#: patterns/bio-card.php:35
+msgid "Write a longer paragraph here. Keep it factual, direct, and free of filler."
+msgstr ""
+
+#: patterns/bio-hero.php:17
+msgid "Hi, I'm your name here"
+msgstr ""
+
+#: patterns/bio-hero.php:21
+msgid "Writer, apologist, and developer. Replace this paragraph with your own introduction."
+msgstr ""
+
+#: patterns/callout.php:15
+msgid "Note"
+msgstr ""
+
+#: patterns/callout.php:19
+msgid "Replace this with the point worth setting apart from the surrounding argument."
+msgstr ""
+
+#: patterns/contact-block.php:19
+msgid "Get in touch"
+msgstr ""
+
+#: patterns/contact-block.php:23
+msgid "Corrections, disagreements, and commissions all welcome."
+msgstr ""
+
+#: patterns/contact-block.php:23
+msgid "Write to me"
+msgstr ""
+
+#: patterns/link-list.php:15
+msgid "Elsewhere"
 msgstr ""
 
 #: patterns/link-list.php:21
-#: patterns/link-list.php:24
+msgid "First link"
+msgstr ""
+
+#: patterns/link-list.php:21 patterns/link-list.php:24
 msgid "what it is, in one clause."
+msgstr ""
+
+#: patterns/link-list.php:24
+msgid "Second link"
+msgstr ""
+
+#: searchform.php:11
+msgid "Search for:"
+msgstr ""
+
+#: searchform.php:12
+msgid "Search…"
+msgstr ""
+
+#. translators: %s: the status publication date
+#: singular.php:59
+msgid "Status, %s"
+msgstr ""
+
+#: singular.php:85
+msgid "Pages:"
+msgstr ""
+
+#: singular.php:109
+msgid "Post navigation"
 msgstr ""

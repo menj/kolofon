@@ -664,15 +664,14 @@ function render_options_page() {
 					<table class="form-table" role="presentation">
 						<?php do_settings_fields( OPTION_PAGE, $slug ); ?>
 					</table>
+					<?php if ( 'advanced' === $slug ) : ?>
+						<?php render_system_panel(); ?>
+					<?php endif; ?>
 				</div>
 			<?php endforeach; ?>
 
 			<?php submit_button(); ?>
 		</form>
-
-		<div class="kolofon-panel" id="tab-system" role="tabpanel" aria-labelledby="tabctl-system" tabindex="0">
-			<?php render_system_panel(); ?>
-		</div>
 
 		<div class="kolofon-panel kolofon-docs-panel" id="tab-docs" role="tabpanel" aria-labelledby="tabctl-docs" tabindex="0">
 			<?php render_docs_panel(); ?>
@@ -682,7 +681,7 @@ function render_options_page() {
 }
 
 /**
- * Live typography and colour preview for the Appearance tab.
+ * Live typography and colour preview for the Identity tab.
  *
  * A specimen block that re-renders as the font stack, sizes, and colour scheme
  * controls change, entirely client-side. The markup here is the initial state;
@@ -706,7 +705,7 @@ function render_appearance_preview() {
 }
 
 /**
- * Intro block on the Appearance tab: explains the favicon.
+ * Intro block on the Identity tab: explains the favicon.
  *
  * The theme ships a default favicon (a serif K on the Charcoal background, in
  * the theme's own display face) and emits it as a fallback only when no Site

@@ -63,9 +63,11 @@ function get_option_tabs() {
 function get_form_tabs() {
 	$tabs = get_option_tabs();
 
-	// These render read-only content outside the settings form, so they have
-	// no section and no fields.
-	unset( $tabs['docs'], $tabs['system'] );
+	// The Documentation tab renders outside the settings form, so it carries
+	// no section and no fields. (`system` was folded into Advanced in 6.3.0
+	// and is no longer a tab of its own; the report renders inside that
+	// panel.)
+	unset( $tabs['docs'] );
 
 	return $tabs;
 }
@@ -134,7 +136,7 @@ function get_option_fields() {
 		'tab'   => 'identity',
 		'type'  => 'text',
 		'args'  => array(
-			'help' => __( 'Your name inverted for citations, as MLA requires: Last, First (for example, "Juferi, Mohd Elfie Nieshaem"). Used in the citation printed at the foot of a post. If left empty, the hero heading is used as written.', 'kolofon' ),
+			'help' => __( 'Your name inverted for citations, as MLA requires: Last, First (for example, "Lovelace, Ada"). Used in the citation printed at the foot of a post. If left empty, the hero heading is used as written.', 'kolofon' ),
 		),
 	);
 	$fields['hero_body']       = array(
@@ -157,6 +159,15 @@ function get_option_fields() {
 		'tab'   => 'identity',
 		'type'  => 'textarea',
 		'args'  => array( 'help' => __( 'Basic HTML is allowed.', 'kolofon' ) ),
+	);
+	$fields['same_as_urls']    = array(
+		'label' => __( 'Additional profile pages (sameAs)', 'kolofon' ),
+		'tab'   => 'identity',
+		'type'  => 'textarea',
+		'args'  => array(
+			'help' => __( 'One URL per line. For pages about you that aren\'t social media — a Gravatar profile, a Wikipedia page, a Crunchbase or IMDb entry, a personal wiki. These feed the sameAs structured data alongside the Social tab URLs, but never render as an icon or a link anywhere on the site: this field exists only to tell search engines and AI crawlers these other pages describe the same person.', 'kolofon' ),
+			'rows' => 4,
+		),
 	);
 
 	// Sections.
@@ -336,7 +347,7 @@ function get_option_fields() {
 		'type'  => 'select',
 		'args'  => array(
 			'choices' => array(
-				'author'     => __( 'One handle from your username, e.g. @menj@example.com', 'kolofon' ),
+				'author'     => __( 'One handle from your username, e.g. @you@example.com', 'kolofon' ),
 				'blog'       => __( 'One handle for the site, e.g. @example.com@example.com', 'kolofon' ),
 				'actor_blog' => __( 'Both a site handle and a personal one', 'kolofon' ),
 			),
@@ -447,6 +458,12 @@ function get_option_fields() {
 			'step' => 5,
 			'help' => __( 'How many posts appear on each page of the Blog Index template before pagination kicks in. A year of posts can split across two pages once it runs past this count.', 'kolofon' ),
 		),
+	);
+	$fields['post_sharing_enabled']    = array(
+		'label' => __( 'Show sharing icons on posts', 'kolofon' ),
+		'tab'   => 'layout',
+		'type'  => 'checkbox',
+		'args'  => array( 'help' => __( 'Adds a row of share links at the foot of each post: X, Facebook, LinkedIn, Bluesky, Reddit, Telegram, WhatsApp, email, and a copy-link button. Only platforms with both an icon and a working share link render, so a target added through the kolofon_share_targets filter needs a matching icon in the registry.', 'kolofon' ) ),
 	);
 
 	// Advanced. Help text here depends on runtime state, so it is deferred.

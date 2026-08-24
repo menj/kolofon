@@ -57,7 +57,7 @@ function default_portrait_url() {
  * The bundled default is a serif K in XCharter Bold, ivory on the Charcoal
  * background, matching the wordmark. It is flattened onto a solid background
  * because a transparent favicon disappears against matching browser chrome.
- * The Appearance tab of Kolofon Options explains this and links to the Site
+ * The Identity tab of Kolofon Options explains this and links to the Site
  * Icon control.
  */
 function emit_favicon_fallback() {

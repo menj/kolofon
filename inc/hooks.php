@@ -258,6 +258,9 @@ function get_option_sanitizers() {
 		'hero_body'              => 'wp_kses_post',
 		'hero_portrait'          => 'esc_url_raw',
 		'footer_text'            => 'wp_kses_post',
+		'same_as_urls'           => function ( $value ) {
+			return implode( "\n", parse_same_as_urls( $value ) );
+		},
 
 		// Privacy and hardening.
 		'email_obfuscation'      => $enum_from( __NAMESPACE__ . '\\get_email_modes', $defaults['email_obfuscation'] ),
@@ -302,6 +305,8 @@ function get_option_sanitizers() {
 		'microblog_page_size'    => $int_between( 1, 100, $defaults['microblog_page_size'] ),
 		'show_recent'            => $bool,
 		'recent_count'           => $int_between( 1, 20, $defaults['recent_count'] ),
+		'blog_per_page'          => $int_between( 5, 100, $defaults['blog_per_page'] ),
+		'post_sharing_enabled'   => $bool,
 	);
 
 	// Social URLs share one rule, and the platform list is itself filterable,
