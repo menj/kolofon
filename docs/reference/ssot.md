@@ -118,6 +118,8 @@ For quick lookup: when two files disagree, the file named here wins.
 | Page states | `get_page_states()` in `inc/page-states.php`, meta key `_kolofon_page_state` | Editor meta box, nav badge, content notice |
 | Palette resolution | `resolve_palette()` in `inc/dynamic-css.php` | `build_root_css()`, both light and dark blocks |
 | System report rows | `get_system_report()` in `inc/system-report.php` | System report block on the Advanced tab |
+| Fediverse engine detection, source, options | `fediverse_engine_available()`, `fediverse_engine_source()`, `fediverse_engine_option()`/`fediverse_set_engine_option()` in `inc/fediverse.php` (9.2) | `inc/microblog.php`'s thin `activitypub_available()`/`activitypub_plugin_active()` delegates; `class-activitypub-bridge.php`'s `activitypub_present()`. No other file inspects `\Activitypub` classes, `ACTIVITYPUB_*` constants, or `activitypub_*` options directly. |
+| Display feature visibility | `display_rule()` in `inc/display-rules.php` (9.3), filterable through `kolofon_display_rule` | `home.php`'s Recent Posts section and section chooser; `index.php`'s section chooser |
 | Chrome layout | `chrome_layout()` in `inc/chrome.php` | Header branch, body class, numbering, shortcuts |
 | Body class for font stack | `chrome_body_class()` in `inc/chrome.php` emits `font-<slug>` | Pairings' typographic adjustments |
 | Active social links | `get_active_social_links()` in `inc/social.php` | Hero icon row, sidebar stay-in-touch block |
@@ -284,19 +286,26 @@ emitted. Stylesheets consume them and never redefine them.
 
 | Property | Source |
 | --- | --- |
-| `--mb-bg` | active preset `bg`, resolved through `resolve_palette()` |
-| `--mb-text` | active preset `text` |
-| `--mb-accent` | active preset `accent` |
-| `--mb-muted` | active preset `muted` |
-| `--mb-rule` | active preset `rule` |
-| `--mb-font-body` | `body` of the active font stack |
-| `--mb-font-heading` | `heading` of the active font stack |
-| `--mb-container` | `container_width` with `px` appended |
-| `--mb-portrait` | `portrait_size` with `px` appended |
-| `--mb-preview` | `preview_size` with `px` appended |
-| `--mb-lede-heading-max` | `hero_heading_size` converted px to rem |
-| `--mb-lede-heading-min` | 60% of `hero_heading_size`, converted to rem |
-| `--mb-lede-body` | `hero_body_size` converted px to rem |
+| `--k-bg` | active preset `bg`, resolved through `resolve_palette()` |
+| `--k-text` | active preset `text` |
+| `--k-accent` | active preset `accent` |
+| `--k-muted` | active preset `muted` |
+| `--k-rule` | active preset `rule` |
+| `--k-font-body` | `body` of the active font stack |
+| `--k-font-heading` | `heading` of the active font stack |
+| `--k-container` | `container_width` with `px` appended |
+| `--k-portrait` | `portrait_size` with `px` appended |
+| `--k-preview` | hover-preview tile size, `preview_size` with `px` appended |
+| `--k-list-title` | post-list title size; `list_title_size` (px, for a familiar UI) divided by 16 and emitted in `rem`, so it honours the reader's browser font-size setting |
+| `--k-lede-heading-min` | hero heading `clamp()` floor: 60% of `hero_heading_size`, converted from px to `rem` |
+| `--k-lede-heading-max` | hero heading `clamp()` ceiling: `hero_heading_size` converted from px to `rem` |
+| `--k-lede-body` | hero body text size; `hero_body_size` (px) converted to `rem` |
+
+Fourteen tokens, all consumed by `main.css`; `editor.css` and `theme.json`
+consume the eight core tokens (`--k-bg` through `--k-font-heading`, plus
+`--k-container`) so the block editor matches the front end. No orphaned
+tokens exist on either side: every emitted token is consumed, and nothing in
+the CSS references a token `build_root_css()` doesn't emit.
 
 `theme.json` binds its palette entries to these same variables rather than
 declaring literal colours, so the editor and the front-end cannot drift.
@@ -325,7 +334,7 @@ WordPress collapses its own admin chrome.
 
 ## Extension points
 
-Twelve hooks, all named `kolofon_*`.
+Thirteen hooks, all named `kolofon_*`.
 
 | Hook | Type | Purpose |
 | --- | --- | --- |
@@ -340,6 +349,7 @@ Twelve hooks, all named `kolofon_*`.
 | `kolofon_social_platforms` | filter | Add or remove a social platform |
 | `kolofon_root_css` | filter | Amend the emitted `:root` block |
 | `kolofon_seo_plugin_active` | filter | Override SEO plugin detection |
+| `kolofon_display_rule` | filter | Override whether a display feature (`recent_posts`, `section_chooser`) shows, given the option-driven result |
 | `kolofon_before_hero` | action | Inject markup above the hero |
 | `kolofon_after_hero` | action | Inject markup below the hero |
 
@@ -386,6 +396,36 @@ becomes. Without a registered boolean callback an unticked box stores an empty
 string rather than `0`, which is falsy but untidy and will not match a strict
 comparison. Register a callback returning `0` or `1` for any boolean option you
 add. Every built-in boolean already has one.
+
+## The theme/Core boundary, as it stands today
+
+Roadmap 9.1 calls for a Kolofon Core abstraction: functionality that is
+site-level rather than presentation-level, moved behind stable APIs so
+templates depend on interfaces rather than implementation details. That
+extraction into a separate package has not happened; it is a real
+architectural undertaking this entry does not claim to have done. What
+follows is the written contract 9.1 also asks for, done first and separately:
+which existing code already sits on which side of that boundary, so a future
+extraction moves things that are already behaving like Core, rather than
+guessing.
+
+| Candidate Core domain | What plays that role in the theme today | Boundary quality |
+| --- | --- | --- |
+| Sections | `get_sections()`, `get_primary_section()`, `get_blog_index_url()` in `inc/sections.php` | Clean. Already a single registry with named accessors; no template reaches around it. |
+| Page states | `get_page_states()` in `inc/page-states.php`, meta key `_kolofon_page_state` | Clean. Same shape as sections: one file, one accessor. |
+| Identity | Split across `inc/branding.php` (portrait, brand assets) and `inc/social.php` (platform registry, `sameAs`) | Coupled to presentation. Both files mix data (what the identity is) with rendering (`portrait_markup()`, `render_social_icons()`); a Core extraction would need to split accessor from renderer first. |
+| Metadata | `inc/meta.php`: canonical URLs, Open Graph, JSON-LD, `build_collection_schema()` | Coupled to presentation and to the main query. Depends on `is_page()`/`is_singular()` context checks that only make sense inside a WordPress request; not yet a portable API. |
+| Publishing utilities | `inc/post-list.php` (`post_list_item()`, `blog_index_query_args()`), `inc/tags.php` | Mixed. `blog_index_query_args()` is already the shape a Core API should take: a pure function returning query arguments, consumed by both a template and a schema builder (see the entry above). `post_list_item()` itself still echoes markup directly. |
+| REST interfaces | `inc/microblog/class-rest.php` | Reasonably clean; already class-based and scoped to the Microblog module rather than reaching into theme templates. |
+| Migrations | `inc/hooks.php` (the 4.0.1 Now-data cleanup), `inc/activation.php` | Ad hoc. Each migration is a one-off function gated on its own flag; there is no shared migration runner or registry. |
+| Diagnostics | `inc/system-report.php` | Clean shape, theme-specific content. `get_system_report()` is a single accessor, but every row is Kolofon-specific; a Core version would need a registry other code could add rows to. |
+
+Two modules added since this entry was written already follow the pattern a
+Core extraction would want: `inc/fediverse.php` (9.2) is a pure detection and
+option-access layer with no rendering in it, and `inc/display-rules.php`
+(9.3) is a single filtered resolver function. Neither depends on anything
+else in the theme; if Core work begins, both are close to portable as they
+stand.
 
 ## Rules for contributors
 

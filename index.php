@@ -69,7 +69,7 @@ global $wp_query;
 			</header>
 
 			<?php
-			if ( 1 === intval( \Kolofon\opt( 'show_section_chooser' ) ) && ( is_category() || is_home() ) ) {
+			if ( \Kolofon\display_rule( 'section_chooser' ) && ( is_category() || is_home() ) ) {
 				\Kolofon\render_section_chooser( is_category() ? (int) get_queried_object_id() : 0 );
 			}
 			?>

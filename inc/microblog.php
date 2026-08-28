@@ -48,40 +48,26 @@ function fediverse_enabled() {
 /**
  * Whether the ActivityPub plugin is present and active.
  *
- * Checked by class rather than by plugin path so it holds however the plugin
- * was installed.
+ * Thin delegate onto the Fediverse integration layer (inc/fediverse.php, 9.2
+ * of the roadmap): the theme's own code no longer inspects engine classes or
+ * constants directly. Kept under these names for API stability, since
+ * `activitypub_available()` and `activitypub_plugin_active()` are called
+ * throughout this file and by the bridge in inc/microblog/.
  *
  * @return bool
  */
 function activitypub_available() {
-	return class_exists( '\\Activitypub\\Activitypub' ) || defined( 'ACTIVITYPUB_PLUGIN_VERSION' );
+	return fediverse_engine_available();
 }
 
 /**
- * Whether the standalone ActivityPub plugin is active.
- *
- * The theme bundles the same engine, so it must stand down when the plugin is
- * present rather than declare its classes twice. Checked by plugin path, since
- * by the time the theme loads the plugin has already defined its constants.
+ * Whether the standalone ActivityPub plugin is active, as opposed to the
+ * bundled engine.
  *
  * @return bool
  */
 function activitypub_plugin_active() {
-	if ( ! function_exists( 'is_plugin_active' ) ) {
-		$plugin_api = ABSPATH . 'wp-admin/includes/plugin.php';
-		if ( is_readable( $plugin_api ) ) {
-			require_once $plugin_api;
-		}
-	}
-
-	if ( function_exists( 'is_plugin_active' ) ) {
-		return is_plugin_active( 'activitypub/activitypub.php' );
-	}
-
-	// No plugin API available: fall back to the active-plugins option directly.
-	$active = (array) get_option( 'active_plugins', array() );
-
-	return in_array( 'activitypub/activitypub.php', $active, true );
+	return fediverse_standalone_plugin_active();
 }
 
 /**
@@ -101,7 +87,7 @@ function boot_fediverse_engine() {
 	}
 
 	// The standalone plugin owns the namespace if it is active.
-	if ( activitypub_plugin_active() || class_exists( '\\Activitypub\\Activitypub' ) ) {
+	if ( fediverse_engine_source() !== 'none' ) {
 		return;
 	}
 
@@ -115,7 +101,7 @@ function boot_fediverse_engine() {
 	/*
 	 * Run the engine's activation routine the first time it is switched on.
 	 *
-	 * Upstream ties this to plugin activation, and the bundled copy maps that to
+	 * Upstream ties this to plugin activation, and the bundled copy maps this to
 	 * after_switch_theme. Neither fires at the right moment here: the theme is
 	 * usually activated with federation off, so after_switch_theme has long
 	 * passed by the time the toggle is flipped. Without this the rewrite rules
@@ -126,7 +112,7 @@ function boot_fediverse_engine() {
 	 * changes the rules.
 	 */
 	$done = get_option( 'kolofon_fediverse_activated' );
-	if ( ACTIVITYPUB_PLUGIN_VERSION !== $done ) {
+	if ( fediverse_engine_version() !== $done ) {
 		add_action( 'init', __NAMESPACE__ . '\\activate_fediverse_engine', 30 );
 	}
 }
@@ -138,17 +124,8 @@ function boot_fediverse_engine() {
  * rewrite rules and post types first.
  */
 function activate_fediverse_engine() {
-	if ( ! class_exists( '\\Activitypub\\Activitypub' ) ) {
-		return;
-	}
-
-	if ( method_exists( '\\Activitypub\\Activitypub', 'activate' ) ) {
-		\Activitypub\Activitypub::activate( false );
-	} else {
-		flush_rewrite_rules();
-	}
-
-	update_option( 'kolofon_fediverse_activated', ACTIVITYPUB_PLUGIN_VERSION, false );
+	fediverse_run_engine_activation();
+	update_option( 'kolofon_fediverse_activated', fediverse_engine_version(), false );
 }
 
 /**
@@ -305,12 +282,12 @@ function fediverse_identity() {
 		'author'     => 'actor',
 		'blog'       => 'blog',
 		'actor_blog' => 'actor_blog',
-	)[ $choice ] ?? (string) get_option( 'activitypub_actor_mode', 'actor' );
+	)[ $choice ] ?? (string) fediverse_engine_option( 'actor_mode', 'actor' );
 
 	// Blog actor: the site itself. Its username is the host without "www.",
 	// unless overridden on the ActivityPub screen.
 	if ( 'actor' !== $mode ) {
-		$blog_name = (string) get_option( 'activitypub_blog_identifier', '' );
+		$blog_name = (string) fediverse_engine_option( 'blog_identifier', '' );
 		if ( '' === $blog_name ) {
 			$blog_name = preg_replace( '/^www\./i', '', (string) $host );
 		}
@@ -561,8 +538,8 @@ function sync_fediverse_profile_mode() {
 
 	$mode = $map[ $choice ];
 
-	if ( (string) get_option( 'activitypub_actor_mode' ) !== $mode ) {
-		update_option( 'activitypub_actor_mode', $mode );
+	if ( (string) fediverse_engine_option( 'actor_mode' ) !== $mode ) {
+		fediverse_set_engine_option( 'actor_mode', $mode );
 		flush_rewrite_rules();
 	}
 }

@@ -1,5 +1,66 @@
 # Changelog
 
+## 7.5.0
+
+### Added
+Roadmap items 9.2 and 9.3 (Phase 9, Architecture and control surface): a
+Fediverse integration layer and a display-rules resolver, both first-party
+code, not reorganised documentation.
+
+- New `inc/fediverse.php`. The theme's only file that inspects `\Activitypub`
+  classes, `ACTIVITYPUB_*` constants, or reads and writes the engine's own
+  `activitypub_*` options. `fediverse_engine_available()`,
+  `fediverse_standalone_plugin_active()`, `fediverse_engine_source()`,
+  `fediverse_engine_version()`, `fediverse_engine_option()`, and
+  `fediverse_set_engine_option()` cover every signal and setting the theme
+  previously read directly. `inc/microblog.php`'s
+  `activitypub_available()`/`activitypub_plugin_active()` are now thin
+  delegates onto this layer, kept under their existing names since both are
+  called throughout that file and by the bridge class; no call site needed to
+  change. `class-activitypub-bridge.php`'s `activitypub_present()` delegates
+  the same way. The bridge's two `add_filter()` calls onto the engine's own
+  `activitypub_supported_post_types` and `activitypub_object_type` hooks are
+  untouched, since those are the engine's intended public extension point,
+  not the internal coupling this change removes.
+- New `inc/display-rules.php`. A single `display_rule( $feature )` resolver,
+  filterable through the new `kolofon_display_rule` hook, replacing three
+  independent `intval( opt( '...' ) ) === 1` checks in `home.php` and
+  `index.php` for the two display options that exist today,
+  `show_recent` and `show_section_chooser`. Deliberately does not introduce
+  the context taxonomy (homepage, single post, page, archive, search) the
+  roadmap item originally described: with two features and no
+  context-dependent behaviour between them, that structure would organise
+  nothing yet. The resolver takes a feature name rather than an option key
+  directly, so a context parameter can be added later without changing every
+  call site again.
+
+### Documentation
+`docs/reference/ssot.md` gains two things this pass did not previously cover.
+
+- A corrected CSS custom property table. It had listed the pre-rename
+  `--mb-*` variable names against the current implementation, and was
+  missing four tokens the code actually emits (`--k-preview`,
+  `--k-list-title`, `--k-lede-heading-min`, `--k-lede-heading-max`). Replaced
+  with the verified 14-token `--k-*` inventory, checked line by line against
+  the `sprintf()` call in `build_root_css()`, including which option backs
+  each token and which unit conversion applies.
+- A new "theme/Core boundary, as it stands today" section, the written
+  contract roadmap item 9.1 calls for. Maps every candidate Core domain
+  (sections, page states, identity, metadata, publishing utilities, REST
+  interfaces, migrations, diagnostics) to what plays that role in the theme
+  now, and judges the boundary quality honestly: sections and page states
+  are clean, identity and metadata are coupled to presentation, migrations
+  are ad hoc with no shared runner. The actual extraction into a separate
+  Core package has not happened and this section does not claim it has.
+- The Extension points hook count corrected from twelve to thirteen, adding
+  the new `kolofon_display_rule` filter that was otherwise undocumented the
+  moment it shipped.
+
+`docs/guides/upgrading.md` updated in place rather than left to describe
+superseded intentions: 9.2 and 9.3 marked shipped against their real exit
+criteria, 9.1 marked in progress with a pointer to the new `ssot.md` section,
+and the Phase 9 and Status-at-a-glance entries synced to match.
+
 ## 7.4.0
 
 ### Added

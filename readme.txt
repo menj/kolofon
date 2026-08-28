@@ -6,7 +6,7 @@ Theme URI: https://github.com/menj/kolofon
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 7.4.0
+Stable tag: 7.5.0
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: blog, one-column, custom-colors, custom-menu, editor-style, featured-images, translation-ready
@@ -81,6 +81,11 @@ Special Elite font, (C) Astigmatic, Apache License 2.0.
 Font licenses are included alongside the fonts in `assets/fonts/`.
 
 == Changelog ==
+
+= 7.5.0 =
+* New `inc/fediverse.php` integration layer: the theme's only file that inspects ActivityPub engine internals or touches its own options. Existing code delegates to it under unchanged function names, so no call site needed to change.
+* New `inc/display-rules.php` with a `display_rule()` resolver and a `kolofon_display_rule` filter, replacing three independent option checks for the two display features that exist today.
+* Corrected a stale CSS custom property table in `ssot.md` (pre-rename `--mb-*` names, four missing tokens) and added a written theme/Core boundary map for future architecture work.
 
 = 7.4.0 =
 * Mobile audit: fixed a touch-target gap on the per-post share row, and fixed the sidebar layout's social links disappearing entirely on mobile (≤1024px) with no alternative — now reflows into a horizontal pill row instead.

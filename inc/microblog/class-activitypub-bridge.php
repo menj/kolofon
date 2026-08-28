@@ -27,7 +27,7 @@ class ActivityPub_Bridge {
 	}
 
 	public static function activitypub_present(): bool {
-		return defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) || function_exists( '\Activitypub\get_plugin_version' );
+		return \Kolofon\fediverse_engine_available();
 	}
 
 	public static function add_cpt( $types ) {

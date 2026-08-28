@@ -6,6 +6,7 @@
  */
 
 use function Kolofon\opt;
+use function Kolofon\display_rule;
 
 get_header();
 ?>
@@ -71,7 +72,7 @@ get_header();
 
 	<?php do_action( 'kolofon_after_hero' ); ?>
 
-	<?php if ( intval( opt( 'show_recent' ) ) === 1 ) : ?>
+	<?php if ( display_rule( 'recent_posts' ) ) : ?>
 		<?php
 		$kolofon_recent = new WP_Query(
 			array(
@@ -85,7 +86,7 @@ get_header();
 			<section class="recent" itemscope="itemscope" itemtype="https://schema.org/ItemList">
 				<div class="container">
 					<?php
-					if ( 1 === intval( opt( 'show_section_chooser' ) ) ) {
+					if ( display_rule( 'section_chooser' ) ) {
 						\Kolofon\render_section_chooser( 0 );
 					}
 					?>

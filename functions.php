@@ -10,7 +10,7 @@ namespace Kolofon;
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'KOLOFON_VERSION', '7.4.0' );
+define( 'KOLOFON_VERSION', '7.5.0' );
 define( 'KOLOFON_DIR', trailingslashit( get_template_directory() ) );
 define( 'KOLOFON_URI', trailingslashit( get_template_directory_uri() ) );
 define( 'KOLOFON_OPTION_KEY', 'kolofon_options' );
@@ -31,6 +31,7 @@ $kolofon_modules = array(
 	'webfonts',
 	'security',
 	'options',
+	'display-rules',
 	'settings-io',
 	'social',
 	'share',
@@ -43,6 +44,7 @@ $kolofon_modules = array(
 	'meta',
 	'syndication',
 	'print-branding',
+	'fediverse',
 	'microblog',
 	'docs',
 	'system-report',
