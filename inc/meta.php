@@ -204,6 +204,73 @@ function meta_canonical() {
 }
 
 /**
+ * Build an ImageObject node from an image URL and, where available, its
+ * attachment record.
+ *
+ * Google Images can show creator, credit, and licensing details when they are
+ * declared, so a bare URL string leaves real information on the table. What it
+ * cannot do is invent them: every field below is emitted only when the
+ * attachment actually carries it. A post with no caption gets no `creditText`,
+ * not an empty one, and nothing here asserts a licence the site owner has not
+ * set.
+ *
+ * @param string $url           Image URL, already resolved by meta_image().
+ * @param int    $attachment_id Attachment ID, 0 when the image is not in the library.
+ * @return array|string ImageObject node, or the bare URL when nothing is known about it.
+ *
+ * @since 7.6.0
+ */
+function build_image_object( $url, $attachment_id = 0 ) {
+	if ( '' === $url ) {
+		return '';
+	}
+
+	$node = array(
+		'@type' => 'ImageObject',
+		'url'   => $url,
+	);
+
+	$attachment_id = (int) $attachment_id;
+	if ( $attachment_id > 0 ) {
+		$meta = wp_get_attachment_metadata( $attachment_id );
+		if ( is_array( $meta ) ) {
+			if ( ! empty( $meta['width'] ) ) {
+				$node['width'] = (int) $meta['width'];
+			}
+			if ( ! empty( $meta['height'] ) ) {
+				$node['height'] = (int) $meta['height'];
+			}
+		}
+
+		$alt = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
+		if ( is_string( $alt ) && '' !== $alt ) {
+			$node['caption'] = $alt;
+		}
+
+		// The caption field is where WordPress stores a photo credit when one
+		// is given, so it maps to creditText rather than to caption, which the
+		// alt text above already covers.
+		$credit = wp_get_attachment_caption( $attachment_id );
+		if ( is_string( $credit ) && '' !== $credit ) {
+			$node['creditText'] = wp_strip_all_tags( $credit );
+		}
+	}
+
+	/**
+	 * Filters the ImageObject node before it enters the graph.
+	 *
+	 * The extension point for licence and acquireLicensePage, which Google
+	 * documents for image metadata but which the theme cannot infer: only the
+	 * site owner knows the terms their images are published under.
+	 *
+	 * @param array  $node          The ImageObject node.
+	 * @param string $url           The image URL.
+	 * @param int    $attachment_id Attachment ID, 0 when not in the library.
+	 */
+	return apply_filters( 'kolofon_image_object', $node, $url, $attachment_id );
+}
+
+/**
  * Emit Open Graph, Twitter card, description, and canonical tags.
  */
 function emit_meta_tags() {
@@ -244,9 +311,9 @@ function emit_meta_tags() {
 		printf( "<meta property=\"article:published_time\" content=\"%s\" />\n", esc_attr( get_the_date( DATE_W3C ) ) );
 		printf( "<meta property=\"article:modified_time\" content=\"%s\" />\n", esc_attr( get_the_modified_date( DATE_W3C ) ) );
 
-		$section = get_the_category();
-		if ( ! empty( $section ) ) {
-			printf( "<meta property=\"article:section\" content=\"%s\" />\n", esc_attr( $section[0]->name ) );
+		$section = get_primary_section( get_the_ID() );
+		if ( $section ) {
+			printf( "<meta property=\"article:section\" content=\"%s\" />\n", esc_attr( $section->name ) );
 		}
 	}
 
@@ -445,15 +512,56 @@ function emit_schema() {
 
 		$image = meta_image();
 		if ( '' !== $image ) {
-			$article['image'] = $image;
+			$article['image'] = build_image_object( $image, get_post_thumbnail_id() );
 		}
 
-		$section = get_the_category();
-		if ( ! empty( $section ) ) {
-			$article['articleSection'] = $section[0]->name;
+		// Section comes from the same resolver the rest of the theme uses, not
+		// from get_the_category()[0]. A post in several categories would
+		// otherwise report a different section here than the one shown on the
+		// post itself, which is exactly the contradiction 8.2 exists to remove.
+		$section = get_primary_section( get_the_ID() );
+		if ( $section ) {
+			$article['articleSection'] = $section->name;
 		}
 
 		$graph[] = $article;
+	}
+
+	// A status is a short, title-less body-only post, the same shape as a
+	// Mastodon toot, and it federates as one. SocialMediaPosting is the honest
+	// type for that: BlogPosting would promise a headline the post type does
+	// not even support, and Article would overstate a two-line status. Statuses
+	// were previously absent from the graph entirely despite being a public,
+	// archived post type.
+	if ( is_singular( 'kolofon_status' ) ) {
+		$status_text = wp_strip_all_tags( get_the_content() );
+		$status_text = trim( preg_replace( '/\s+/', ' ', $status_text ) );
+
+		$status = array(
+			'@type'            => 'SocialMediaPosting',
+			'@id'              => get_permalink() . '#status',
+			'url'              => get_permalink(),
+			'datePublished'    => get_the_date( DATE_W3C ),
+			'dateModified'     => get_the_modified_date( DATE_W3C ),
+			'author'           => array( '@id' => $person_id ),
+			'publisher'        => array( '@id' => $person_id ),
+			'isPartOf'         => array( '@id' => $site_id ),
+			'mainEntityOfPage' => array( '@id' => get_permalink() . '#status' ),
+			'inLanguage'       => get_bloginfo( 'language' ),
+		);
+
+		if ( '' !== $status_text ) {
+			// articleBody carries the whole status; a status is short enough
+			// that a separate truncated description would only duplicate it.
+			$status['articleBody'] = $status_text;
+		}
+
+		$status_image = meta_image();
+		if ( '' !== $status_image ) {
+			$status['image'] = build_image_object( $status_image, get_post_thumbnail_id() );
+		}
+
+		$graph[] = $status;
 	}
 
 	// A single page (not a post, not the front page) is a WebPage. The site's
@@ -570,11 +678,21 @@ function build_collection_schema( $site_id, $person_id ) {
 			continue;
 		}
 		++$position;
+
+		// Statuses do not support titles, so get_the_title() returns an empty
+		// string for them and every item in the status archive's ItemList would
+		// carry an empty name. Fall back to a trimmed excerpt of the body, which
+		// is what a reader sees in the listing anyway.
+		$item_name = wp_strip_all_tags( get_the_title( $post_object->ID ) );
+		if ( '' === trim( $item_name ) ) {
+			$item_name = wp_trim_words( wp_strip_all_tags( $post_object->post_content ), 12, '...' );
+		}
+
 		$items[] = array(
 			'@type'    => 'ListItem',
 			'position' => $position,
 			'url'      => get_permalink( $post_object->ID ),
-			'name'     => wp_strip_all_tags( get_the_title( $post_object->ID ) ),
+			'name'     => $item_name,
 		);
 	}
 
@@ -613,6 +731,9 @@ function collection_title() {
 	}
 	if ( is_date() ) {
 		return get_the_archive_title();
+	}
+	if ( is_post_type_archive( 'kolofon_status' ) ) {
+		return post_type_archive_title( '', false );
 	}
 	return get_bloginfo( 'name', 'display' );
 }
@@ -655,9 +776,9 @@ function build_breadcrumb_schema( $home ) {
 	$add( __( 'Home', 'kolofon' ), $home );
 
 	if ( is_singular( 'post' ) ) {
-		$cats = get_the_category();
-		if ( ! empty( $cats ) ) {
-			$add( $cats[0]->name, get_category_link( $cats[0]->term_id ) );
+		$section = get_primary_section( get_the_ID() );
+		if ( $section ) {
+			$add( $section->name, get_category_link( $section->term_id ) );
 		}
 		$add( get_the_title(), get_permalink() );
 	} elseif ( is_page() ) {

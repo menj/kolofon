@@ -334,7 +334,7 @@ WordPress collapses its own admin chrome.
 
 ## Extension points
 
-Thirteen hooks, all named `kolofon_*`.
+Fourteen hooks, all named `kolofon_*`.
 
 | Hook | Type | Purpose |
 | --- | --- | --- |
@@ -349,6 +349,7 @@ Thirteen hooks, all named `kolofon_*`.
 | `kolofon_social_platforms` | filter | Add or remove a social platform |
 | `kolofon_root_css` | filter | Amend the emitted `:root` block |
 | `kolofon_seo_plugin_active` | filter | Override SEO plugin detection |
+| `kolofon_image_object` | filter | Amend the `ImageObject` node in JSON-LD, the extension point for `license` and `acquireLicensePage`, which only the site owner can supply |
 | `kolofon_display_rule` | filter | Override whether a display feature (`recent_posts`, `section_chooser`) shows, given the option-driven result |
 | `kolofon_before_hero` | action | Inject markup above the hero |
 | `kolofon_after_hero` | action | Inject markup below the hero |

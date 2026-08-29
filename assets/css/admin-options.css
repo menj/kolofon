@@ -51,13 +51,13 @@
 	gap: 0.15rem;
 }
 
-/* Each panel's form table becomes a card. The form-table itself keeps its
+/* Each panel's field list becomes a card. The rows are a CSS grid, not a
    semantics; the card is the visual wrapper the panel provides. The intro card
-   carries a soft accent-tinted gradient; the form-table card stays near-white
+   carries a soft accent-tinted gradient; the field card stays near-white
    so field labels and inputs keep full contrast. */
 /* The content card carries a gold edge down its left side, one vertical accent
    that brands the whole panel at the cost of a single declaration. */
-.kolofon-panel > .form-table,
+.kolofon-panel > .kolofon-fields,
 .kolofon-panel > .kolofon-intro {
 	background: var(--kolofon-card-bg);
 	border: 1px solid var(--kolofon-card-border);
@@ -80,10 +80,98 @@
 .kolofon-panel > .kolofon-intro p:last-child { margin-bottom: 0; }
 .kolofon-panel > .kolofon-intro a { color: var(--kolofon-accent); }
 
-.kolofon-preset {
-	display: inline-block;
-	margin-right: 1.25rem;
-	margin-bottom: 0.35rem;
+/* ------- Visual selectors -------
+   Colour schemes and font stacks are style choices, so the control shows the
+   style rather than naming it: each card carries the preset's own palette or
+   sets its label in the face it selects. The native radio stays in the markup
+   and is visually hidden, so keyboard navigation, arrow keys within the group,
+   and form submission are the browser's own and need no JavaScript. */
+.kolofon-selector {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+	gap: 0.75rem;
+	margin: 0;
+	max-width: 42rem;
+}
+.kolofon-selector-card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.6rem;
+	padding: 0.9rem 0.75rem;
+	background: var(--kolofon-field-bg);
+	border: 1px solid var(--kolofon-field-border);
+	border-radius: 8px;
+	cursor: pointer;
+	transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+.kolofon-selector-card:hover {
+	border-color: var(--kolofon-accent);
+}
+/* The radio is hidden visually but stays focusable, so the focus ring is drawn
+   on the card it controls. */
+.kolofon-selector-card input[type="radio"] {
+	position: absolute;
+	opacity: 0;
+	width: 1px;
+	height: 1px;
+	margin: 0;
+	pointer-events: none;
+}
+.kolofon-selector-card:has(input:checked),
+.kolofon-selector-card.is-active {
+	border-color: var(--kolofon-accent);
+	box-shadow: inset 0 0 0 1px var(--kolofon-accent);
+	background: var(--kolofon-card-bg);
+}
+.kolofon-selector-card:has(input:focus-visible) {
+	outline: 2px solid var(--kolofon-accent);
+	outline-offset: 2px;
+}
+.kolofon-selector-label {
+	font-size: 0.82rem;
+	line-height: 1.3;
+	text-align: center;
+	color: var(--kolofon-ink);
+}
+
+/* Colour swatch: the scheme's own background, rule, text and accent. */
+.kolofon-swatch {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+	width: 100%;
+	height: 3rem;
+	border: 1px solid;
+	border-radius: 5px;
+}
+.kolofon-swatch-text {
+	font-size: 1.05rem;
+	font-weight: 700;
+	line-height: 1;
+}
+.kolofon-swatch-accent {
+	display: block;
+	width: 0.85rem;
+	height: 0.85rem;
+	border-radius: 50%;
+}
+
+/* Font specimen, set in the stack the card selects. */
+.kolofon-specimen {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 3rem;
+	font-size: 1.6rem;
+	line-height: 1;
+	color: var(--kolofon-ink);
+	background: var(--kolofon-card-bg);
+	border: 1px solid var(--kolofon-hairline);
+	border-radius: 5px;
 }
 
 /* ------- Form fields -------
@@ -93,9 +181,24 @@
    the hero eyebrow on the front end), fields sit on a warm off-white with a
    generous target, and help text is set as considered secondary copy rather
    than default grey. */
-.kolofon-form .form-table {
-	border-collapse: collapse;
+.kolofon-form .kolofon-fields {
+	padding: 0.5rem 1.75rem;
 }
+/* Label left, control right on desktop; the row is the grid, so no layout
+   table is involved. */
+.kolofon-form .kolofon-field-row {
+	display: grid;
+	grid-template-columns: minmax(12rem, 20rem) 1fr;
+	gap: 1.5rem;
+	align-items: start;
+	padding: 1.1rem 0;
+}
+/* Blocks that carry their own structure span both columns rather than leaving
+   an empty label cell beside them. */
+.kolofon-form .kolofon-field-row.is-full {
+	grid-template-columns: 1fr;
+}
+.kolofon-form .kolofon-field-control > * { max-width: 100%; }
 .kolofon-field-name {
 	display: block;
 	font-size: 0.95rem;
@@ -115,8 +218,7 @@
 }
 /* A hairline between rows gives the form the same rhythm as the rules the
    front end uses to separate entries. */
-.kolofon-form .form-table tr + tr th,
-.kolofon-form .form-table tr + tr td {
+.kolofon-form .kolofon-field-row + .kolofon-field-row {
 	border-top: 1px solid var(--kolofon-hairline);
 }
 
@@ -143,7 +245,7 @@
 
 /* Help text: secondary copy, not an afterthought. The left hairline ties it to
    the field it belongs to. */
-.kolofon-form .form-table td .description {
+.kolofon-form .kolofon-field-control .description {
 	margin: 0.6rem 0 0;
 	padding-left: 0.75rem;
 	border-left: 2px solid var(--kolofon-hairline);
@@ -477,7 +579,7 @@
 	.kolofon-wrap { max-width: 100%; }
 
 	/* Cards keep their shape but tighten their padding on narrow screens. */
-	.kolofon-panel > .form-table,
+	.kolofon-panel > .kolofon-fields,
 	.kolofon-panel > .kolofon-intro {
 		padding-left: 1rem;
 		padding-right: 1rem;
@@ -508,11 +610,20 @@
 		margin-right: 4px;
 	}
 
-	/* Core already stacks .form-table below 782px; make sure our fixed label
-	   column does not fight it. */
-	.kolofon-form .form-table th {
-		width: auto;
-		padding-bottom: 0;
+	/* Rows stack: label above control, both full width. */
+	.kolofon-form .kolofon-field-row {
+		grid-template-columns: 1fr;
+		gap: 0.6rem;
+	}
+	/* Keep a horizontal inset so field controls do not sit hard against the
+	   card's edge; the panel padding above handles the outer frame. */
+	.kolofon-form .kolofon-fields {
+		padding-left: 0.25rem;
+		padding-right: 0.25rem;
+	}
+	/* Single-column selector grid on narrow screens. */
+	.kolofon-selector {
+		grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
 	}
 
 	.kolofon-form input[type="text"],

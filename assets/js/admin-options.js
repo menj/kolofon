@@ -258,5 +258,31 @@
 
 			render();
 		}() );
+
+		/*
+		 * Visual selector cards.
+		 *
+		 * The active state is drawn by :has(input:checked) in CSS, which needs
+		 * no script. This mirrors it onto an is-active class so browsers
+		 * without :has() still show which card is selected after a click. The
+		 * radio itself does the real work either way, so with JavaScript off
+		 * the server-rendered class stays correct for the saved value.
+		 */
+		( function () {
+			var groups = document.querySelectorAll( '.kolofon-selector' );
+			if ( ! groups.length ) { return; }
+
+			Array.prototype.forEach.call( groups, function ( group ) {
+				group.addEventListener( 'change', function ( e ) {
+					if ( ! e.target.matches( 'input[type="radio"]' ) ) { return; }
+
+					var cards = group.querySelectorAll( '.kolofon-selector-card' );
+					Array.prototype.forEach.call( cards, function ( card ) {
+						var input = card.querySelector( 'input[type="radio"]' );
+						card.classList.toggle( 'is-active', !! ( input && input.checked ) );
+					} );
+				} );
+			} );
+		}() );
 	} );
 }() );

@@ -196,9 +196,11 @@ describes its own type:
 | View | Added node |
 | --- | --- |
 | Front page | `ProfilePage` about the Person |
-| Single post | `BlogPosting` with author, dates, section, image |
+| Single post | `BlogPosting` with author, dates, section, and image as an `ImageObject` |
+| Single status | `SocialMediaPosting` with author, dates, body, and image |
 | Single page | `WebPage`, or `AboutPage` when the slug or title is "about" |
 | Category, tag, date, author archive | `CollectionPage` with an `ItemList` of the posts on the page |
+| Status archive | `CollectionPage` with an `ItemList`; titleless statuses fall back to a trimmed body excerpt for each item name |
 | Blog Index page | `CollectionPage` with its `ItemList` |
 | Search results | `SearchResultsPage` |
 

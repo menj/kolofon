@@ -1,5 +1,89 @@
 # Changelog
 
+## 7.7.0
+
+### Changed
+The Theme Options screen moves off layout tables and gives its two style
+choices a visual control.
+
+- Field rows are a CSS grid, not a `<table class="form-table">`. A new
+  `render_field_rows()` replaces `do_settings_fields()`, reading the same
+  registered fields through the same callbacks, so registration is untouched
+  and anything added through the `kolofon_option_fields` filter still appears
+  with no extra work. Label left, control right on desktop; stacked on mobile.
+  Blocks that carry their own structure (headings, the system panel, import
+  and export buttons, the section-slug editor, the Fediverse identity panel)
+  span both columns rather than leaving an empty label cell beside them.
+- Colour schemes and font stacks render as selectable cards instead of a
+  vertical list of bare radios. Each colour card is drawn in the scheme's own
+  background, rule, text, and accent colours; each font card sets its specimen
+  in the face it selects. A picker that showed neither the colours nor the
+  fonts made the choice guesswork. The native radio stays in the markup and is
+  visually hidden, so keyboard navigation, arrow keys within the group, and
+  submission are the browser's own and work with JavaScript off. The active
+  state is drawn by `:has(input:checked)`, with a server-rendered `is-active`
+  class as the fallback for browsers without `:has()`, kept in sync by
+  `admin-options.js`.
+
+Verified by rendering the screen in Chromium at 1100px and 420px and measuring
+the computed layout rather than reading the stylesheet: the grid resolves to
+two columns on desktop and one on mobile, full-width rows span, both swatches
+carry the presets' real hex values, and all four specimens resolve to distinct
+font families. That pass caught a mobile defect the static checks could not,
+where zeroed horizontal padding left the selector cards touching the panel
+edge.
+
+## 7.6.0
+
+### Structured data
+Roadmap item 12.3 (JSON-LD architecture), partially advanced. Three real gaps
+closed, all of them backed by content the site actually has.
+
+- Statuses had no structured data at all. `kolofon_status` is a public post
+  type with its own archive, and it was invisible to crawlers.
+  `is_singular( 'kolofon_status' )` now emits `SocialMediaPosting` with author,
+  dates, body, and image. That type rather than `BlogPosting` because the post
+  type does not support titles at all, so a `headline` would be an empty
+  promise, and rather than `Article` because a two-line status is not one.
+- Post and status images are now `ImageObject` nodes instead of bare URL
+  strings, carrying width, height, caption from the alt text, and
+  `creditText` from the attachment caption. Every field is emitted only when
+  the attachment actually carries it. Licence fields are deliberately absent:
+  the theme cannot know the terms images are published under, so the new
+  `kolofon_image_object` filter is the place to add `license` and
+  `acquireLicensePage`.
+- `articleSection` on posts read `get_the_category()[0]` directly. It now
+  resolves through `get_primary_section()`, so a post in several categories
+  cannot report one section in its JSON-LD and a different one on the page.
+  This closes one of the call sites 8.2 identifies. Two further call sites in
+  the same file were found while checking that fix and corrected the same way:
+  the Open Graph `article:section` tag and the JSON-LD breadcrumb trail, both
+  of which could otherwise have named a different category than the article
+  node on the very same page.
+- Fixed an empty-name bug this work exposed. `build_collection_schema()` built
+  each `ListItem` name from `get_the_title()`, which returns an empty string
+  for titleless post types, so every item in the status archive's `ItemList`
+  would have carried an empty name. Falls back to a trimmed body excerpt,
+  which is what the listing shows anyway. The status archive also gains a real
+  `CollectionPage` name instead of falling through to the site title.
+
+Deliberately not added: `Product`, `Recipe`, `JobPosting`, `Event`,
+`LocalBusiness`, `VacationRental`, `Course`, `Dataset`, `SoftwareApp`,
+`MathSolver`, `Movie`, and review snippets. Google's structured data policies
+require markup to describe content genuinely present on the page, and none of
+these describe anything on a writer's microsite. Emitting them would be
+fabricating entities, which risks a manual action against the domain, and
+stacking unrelated types on one URL is the contradictory-entity problem 12.3
+exists to prevent.
+
+### Documentation
+- `docs/guides/readme.md`'s structured data table gains rows for the single
+  status view and the status archive, and records that post and status images
+  are now `ImageObject` nodes rather than bare URLs.
+- `docs/reference/ssot.md` hook count corrected from thirteen to fourteen for
+  the new `kolofon_image_object` filter, which is the documented place to add
+  `license` and `acquireLicensePage`. The theme cannot infer either.
+
 ## 7.5.0
 
 ### Added

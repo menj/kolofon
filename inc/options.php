@@ -211,6 +211,71 @@ function add_field( $key, $label, $tab, $type, $args = array() ) {
 }
 
 /**
+ * Render a tab's fields as div rows rather than a layout table.
+ *
+ * `do_settings_fields()` emits `<tr><th><td>`, which is a table used for
+ * layout. This renders the same registered fields, through the same callbacks
+ * and args, into a grid the CSS controls. Registration is untouched: fields
+ * still go through `add_settings_field()`, so anything added by the
+ * `kolofon_option_fields` filter appears here with no extra work.
+ *
+ * Some field types are not label-plus-control pairs. A heading is a heading, a
+ * system panel or an import button is a block that spans the full width, and
+ * pinching those into a 2-column grid leaves an empty label column beside
+ * them. Those types get a modifier class and span instead.
+ *
+ * @param string $section Section (tab) id.
+ * @since 7.7.0
+ */
+function render_field_rows( $section ) {
+	global $wp_settings_fields;
+
+	if ( empty( $wp_settings_fields[ OPTION_PAGE ][ $section ] ) ) {
+		return;
+	}
+
+	// Types that carry their own structure and read better across both
+	// columns than squeezed into the control column.
+	$full_width = array(
+		'heading_text',
+		'export_button',
+		'import_button',
+		'reset_button',
+		'section_slugs',
+		'fediverse_identity',
+	);
+
+	foreach ( $wp_settings_fields[ OPTION_PAGE ][ $section ] as $field ) {
+		$args = isset( $field['args'] ) && is_array( $field['args'] ) ? $field['args'] : array();
+		$type = isset( $args['type'] ) ? $args['type'] : '';
+		$key  = isset( $args['key'] ) ? $args['key'] : $field['id'];
+
+		$row_class = 'kolofon-field-row';
+		if ( in_array( $type, $full_width, true ) ) {
+			$row_class .= ' is-full';
+		}
+
+		printf( '<div class="%s">', esc_attr( $row_class ) );
+
+		if ( ! in_array( $type, $full_width, true ) ) {
+			printf(
+				'<div class="kolofon-field-label"><label for="%1$s">%2$s</label></div>',
+				esc_attr( $key ),
+				// Built in add_field() from escaped parts; it is markup by
+				// design, carrying the field name and its help text.
+				$field['title'] // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- assembled from esc_html() output in add_field().
+			);
+		}
+
+		echo '<div class="kolofon-field-control">';
+		if ( is_callable( $field['callback'] ) ) {
+			call_user_func( $field['callback'], $args );
+		}
+		echo '</div></div>';
+	}
+}
+
+/**
  * Render a single settings field.
  *
  * @param array $args Field args.
@@ -357,27 +422,56 @@ function render_field( $args ) {
 			break;
 
 		case 'radio_presets':
+			echo '<div class="kolofon-selector" role="radiogroup">';
 			foreach ( get_colour_presets() as $slug => $preset ) {
+				// The swatch is the preset's own resolved colours, so the card
+				// shows the scheme rather than describing it. Inline styles are
+				// unavoidable here: the values come from a filterable registry,
+				// so a stylesheet cannot know them ahead of time.
 				printf(
-					'<label class="kolofon-preset"><input type="radio" name="%1$s" value="%2$s" %3$s /> %4$s</label><br />',
+					'<label class="kolofon-selector-card%1$s">
+						<input type="radio" name="%2$s" value="%3$s" %4$s />
+						<span class="kolofon-swatch" style="background:%5$s;border-color:%6$s" aria-hidden="true">
+							<span class="kolofon-swatch-text" style="color:%7$s">Aa</span>
+							<span class="kolofon-swatch-accent" style="background:%8$s"></span>
+						</span>
+						<span class="kolofon-selector-label">%9$s</span>
+					</label>',
+					checked( $value, $slug, false ) ? ' is-active' : '',
 					esc_attr( $name ),
 					esc_attr( $slug ),
 					checked( $value, $slug, false ),
+					esc_attr( $preset['bg'] ),
+					esc_attr( $preset['rule'] ),
+					esc_attr( $preset['text'] ),
+					esc_attr( $preset['accent'] ),
 					esc_html( $preset['label'] )
 				);
 			}
+			echo '</div>';
 			break;
 
 		case 'font_stack':
+			echo '<div class="kolofon-selector" role="radiogroup">';
 			foreach ( get_font_stacks() as $slug => $stack ) {
+				// Each card sets its own specimen in the face it selects, which
+				// is the whole point: a font picker that does not show the font
+				// makes the administrator guess.
 				printf(
-					'<label class="kolofon-preset"><input type="radio" name="%1$s" value="%2$s" %3$s /> %4$s</label><br />',
+					'<label class="kolofon-selector-card%1$s">
+						<input type="radio" name="%2$s" value="%3$s" %4$s />
+						<span class="kolofon-specimen" style="font-family:%5$s" aria-hidden="true">Aa</span>
+						<span class="kolofon-selector-label">%6$s</span>
+					</label>',
+					checked( $value, $slug, false ) ? ' is-active' : '',
 					esc_attr( $name ),
 					esc_attr( $slug ),
 					checked( $value, $slug, false ),
+					esc_attr( $stack['heading'] ),
 					esc_html( $stack['label'] )
 				);
 			}
+			echo '</div>';
 			break;
 
 		case 'export_button':
@@ -661,9 +755,9 @@ function render_options_page() {
 					<?php if ( 'fediverse' === $slug ) : ?>
 						<?php render_fediverse_tab_intro(); ?>
 					<?php endif; ?>
-					<table class="form-table" role="presentation">
-						<?php do_settings_fields( OPTION_PAGE, $slug ); ?>
-					</table>
+					<div class="kolofon-fields">
+						<?php render_field_rows( $slug ); ?>
+					</div>
 					<?php if ( 'advanced' === $slug ) : ?>
 						<?php render_system_panel(); ?>
 					<?php endif; ?>

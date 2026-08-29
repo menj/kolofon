@@ -6,7 +6,7 @@ Theme URI: https://github.com/menj/kolofon
 Requires at least: 6.4
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 7.5.0
+Stable tag: 7.7.0
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: blog, one-column, custom-colors, custom-menu, editor-style, featured-images, translation-ready
@@ -81,6 +81,16 @@ Special Elite font, (C) Astigmatic, Apache License 2.0.
 Font licenses are included alongside the fonts in `assets/fonts/`.
 
 == Changelog ==
+
+= 7.7.0 =
+* Theme Options field rows are now a CSS grid rather than a layout table. Field registration is unchanged, so filtered-in options keep working.
+* Colour schemes and font stacks are now selectable cards: each colour card shows the scheme's own palette, each font card sets its specimen in the face it selects. Keyboard navigation and no-JavaScript operation are unchanged, since the native radio is still the control.
+
+= 7.6.0 =
+* Statuses now emit `SocialMediaPosting` JSON-LD; they previously had no structured data at all despite being a public, archived post type.
+* Post and status images upgraded from bare URLs to `ImageObject` nodes with dimensions, caption, and credit where the attachment supplies them. A new `kolofon_image_object` filter is the place to add licence fields, which the theme cannot infer.
+* Section identity now resolves through `get_primary_section()` in all three places that reported it: the JSON-LD `articleSection`, the Open Graph `article:section` tag, and the breadcrumb trail. A post in several categories could previously name a different section in each.
+* Fixed empty item names in the status archive's JSON-LD `ItemList`, which were built from a title the status post type does not support.
 
 = 7.5.0 =
 * New `inc/fediverse.php` integration layer: the theme's only file that inspects ActivityPub engine internals or touches its own options. Existing code delegates to it under unchanged function names, so no call site needed to change.
